@@ -69,6 +69,93 @@
   	TIM_Period: Quy định thời gian 1 chu kỳ
    	TIM_Mode: Chọn chế độ
 
+# Bài 4: Các chuẩn giao tiếp cơ bản
+
+## SPI - Serial Peripheral Interface
+<p>Là chuẩn giao tiếp đồng bộ.</p>
+<p>Hoạt động ở chế độ song công (Có thể truyền - nhận cùng thời điểm).</p>
+
+<h3>Các đầu nối</h3>
+<ul>
+  <li>SCK (Serial Clock): Thiết bị Master tạo xung tín hiệu SCK và cung cấp cho Slave.</li>
+  <li>MISO (Master Input Slave Output): Tín hiệu tạo bởi thiết bị Slave và nhận bởi thiết bị Master.</li>
+  <li>MOSI (Master Output Slave Input): Tín hiệu tạo bởi thiết bị Master và nhận bởi thiết bị Slave. </li>
+  <li>SS (Slave Select): Chọn thiết bị Slave cụ thể để giao tiếp. Để chọn Slave giao tiếp thiết bị Master chủ động kéo đường SS tương ứng xuống mức 0 (Low).</li>
+</ul>
+
+<h3>Quá trình truyền nhận data</h3>
+<ul>
+  <li>Master kéo chân SS của chân Slave muốn giao tiếp xuống mức 0 để báo hiệu muốn truyền nhận.</li>
+  <li>Master cấp xung clock, với mỗi xung clock, 1 bit sẽ được truyền từ Master đến Slave và ngược lại.</li>
+  <li>Các thanh ghi cập nhật giá trị và dịch 1 bit.</li>
+  <li>Lặp lại quá trình đến khi truyền xong 8 bit thanh ghi.</li>
+</ul>
+
+<h3>Các chế độ hoạt động</h3>
+<p>Có 4 chế độ hoạt động phụ thuộc Clock Polarity (CPOL) và Phase (CPHA).</p>
+<p>CPOL:</p>
+<ul>
+  <li>CPOL = 0: Xung clock ban đầu ở mức 0.</li>
+  <li>CPOL = 1: Xung clock ban đầu ở mức 1.</li>
+</ul>
+<p>CPHA:</p>
+<ul>
+  <li>CPHA = 0: Truyền bit trước rồi mới cấp xung.</li>
+  <li>CPHA = 1: Cấp xung rồi mới truyền bit.</li>
+</ul>
+
+## I2C - Inter-Integrated Circuit
+<p>Là chuẩn giao tiếp đồng bộ.</p>
+<p>Hoạt động ở chế độ bán song công.</p>
+<p>Một Master giao tiếp được với nhiều Slave.</p>
+
+<h3>Các đầu nối</h3>
+<ul>
+  <li>SDA (Serial Data): Đường truyền cho Master và Slave để gửi và nhận dữ liệu.</li>
+  <li>SCL (Serial Clock): Thiết bị Master tạo xung tín hiệu SCK và cung cấp cho Slave.</li>
+</ul>
+
+<h3>Quá trình truyền nhận dữ liệu</h3>
+<ul>
+	<li>Start: Điều kiện: Chân SDA xuống mức 0 trước chân SCL.</li>
+  <li>Truyền các bit địa chỉ để tìm Slave muốn giao tiếp.</li>
+  <li>Bit R/W: Master gửi dữ liệu đi ứng với bit '0', nhận dữ liệu ứng với bit '1'.</li>
+  <li>ACK: Chờ phản hồi, '0' là nhận và '1' là không nhận. Nếu không có Slave nào phản hồi, dùng Timer để thoát ra.</li>
+  <li>Sau khi chọn được Slave để giao tiếp, bắt đầu truyền các bit dữ liệu đến Slave.</li>
+  <li>Tương tự cũng có ACK để chờ phản hồi.</li>
+	<li>Stop: Điều kiện: Chân SDA lên mức 1 trước chân SCL.</li>
+</ul>
+
+## UART - Universal Asynchronous Receiver - Transmitter
+<p>Là chuẩn giao tiếp <strong>KHÔNG</strong> đồng bộ.</p>
+<p>Hoạt động ở chế độ song công.</p>
+<p>Dùng Timer nội để phân biệt 2 bit liền kề.</p>
+<p>Tốc độ truyền: Baudrate = Số bit truyền/1s</p>
+
+<h3>Các đầu nối</h3>
+<p>Gồm 2 đường truyền dứ liệu độc lập và không cần chân Clock.</p>
+<ul>
+  <li>TX: Truyền.</li>
+  <li>RX: Nhận.</li>
+</ul>
+
+<h3>Quá trình truyền nhận data</h3>
+<ul>
+  <li>Start: 1 bit.</li>
+  <li>Bit dữ liệu: 5 đến 9 bit.</li>
+  <li>Bit chẵn lẻ:
+		<ul>
+      <li>Quy luật chẵn: Thêm một bit '0' hoặc '1' để số bit '1' là số chẵn.</li>
+      <li>Quy luật lẻ: Thêm một bit '0' hoặc '1' để số bit '1' là số lẻ.</li>
+    </ul>
+	</li>
+  <li>Stop: 1 đến 2 bit.</li>
+</ul>
+
+
+
+
+
 
 
 
