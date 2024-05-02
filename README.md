@@ -83,7 +83,7 @@
   <li>SS (Slave Select): Chọn thiết bị Slave cụ thể để giao tiếp. Để chọn Slave giao tiếp thiết bị Master chủ động kéo đường SS tương ứng xuống mức 0 (Low).</li>
 </ul>
 
-<h3>Quá trình truyền nhận data</h3>
+<h3>Quá trình truyền nhận dữ liệu</h3>
 <ul>
   <li>Master kéo chân SS của chân Slave muốn giao tiếp xuống mức 0 để báo hiệu muốn truyền nhận.</li>
   <li>Master cấp xung clock, với mỗi xung clock, 1 bit sẽ được truyền từ Master đến Slave và ngược lại.</li>
@@ -139,7 +139,7 @@
   <li>RX: Nhận.</li>
 </ul>
 
-<h3>Quá trình truyền nhận data</h3>
+<h3>Quá trình truyền nhận dữ liệu</h3>
 <ul>
   <li>Start: 1 bit.</li>
   <li>Bit dữ liệu: 5 đến 9 bit.</li>
