@@ -70,28 +70,28 @@ Cấu hình Timer:
 ### 1. SPI - Serial Peripheral Interface
 - Là chuẩn giao tiếp đồng bộ.
 - Hoạt động ở chế độ song công (Có thể truyền - nhận cùng thời điểm).
-- Các đầu nối:
-    - **SCK** (Serial Clock): Thiết bị Master tạo xung tín hiệu SCK và cung cấp cho Slave.
-    - **MISO** (Master Input Slave Output): Tín hiệu tạo bởi thiết bị Slave và nhận bởi thiết bị Master.
-    - **MOSI** (Master Output Slave Input): Tín hiệu tạo bởi thiết bị Master và nhận bởi thiết bị Slave.
-    - **SS** (Slave Select): Chọn thiết bị Slave cụ thể để giao tiếp. Để chọn Slave giao tiếp thiết bị Master chủ động kéo đường SS tương ứng xuống mức 0 (Low).
+#### Các đầu nối:
+- **SCK** (Serial Clock): Thiết bị Master tạo xung tín hiệu SCK và cung cấp cho Slave.
+- **MISO** (Master Input Slave Output): Tín hiệu tạo bởi thiết bị Slave và nhận bởi thiết bị Master.
+- **MOSI** (Master Output Slave Input): Tín hiệu tạo bởi thiết bị Master và nhận bởi thiết bị Slave.
+- **SS** (Slave Select): Chọn thiết bị Slave cụ thể để giao tiếp. Để chọn Slave giao tiếp thiết bị Master chủ động kéo đường SS tương ứng xuống mức 0 (Low).
   
 ![Picture2](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/59a2f364-6d36-4043-927f-1324d5c19944)
-- Quá trình truyền nhận dữ liệu:
-    - Master kéo chân SS của chân Slave muốn giao tiếp xuống mức 0 để báo hiệu muốn truyền nhận.
-    - Master cấp xung clock, với mỗi xung clock, 1 bit sẽ được truyền từ Master đến Slave và ngược lại.
-    - Các thanh ghi cập nhật giá trị và dịch 1 bit.
-    - Lặp lại quá trình đến khi truyền xong 8 bit thanh ghi.
+#### Quá trình truyền nhận dữ liệu:
+- Master kéo chân SS của chân Slave muốn giao tiếp xuống mức 0 để báo hiệu muốn truyền nhận.
+- Master cấp xung clock, với mỗi xung clock, 1 bit sẽ được truyền từ Master đến Slave và ngược lại.
+- Các thanh ghi cập nhật giá trị và dịch 1 bit.
+- Lặp lại quá trình đến khi truyền xong 8 bit thanh ghi.
   
 ![Picture3](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/f984fc6c-1364-4c0d-8566-e4bdb93302db)
-- Các chế độ hoạt động:
-    - Có 4 chế độ hoạt động phụ thuộc **Clock Polarity** (CPOL) và **Clock Phase** (CPHA).
-    - CPOL: 
-        - CPOL = 0: Xung clock ban đầu ở mức 0.
-        - CPOL = 1: Xung clock ban đầu ở mức 1.
-    - CPHA:
-        - CPHA = 0: Truyền bit trước rồi mới cấp xung.
-        - CPHA = 1: Cấp xung trước rồi mới truyền bit.
+#### Các chế độ hoạt động:
+- Có 4 chế độ hoạt động phụ thuộc **Clock Polarity** (CPOL) và **Clock Phase** (CPHA).
+- CPOL: 
+	- CPOL = 0: Xung clock ban đầu ở mức 0.
+    - CPOL = 1: Xung clock ban đầu ở mức 1.
+- CPHA:
+  	- CPHA = 0: Truyền bit trước rồi mới cấp xung.
+    - CPHA = 1: Cấp xung trước rồi mới truyền bit.
           
 | SPI Mode | CPOL | CPHA |
 | :--- | :--- | :--- | 
@@ -104,19 +104,19 @@ Cấu hình Timer:
 - Là chuẩn giao tiếp đồng bộ.
 - Hoạt động ở chế độ bán song công.
 - Một Master giao tiếp được với nhiều Slave.
-- Các đầu nối:
-    - **SDA** (Serial Data): Đường truyền cho Master và Slave để gửi và nhận dữ liệu.
-    - **SCL** (Serial Clock): Thiết bị Master tạo xung tín hiệu SCK và cung cấp cho Slave.
+#### Các đầu nối:
+- **SDA** (Serial Data): Đường truyền cho Master và Slave để gửi và nhận dữ liệu.
+- **SCL** (Serial Clock): Thiết bị Master tạo xung tín hiệu SCK và cung cấp cho Slave.
       
 ![Picture4](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/89a016e7-34fa-443d-8736-0102a2a6a62a)
-- Quá trình truyền nhận dữ liệu:
-    - Start: Điều kiện: Chân SDA xuống mức 0 trước chân SCL.
-    - Truyền các bit địa chỉ để tìm Slave muốn giao tiếp.
-    - Bit R/W: Master gửi dữ liệu đi ứng với bit '0', nhận dữ liệu ứng với bit '1'.
-    - ACK: Chờ phản hồi, '0' là nhận và '1' là không nhận. Nếu không có Slave nào phản hồi, dùng Timer để thoát ra.
-    - Sau khi chọn được Slave để giao tiếp, bắt đầu truyền các bit dữ liệu đến Slave.
-    - Tương tự cũng có ACK để chờ phản hồi.
-	- Stop: Điều kiện: Chân SDA lên mức 1 trước chân SCL
+#### Quá trình truyền nhận dữ liệu:
+- Start: Điều kiện: Chân SDA xuống mức 0 trước chân SCL.
+- Truyền các bit địa chỉ để tìm Slave muốn giao tiếp.
+- Bit R/W: Master gửi dữ liệu đi ứng với bit '0', nhận dữ liệu ứng với bit '1'.
+- ACK: Chờ phản hồi, '0' là nhận và '1' là không nhận. Nếu không có Slave nào phản hồi, dùng Timer để thoát ra.
+- Sau khi chọn được Slave để giao tiếp, bắt đầu truyền các bit dữ liệu đến Slave.
+- Tương tự cũng có ACK để chờ phản hồi.
+- Stop: Điều kiện: Chân SDA lên mức 1 trước chân SCL
    
  ![Picture5](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/d5ba043a-1d63-4de2-a7a6-bdb783e4acee)
 
@@ -125,17 +125,17 @@ Cấu hình Timer:
 - Hoạt động ở chế độ song công.
 - Dùng Timer nội để phân biệt 2 bit liền kề.
 - Tốc độ truyền: Baudrate = Số bit truyền/1s
-- Các đầu nối:
-    - TX: Truyền.
-    - RX: Nhận.
+#### Các đầu nối:
+- TX: Truyền.
+- RX: Nhận.
       
 ![Picture6](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/9a52fd6e-eb76-43f4-aa81-9cce344ae3a7)
-- Quá trình truyền nhận dữ liệu:
-    - Start: 1 bit.
-    - Bit dữ liệu: 5 đến 9 bit.
-    - Bit chẵn lẻ:
-        - Quy luật chẵn: Thêm một bit '0' hoặc '1' để số bit '1' là số chẵn.
-        - Quy luật lẻ: Thêm một bit '0' hoặc '1' để số bit '1' là số lẻ.
-    - Stop: 1 đến 2 bit.
+#### Quá trình truyền nhận dữ liệu:
+- Start: 1 bit.
+- Bit dữ liệu: 5 đến 9 bit.
+- Bit chẵn lẻ:
+	- Quy luật chẵn: Thêm một bit '0' hoặc '1' để số bit '1' là số chẵn.
+	- Quy luật lẻ: Thêm một bit '0' hoặc '1' để số bit '1' là số lẻ.
+- Stop: 1 đến 2 bit.
       
 ![Picture7](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/56943f89-3f0a-4785-b944-51966027ff2b)
