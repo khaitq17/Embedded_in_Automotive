@@ -4,7 +4,7 @@
 
 ### 1. Cấp xung clock cho GPIO
 Module RCC (Reset and Clock Control) cung cấp các hàm để cấu hình xung clock cho ngoại vi qua các Bus tương ứng.
-[new](Picture1.png)
+![new](Picture1.png)
 ```
 RCC_APB1PeriphClockCmd
 
