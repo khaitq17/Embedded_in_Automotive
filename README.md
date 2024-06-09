@@ -4,7 +4,7 @@
 
 ### 1. Cấp xung clock cho GPIO
 Module RCC (Reset and Clock Control) cung cấp các hàm để cấu hình xung clock cho ngoại vi qua các Bus tương ứng.
-[new](https://imgur.com/1xluUUh)
+[new](Picture1.png)
 ```
 RCC_APB1PeriphClockCmd
 
@@ -62,7 +62,7 @@ Cấu hình Timer:
 - Cấp xung cho Timer
 - Cấu hình cho Timer trong struct **TIM_TimeBaseInitTypeDef**:
     - TIM_ClockDivision: Chia tần số
- 	- TIM_Prescaler: Quy định sau bao nhiêu dao động thì đếm lên 1 lần
+ 	  - TIM_Prescaler: Quy định sau bao nhiêu dao động thì đếm lên 1 lần
   	- TIM_Period: Quy định thời gian 1 chu kỳ
    	- TIM_Mode: Chọn chế độ (Đếm lên hoặc đếm xuống)
 
