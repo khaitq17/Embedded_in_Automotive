@@ -4,6 +4,7 @@
 
 ### 1. Cấp xung clock cho GPIO
 Module RCC (Reset and Clock Control) cung cấp các hàm để cấu hình xung clock cho ngoại vi qua các Bus tương ứng.
+![Picture1](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/daacd745-60e6-4499-bb41-86c84afb9edd)
 ```
 RCC_APB1PeriphClockCmd
 
@@ -74,11 +75,15 @@ Cấu hình Timer:
     - **MISO** (Master Input Slave Output): Tín hiệu tạo bởi thiết bị Slave và nhận bởi thiết bị Master.
     - **MOSI** (Master Output Slave Input): Tín hiệu tạo bởi thiết bị Master và nhận bởi thiết bị Slave.
     - **SS** (Slave Select): Chọn thiết bị Slave cụ thể để giao tiếp. Để chọn Slave giao tiếp thiết bị Master chủ động kéo đường SS tương ứng xuống mức 0 (Low).
+  
+![Picture2](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/59a2f364-6d36-4043-927f-1324d5c19944)
 - Quá trình truyền nhận dữ liệu:
     - Master kéo chân SS của chân Slave muốn giao tiếp xuống mức 0 để báo hiệu muốn truyền nhận.
     - Master cấp xung clock, với mỗi xung clock, 1 bit sẽ được truyền từ Master đến Slave và ngược lại.
     - Các thanh ghi cập nhật giá trị và dịch 1 bit.
     - Lặp lại quá trình đến khi truyền xong 8 bit thanh ghi.
+  
+![Picture3](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/f984fc6c-1364-4c0d-8566-e4bdb93302db)
 - Các chế độ hoạt động:
     - Có 4 chế độ hoạt động phụ thuộc **Clock Polarity** (CPOL) và **Clock Phase** (CPHA).
     - CPOL: 
@@ -87,6 +92,7 @@ Cấu hình Timer:
     - CPHA:
         - CPHA = 0: Truyền bit trước rồi mới cấp xung.
         - CPHA = 1: Cấp xung trước rồi mới truyền bit.
+          
 | SPI Mode | CPOL | CPHA |
 | :--- | :--- | :--- | 
 | 1 | 0 | 0 |
@@ -101,6 +107,8 @@ Cấu hình Timer:
 - Các đầu nối:
     - **SDA** (Serial Data): Đường truyền cho Master và Slave để gửi và nhận dữ liệu.
     - **SCL** (Serial Clock): Thiết bị Master tạo xung tín hiệu SCK và cung cấp cho Slave.
+      
+![Picture4](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/89a016e7-34fa-443d-8736-0102a2a6a62a)
 - Quá trình truyền nhận dữ liệu:
     - Start: Điều kiện: Chân SDA xuống mức 0 trước chân SCL.
     - Truyền các bit địa chỉ để tìm Slave muốn giao tiếp.
@@ -109,6 +117,8 @@ Cấu hình Timer:
     - Sau khi chọn được Slave để giao tiếp, bắt đầu truyền các bit dữ liệu đến Slave.
     - Tương tự cũng có ACK để chờ phản hồi.
 	- Stop: Điều kiện: Chân SDA lên mức 1 trước chân SCL
+   
+ ![Picture5](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/d5ba043a-1d63-4de2-a7a6-bdb783e4acee)
 
 ### 3. UART - Universal Asynchronous Receiver - Transmitter
 - Là chuẩn giao tiếp **KHÔNG** đồng bộ.
@@ -118,6 +128,8 @@ Cấu hình Timer:
 - Các đầu nối:
     - TX: Truyền.
     - RX: Nhận.
+      
+![Picture6](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/9a52fd6e-eb76-43f4-aa81-9cce344ae3a7)
 - Quá trình truyền nhận dữ liệu:
     - Start: 1 bit.
     - Bit dữ liệu: 5 đến 9 bit.
@@ -125,4 +137,5 @@ Cấu hình Timer:
         - Quy luật chẵn: Thêm một bit '0' hoặc '1' để số bit '1' là số chẵn.
         - Quy luật lẻ: Thêm một bit '0' hoặc '1' để số bit '1' là số lẻ.
     - Stop: 1 đến 2 bit.
-
+      
+![Picture7](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/56943f89-3f0a-4785-b944-51966027ff2b)
