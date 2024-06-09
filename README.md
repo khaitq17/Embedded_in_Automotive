@@ -1,11 +1,10 @@
-<<<<<<< HEAD
 # Embedded-Automotive
 
 ## Bài 2: GPIO
 
 ### 1. Cấp xung clock cho GPIO
 Module RCC (Reset and Clock Control) cung cấp các hàm để cấu hình xung clock cho ngoại vi qua các Bus tương ứng.
-![new](https://imgur.com/1xluUUh)
+[new](https://imgur.com/1xluUUh)
 ```
 RCC_APB1PeriphClockCmd
 
@@ -76,13 +75,13 @@ Cấu hình Timer:
     - **MISO** (Master Input Slave Output): Tín hiệu tạo bởi thiết bị Slave và nhận bởi thiết bị Master.
     - **MOSI** (Master Output Slave Input): Tín hiệu tạo bởi thiết bị Master và nhận bởi thiết bị Slave.
     - **SS** (Slave Select): Chọn thiết bị Slave cụ thể để giao tiếp. Để chọn Slave giao tiếp thiết bị Master chủ động kéo đường SS tương ứng xuống mức 0 (Low).
-![new](https://imgur.com/hBls0FV)
+[new](https://imgur.com/hBls0FV)
 - Quá trình truyền nhận dữ liệu:
     - Master kéo chân SS của chân Slave muốn giao tiếp xuống mức 0 để báo hiệu muốn truyền nhận.
     - Master cấp xung clock, với mỗi xung clock, 1 bit sẽ được truyền từ Master đến Slave và ngược lại.
     - Các thanh ghi cập nhật giá trị và dịch 1 bit.
     - Lặp lại quá trình đến khi truyền xong 8 bit thanh ghi.
-![new](https://imgur.com/iT4BTRS)
+[new](https://imgur.com/iT4BTRS)
 - Các chế độ hoạt động:
     - Có 4 chế độ hoạt động phụ thuộc **Clock Polarity** (CPOL) và **Clock Phase** (CPHA).
     - CPOL: 
@@ -105,7 +104,7 @@ Cấu hình Timer:
 - Các đầu nối:
     - **SDA** (Serial Data): Đường truyền cho Master và Slave để gửi và nhận dữ liệu.
     - **SCL** (Serial Clock): Thiết bị Master tạo xung tín hiệu SCK và cung cấp cho Slave.
-![new](https://imgur.com/6JN0vw1)
+[new](https://imgur.com/6JN0vw1)
 - Quá trình truyền nhận dữ liệu:
     - Start: Điều kiện: Chân SDA xuống mức 0 trước chân SCL.
     - Truyền các bit địa chỉ để tìm Slave muốn giao tiếp.
@@ -114,7 +113,7 @@ Cấu hình Timer:
     - Sau khi chọn được Slave để giao tiếp, bắt đầu truyền các bit dữ liệu đến Slave.
     - Tương tự cũng có ACK để chờ phản hồi.
 	- Stop: Điều kiện: Chân SDA lên mức 1 trước chân SCL.
-![new](https://imgur.com/1FE9SPj)
+[new](https://imgur.com/1FE9SPj)
 
 ### 3. UART - Universal Asynchronous Receiver - Transmitter
 - Là chuẩn giao tiếp **KHÔNG** đồng bộ.
@@ -124,7 +123,7 @@ Cấu hình Timer:
 - Các đầu nối:
     - TX: Truyền.
     - RX: Nhận.
-![new](https://imgur.com/BLGyJE4)
+[new](https://imgur.com/BLGyJE4)
 - Quá trình truyền nhận dữ liệu:
     - Start: 1 bit.
     - Bit dữ liệu: 5 đến 9 bit.
@@ -132,7 +131,7 @@ Cấu hình Timer:
         - Quy luật chẵn: Thêm một bit '0' hoặc '1' để số bit '1' là số chẵn.
         - Quy luật lẻ: Thêm một bit '0' hoặc '1' để số bit '1' là số lẻ.
     - Stop: 1 đến 2 bit.
-![new](https://imgur.com/f1kihwM)
+[new](https://imgur.com/f1kihwM)
 
 =======
 # BÀI 2: GPIO
@@ -288,18 +287,3 @@ Cấu hình Timer:
 	</li>
   <li>Stop: 1 đến 2 bit.</li>
 </ul>
->>>>>>> 167bddcb9e40efb2bc87e4e887780660753b5f2b
-
-
-
-
-
-
-
-
-<<<<<<< HEAD
-=======
-  
->>>>>>> 167bddcb9e40efb2bc87e4e887780660753b5f2b
-
-
