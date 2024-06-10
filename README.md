@@ -575,9 +575,9 @@ uint8_t Read_I2C_Data()
 ![Picture10](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/020f6237-8485-407a-aad9-e687fd17181f)
 Định nghĩa các chân UART:
 ```
-	#define TX_Pin 		GPIO_Pin_9
-	#define RX_Pin 		GPIO_Pin_10
-	#define UART_GPIO 	GPIOA
+#define TX_Pin 		GPIO_Pin_9
+#define RX_Pin 		GPIO_Pin_10
+#define UART_GPIO 	GPIOA
 ```
 Cấu hình GPIO:
 ```
