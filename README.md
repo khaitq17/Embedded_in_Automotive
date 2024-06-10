@@ -139,3 +139,41 @@ Cấu hình Timer:
 - Stop: 1 đến 2 bit.
       
 ![Picture7](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/56943f89-3f0a-4785-b944-51966027ff2b)
+
+## BÀI 5: Giao tiếp SPI
+### 1. SPI Software
+SPI Software là cách “mô phỏng” bằng việc tạo ra một giao thức truyền thông giống SPI nhưng chỉ sử dụng GPIO của vi điều khiển.
+#### Cấu hình GPIO cho SPI Software
+SPI dùng 4 chân để truyền nhận, gồm MISO, MOSI, CS và SCK.
+- **SCK** (Serial Clock): Thiết bị Master tạo xung tín hiệu SCK và cung cấp cho Slave.
+- **MISO** (Master Input Slave Output): Tín hiệu tạo bởi thiết bị Slave và nhận bởi thiết bị Master.
+- **MOSI** (Master Output Slave Input): Tín hiệu tạo bởi thiết bị Master và nhận bởi thiết bị Slave.
+- **CS** (Chip Select): Chọn thiết bị Slave cụ thể để giao tiếp. Để chọn Slave giao tiếp thiết bị Master chủ động kéo đường CS tương ứng xuống mức 0 (Low).
+
+Định nghĩa 4 chân sử dụng SPI:
+```
+#define SPI_SCK_Pin GPIO_Pin_0
+#define SPI_MISO_Pin GPIO_Pin_1
+#define SPI_MOSI_Pin GPIO_Pin_2
+#define SPI_CS_Pin GPIO_Pin_3
+#define SPI_GPIO GPIOA
+#define SPI_RCC RCC_APB2Periph_GPIOA
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
