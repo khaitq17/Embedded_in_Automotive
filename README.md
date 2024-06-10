@@ -145,6 +145,8 @@ Cấu hình Timer:
 SPI Software là cách “mô phỏng” bằng việc tạo ra một giao thức truyền thông giống SPI nhưng chỉ sử dụng GPIO của vi điều khiển.
 #### Cấu hình GPIO cho SPI Software
 SPI dùng 4 chân để truyền nhận, gồm MISO, MOSI, CS và SCK.
+
+![Picture8](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/35ea2e93-5df0-4663-b101-b708694557df)
 - **SCK** (Serial Clock): Thiết bị Master tạo xung tín hiệu SCK và cung cấp cho Slave.
 - **MISO** (Master Input Slave Output): Tín hiệu tạo bởi thiết bị Slave và nhận bởi thiết bị Master.
 - **MOSI** (Master Output Slave Input): Tín hiệu tạo bởi thiết bị Master và nhận bởi thiết bị Slave.
@@ -157,8 +159,184 @@ SPI dùng 4 chân để truyền nhận, gồm MISO, MOSI, CS và SCK.
 #define SPI_MOSI_Pin GPIO_Pin_2
 #define SPI_CS_Pin GPIO_Pin_3
 #define SPI_GPIO GPIOA
-#define SPI_RCC RCC_APB2Periph_GPIOA
 ```
+Cấu hình GPIO:
+```
+void GPIO_Config(){
+	GPIO_InitTypeDef GPIO_InitStructure;
+
+	GPIO_InitStructure.GPIO_Pin = SPI_SCK_Pin| SPI_MOSI_Pin| SPI_CS_Pin;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(SPI_GPIO, &GPIO_InitStructure);
+	
+	GPIO_InitStructure.GPIO_Pin = SPI_MISO_Pin;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(SPI_GPIO, &GPIO_InitStructure);
+```
+Tạo xung Clock:
+```
+void Clock(){
+	GPIO_WriteBit(SPI_GPIO, SPI_SCK_Pin, Bit_SET);		// Kéo chân SCK lên 1	
+	delay_ms(4);
+	GPIO_WriteBit(SPI_GPIO, SPI_SCK_Pin, Bit_RESET);	// Kéo chân SCK xuống 0
+	delay_ms(4);
+}
+```
+#### Khởi tạo các chân cho SPI
+```
+void SPI_Init(){
+	GPIO_WriteBit(SPI_GPIO, SPI_SCK_Pin, Bit_RESET);
+	GPIO_WriteBit(SPI_GPIO, SPI_CS_Pin, Bit_SET);
+	GPIO_WriteBit(SPI_GPIO, SPI_MISO_Pin, Bit_RESET);
+	GPIO_WriteBit(SPI_GPIO, SPI_MOSI_Pin, Bit_RESET);
+}
+```
+#### Hàm truyền
+Hàm truyền sẽ truyền lần lượt 8 bit trong byte dữ liệu.
+- Kéo CS xuống 0.
+	- Truyền 1 bit.
+	- Dịch 1 bit.
+	- Gửi Clock
+- Kéo CS lên 1.
+```
+void SPI_Master_Transmit(uint8_t u8Data)
+{
+	uint8_t u8Mask = 0x80;// 0b10000000
+	uint8_t tempData;
+	GPIO_WriteBit(SPI_GPIO, SPI_CS_Pin, Bit_RESET);		// Kéo CS xuống 0
+	delay_ms(1);
+	for(int i=0; i<8; i++){			// Truyền lần lượt 8 bit
+		tempData = u8Data & u8Mask;
+		if(tempData){
+			GPIO_WriteBit(SPI_GPIO, SPI_MOSI_Pin, Bit_SET);
+			delay_ms(1);
+		} else{
+			GPIO_WriteBit(SPI_GPIO, SPI_MOSI_Pin, Bit_RESET);
+			delay_ms(1);
+		}
+		u8Data=u8Data<<1;
+		Clock();		// Gửi Clock
+	}
+	GPIO_WriteBit(SPI_GPIO, SPI_CS_Pin, Bit_SET);		// Kéo CS lên 1
+	delay_ms(1);
+}
+```
+#### Hàm nhận
+- Kiểm tra CS == 0?.
+	- Kiểm tra Clock == 1?
+	- Đọc data trên MOSI, ghi vào biến.
+	- Dịch 1 bit.
+- Kiểm tra CS == 1?
+```
+uint8_t SPI_Slave_Receive(void){
+	uint8_t u8Mask = 0x80;
+	uint8_t dataReceive =0x00;//0b11000000
+	uint8_t temp = 0x00, i=0;
+	while(GPIO_ReadInputDataBit(SPI_GPIO, SPI_CS_Pin));		
+	while(!GPIO_ReadInputDataBit(SPI_GPIO, SPI_SCK_Pin));		// Kiểm tra CS == 0
+	for(i=0; i<8;i++)
+    	{ 
+		if(GPIO_ReadInputDataBit(SPI_GPIO, SPI_SCK_Pin)){
+		while (GPIO_ReadInputDataBit(SPI_GPIO, SPI_SCK_Pin)) 
+			temp = GPIO_ReadInputDataBit(SPI_GPIO, SPI_MOSI_Pin);	// Đọc data trên MOSI
+		dataReceive=dataReceive<<1;		// Dịch 1 bit
+		dataReceive=dataReceive|temp;	// Ghi vào biến
+    		}
+	while(!GPIO_ReadInputDataBit(SPI_GPIO, SPI_SCK_Pin));		// Kiểm tra CS == 1
+	}
+	return dataReceive;
+}
+```
+
+### SPI Hardware
+Trên mỗi dòng vi điều khiển khác nhau module SPI sẽ được tích hợp, điều khiển bởi các thanh ghi, phần cứng, IO khác nhau gọi là SPI cứng (SPI Hardware). STM32F1 có 2 khối SPI: SPI1 ở APB2 và SPI2 ở PAB1.
+#### Cấu hình GPIO cho SPI Hardware
+STM32 đã cấu hình sẵn các chân dành cho chức năng SPI. Khi sử dụng SPI1, ta định nghĩa các chân đã được thiết lập sẵn:
+```
+#define SPI1_NSS 	GPIO_Pin_4
+#define SPI1_SCK	GPIO_Pin_5
+#define SPI1_MISO 	GPIO_Pin_6
+#define SPI1_MOSI 	GPIO_Pin_7
+#define SPI1_GPIO 	GPIOA
+```
+Cấu hình GPIO:
+```
+void GPIO_Config(){
+	GPIO_InitTypeDef GPIO_InitStructure;
+	
+	GPIO_InitStructure.GPIO_Pin = SPI1_NSS| SPI1_SCK| SPI1_MISO| SPI1_MOSI;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(SPI1_GPIO, &GPIO_InitStructure);
+}
+```
+#### Cấu hình SPI
+Tương tự các ngoại vi khác, các tham số SPI được cấu hình trong Struct **SPI_InitTypeDef**:
+- **SPI_Mode**: Quy định chế độ hoạt động của thiết bị SPI. 
+- **SPI_Direction**: Quy định kiểu truyền của thiết bị.
+- **SPI_BaudRatePrescaler**: Hệ số chia clock cấp cho Module SPI.
+- **SPI_CPOL**: Cấu hình cực tính của SCK . Có 2 chế độ:
+	- SPI_CPOL_Low: Cực tính mức 0 khi SCK không truyền xung.
+	- SPI_CPOL_High: Cực tính mức 1 khi SCK không truyền xung.
+- **SPI_CPHA**: Cấu hình chế độ hoạt động của SCK. Có 2 chế độ:
+	- SPI_CPHA_1Edge: Tín hiệu truyền đi ở cạnh xung đầu tiên.
+	- SPI_CPHA_2Edge: Tín hiệu truyền đi ở cạnh xung thứ hai.
+- **SPI_DataSize**: Cấu hình số bit truyền. 8 hoặc 16 bit.
+- **SPI_FirstBit**: Cấu hình chiều truyền của các bit là MSB hay LSB.
+- **SPI_CRCPolynomial**: Cấu hình số bit CheckSum cho SPI.
+- **SPI_NSS**: Cấu hình chân SS là điều khiển bằng thiết bị hay phần mềm.
+
+```
+void SPI_Config(){
+	SPI_InitTypeDef SPI_InitStructure;
+	SPI_InitStructure.SPI_Mode = SPI_Mode_Master;
+	SPI_InitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;
+	SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_16;//72Mhs/16
+	SPI_InitStructure.SPI_CPOL = SPI_CPOL_Low;
+	SPI_InitStructure.SPI_CPHA = SPI_CPHA_1Edge;
+	SPI_InitStructure.SPI_DataSize = SPI_DataSize_8b;
+	SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_LSB;//0b001001001
+	SPI_InitStructure.SPI_CRCPolynomial = 7;
+	SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;
+	
+	SPI_Init(SPI1, &SPI_InitStructure);
+	SPI_Cmd(SPI1, ENABLE);
+}
+```
+#### Các hàm truyền nhận
+- Hàm SPI_I2S_SendData(SPI_TypeDef* SPIx, uint16_t Data), tùy vào cấu hình datasize là 8 hay 16 bit sẽ truyền đi 8 hoặc 16 bit dữ liệu. Hàm nhận 2 tham số là bộ SPI sử dụng và data cần truyền.
+- Hàm SPI_I2S_ReceiveData(SPI_TypeDef* SPIx) trả về giá trị đọc được trên SPIx. Hàm trả về 8 hoặc 16 bit data.
+- Hàm SPI_I2S_GetFlagStatus(SPI_TypeDef* SPIx, uint16_t SPI_I2S_FLAG) trả về giá trị 1 cờ trong thanh ghi của SPI. Các cờ thường được dùng:
+	- SPI_I2S_FLAG_TXE: Cờ báo truyền, cờ này sẽ set lên 1 khi truyền xong data trong buffer.
+	- SPI_I2S_FLAG_RXNE: Cờ báo nhận, cờ này set lên 1 khi nhận xong data.
+	- SPI_I2S_FLAG_BSY: Cờ báo bận,set lên 1 khi SPI đang bận truyền nhận.
+
+Hàm truyền:
+```
+void SPI_Send1Byte(uint8_t data){
+    GPIO_WriteBit(SPI1_GPIO, SPI1_NSS, Bit_RESET);
+   
+    SPI_I2S_SendData(SPI1, data);
+    while(SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE)==0);
+   
+    GPIO_WriteBit(SPI1_GPIO, SPI1_NSS, Bit_SET);
+}
+```
+Hàm nhận:
+```
+uint8_t SPI_Receive1Byte(void){
+    uint8_t temp;
+    while(SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_BSY)==1);
+    temp = (uint8_t)SPI_I2S_ReceiveData(SPI1);
+    while(SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE)==0);
+    return temp;
+}
+```
+
+
+
 
 
 
