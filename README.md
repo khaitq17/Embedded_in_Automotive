@@ -606,7 +606,7 @@ void UART_Config(){
 	delay_us(1);
 }
 ```
-#### Hàm truyền
+### Hàm truyền
 - Hàm truyền sẽ truyền lần lượt 8 bit trong byte dữ liệu, sau khi tín hiệu start được gửi đi.
 - Tạo start, delay 1 period time.
 	- Truyền bit dữ liệu. mỗi bit truyền trong 1 period time.
