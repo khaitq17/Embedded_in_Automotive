@@ -399,7 +399,7 @@ void I2C_Stop(){
 	delay_us(3);
 }
 ```
-#### Hàm truyền
+### Hàm truyền
 - Hàm truyền sẽ truyền lần lượt 8 bit trong byte dữ liệu
 	- Truyền 1 bit
 	- Tạo Clock
