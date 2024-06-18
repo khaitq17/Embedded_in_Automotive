@@ -1174,6 +1174,100 @@ Ví dụ: Ngoại vi SPI1, RX nhận tương ứng với Channel2
 	SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Rx, ENABLE);
 ```
 
+# BÀI 10: Flash và Bootloader
+## 10.1. Flash
+
+![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/d605231e-21d6-47ab-8bb5-188f63bdaf6f)
+
+- STM32F1 không có EPROM mà chỉ được cung cấp sẵn 128/64Kb Flash. 
+- Được chia nhỏ thành các Page, mỗi Page có kích thước 1Kb.
+- Flash có giới hạn về số lần xóa/ghi.
+- Trước khi ghi phải xóa Flash trước.
+- Thường được dùng để lưu chương trình.
+
+![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/f1c84e52-379a-4d81-98d6-3d7ba35b7537)
+
+Thông thường chương trình sẽ được nạp vào vùng nhớ bắt đầu ở 0x08000000, vùng nhớ phía sau sẽ là trống và người dùng có thể lưu trữ dữ liệu ở vùng này.
+
+![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/df0f830a-96ba-4f14-b566-e0aa27259bad)
+
+### 10.1.1. Xóa Flash
+- Mỗi lần ghi 2bytes hoặc 4bytes, tuy nhiên mỗi lần xóa phải xóa cả Page.
+- Sơ đồ xóa FLash như hình:
+	- Đầu tiên, kiểm tra cờ LOCK của Flash, nếu Cờ này đang được bật, Flash đang ở chế độ Lock và cần phải được Unlock trước khi sử dụng.
+	- Sau khi FLash đã Unlock, cờ CR_PER được set lên 1.
+	- Địa chỉ của Page cần xóa được ghi vào FAR.
+	- Set bit CR_STRT lên 1 để bắt đầu quá trình xóa.
+	- Kiểm tra cờ BSY đợi hoàn tất quá trình xóa.
+
+![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/69757aa1-64de-4060-a7c0-68e200abb934)
+
+### 10.1.2. Ghi Flash
+- Flash có thể ghi theo 2/4bytes:
+- Sơ đồ ghi FLash như hình:
+	- Tương tự quá trình xóa, đầu tiên Cờ LOCK được kiểm tra.
+	- Sau khi xác nhận đã Unlock, CỜ CR_PG được set lên 1.
+	- Quá trình ghi dữ liệu vào địa chỉ tương ứng sẽ được thực thi.
+	- Kiểm tra cờ BSY để đợi quá trình ghi hoàn tất.
+
+![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/f4d6f875-25ff-4f6b-a895-43d645afd9e5)
+
+### 10.1.3. Các hàm thông dụng
+#### 10.1.3.1. Các hàm LOCK, UNLOCK Flash
+- **void FLASH_Unlock(void)**: Hàm này Unlock cho tất cả vùng nhớ trong Flash.
+- **void FLASH_UnlockBank1(void)**: Hàm này chỉ Unlock cho Bank đầu tiên. Vì SMT32F103C8T6 chỉ có 1 Bank duy nhất nên chức năng tương tự hàm trên.
+- **void FLASH_UnlockBank2(void)**: Unlock cho Bank thứ 2.
+- **void FLASH_Lock(void)**: Lock bộ điều khiển xóa Flash cho toàn bộ vùng nhớ Flash.
+- **void FLASH_LockBank1(void)** và **void FLASH_LockBank2(void)**: Lock bộ điều khiển xóa Flash cho Bank 1 hoặc 2.
+
+#### 10.1.3.2. Các hàm xóa Flash
+- **FLASH_Status FLASH_EraseAllBank1Pages(void)**: Xóa tất cả các Page trong Bank 1 của Flash. 
+- **FLASH_Status FLASH_EraseAllBank2Pages(void)**: Xóa tất cả các Page trong Bank 2 của Flash. 
+- **FLASH_Status FLASH_EraseAllPages(void)**: Xóa toàn bộ Flash.
+- **FLASH_Status FLASH_ErasePage(uint32_t Page_Address)**: Xóa 1 page cụ thể trong Flash, cụ thể là Page bắt đầu bằng địa chỉ Page_Address.
+
+#### 10.1.3.3. Các hàm ghi Flash
+- **FLASH_Status FLASH_ProgramHalfWord(uint32_t Address, uint16_t Data)**:  Ghi dữ liệu vào vùng nhớ Address với kích thước mỗi 2 byte (Halfword).
+- **FLASH_Status FLASH_ProgramWord(uint32_t Address, uint32_t Data)**: Ghi dữ liệu vào vùng nhớ Address với kích thước mỗi 4 byte (Word).
+- **FlagStatus FLASH_GetFlagStatus(uint32_t FLASH_FLAG)**: hàm này trả về trạng thái của Flag. Ở bài này ta sẽ dùng hàm này để kiểm tra cờ FLASH_FLAG_BSY. Cờ này báo hiệu rằng Flash đang bận (Xóa/Ghi) nếu được set lên 1. 
+
+### 10.1.4. Ví dụ
+Ghi data vào 1 Page trong Flash
+```
+void Flash_WriteInt(uint32_t address, uint16_t value){
+	FLASH_Unlock();
+	while(FLASH_GetFlagStatus(FLASH_FLAG_BSY) == 1);
+	FLASH_ProgramHalfWord(address, value);
+	while(FLASH_GetFlagStatus(FLASH_FLAG_BSY) == 1);
+	FLASH_Lock();
+}
+
+void Flash_WriteNumByte(uint32_t address, uint8_t *data, int num){
+	FLASH_Unlock();
+	while(FLASH_GetFlagStatus(FLASH_FLAG_BSY) == 1);
+	uint16_t *ptr = (uint16_t*)data;
+	for(int i=0; i<((num+1)/2); i++){
+		FLASH_ProgramHalfWord(address+2*i, *ptr);
+		while(FLASH_GetFlagStatus(FLASH_FLAG_BSY) == 1);
+		ptr++;
+	}
+	FLASH_Lock();
+}
+```
+Xóa Flash
+```
+void Flash_Erase(uint32_t addresspage){
+	FLASH_Unlock();
+	while(FLASH_GetFlagStatus(FLASH_FLAG_BSY) == 1);
+	FLASH_ErasePage(addresspage);
+	while(FLASH_GetFlagStatus(FLASH_FLAG_BSY) == 1);
+	FLASH_Lock();
+}
+```
+
+
+
+
 
 
 
