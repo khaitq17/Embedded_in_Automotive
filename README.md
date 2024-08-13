@@ -62,7 +62,7 @@ void GPIO_Write(GPIO_TypeDef* GPIOx, uint16_t PortVal);
     - Ngắt nào có số thứ tự ưu tiên càng thấp thì có quyền càng cao.
 
 ## 2.2 Timer
-- **Timer** là 1 mạch digital logic có vai trò đếm mỗi chu kỳ clock (đếm lên hoặc đếm xuống).
+**Timer** là 1 mạch digital logic có vai trò đếm mỗi chu kỳ clock (đếm lên hoặc đếm xuống).
 
 Cấu hình Timer:    
 - Cấp xung cho Timer
