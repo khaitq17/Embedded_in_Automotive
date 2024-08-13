@@ -63,7 +63,7 @@ void GPIO_Write(GPIO_TypeDef* GPIOx, uint16_t PortVal);
 
 ## 2.2 Timer
 - **Timer** là 1 mạch digital logic có vai trò đếm mỗi chu kỳ clock (đếm lên hoặc đếm xuống).
-- 
+
 Cấu hình Timer:    
 - Cấp xung cho Timer
 - Cấu hình cho Timer trong struct **TIM_TimeBaseInitTypeDef**:
