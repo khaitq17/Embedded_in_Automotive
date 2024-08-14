@@ -187,7 +187,9 @@ void GPIO_Config(){
 	GPIO_InitStructure.GPIO_Pin = SPI_MISO_Pin;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+
 	GPIO_Init(SPI_GPIO, &GPIO_InitStructure);
+}
 ```
 Tạo xung Clock:
 ```
