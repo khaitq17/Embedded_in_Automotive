@@ -58,7 +58,7 @@ void GPIO_Write(GPIO_TypeDef* GPIOx, uint16_t PortVal);
     - **Ngắt Timer**: Xảy ra khi giá trị trong thanh ghi đếm của Timer tràn.
     - **Ngắt truyền thông**: Xảy ra khi có sự truyền/nhận dữ liệu giữa các MCU hay giữa MCU với các thiết bị bên ngoài.
 - Độ ưu tiên ngắt
-    - Độ ưu tiên là khác nhau ở các ngắt. Nó xác định ngắt nào đưuọc quyền thực thi khi nhiều ngắt xảy ra đồng thời.
+    - Độ ưu tiên là khác nhau ở các ngắt. Nó xác định ngắt nào được quyền thực thi khi nhiều ngắt xảy ra đồng thời.
     - Ngắt nào có số thứ tự ưu tiên càng thấp thì có quyền càng cao.
 
 ## 2.2 Timer
