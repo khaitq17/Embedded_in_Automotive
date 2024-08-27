@@ -856,13 +856,14 @@ Ngoài ra, `NVIC_PriorityGroupConfig();` cấu hình các bit dành cho **Channe
 - `NVIC_PriorityGroup_3`: 3 bit pre-emption priority, 1 bit subpriority
 - `NVIC_PriorityGroup_4`: 4 bit pre-emption priority, 0 bit subpriority
 ```
-NVIC_InitTypeDef NVICInitStruct;
+	NVIC_InitTypeDef NVIC_InitStruct;
+
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
 	
-	NVICInitStruct.NVIC_IRQChannel = EXTI0_IRQn;
-	NVICInitStruct.NVIC_IRQChannelPreemptionPriority = 0x00;
+	NVIC_InitStruct.NVIC_IRQChannel = EXTI0_IRQn;
+	NVIC_InitStruct.NVIC_IRQChannelPreemptionPriority = 0x00;
 	NVIC_InitStruct.NVIC_IRQChannelSubPriority = 0x00;
-	NVICInitStruct.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_InitStruct.NVIC_IRQChannelCmd = ENABLE;
 	
 	NVIC_Init(&NVICInitStruct);
 ```
