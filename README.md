@@ -851,7 +851,7 @@ Ngoài ra, `NVIC_PriorityGroupConfig();` cấu hình các bit dành cho **Channe
 - `NVIC_PriorityGroup_0`: 0 bit pre-emption priority, 4 bit subpriority
 - `NVIC_PriorityGroup_1`: 1 bit pre-emption priority, 3 bit subpriority
 - `NVIC_PriorityGroup_2`: 2 bit pre-emption priority, 2 bit subpriority
--` NVIC_PriorityGroup_3`: 3 bit pre-emption priority, 1 bit subpriority
+- `NVIC_PriorityGroup_3`: 3 bit pre-emption priority, 1 bit subpriority
 - `NVIC_PriorityGroup_4`: 4 bit pre-emption priority, 0 bit subpriority
 ```
 NVIC_InitTypeDef NVICInitStruct;
