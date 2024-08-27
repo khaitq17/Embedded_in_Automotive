@@ -813,14 +813,15 @@ Ngắt ngoài của chip STM32F103 bao gồm có 16 line ngắt riêng biệt:
 Ví dụ:
 - Line0 nếu chúng ta đã chọn chân PA0 (chân 0 ở port A) làm chân ngắt thì tất cả các chân 0 ở các Port khác không được khai báo làm chân ngắt ngoài nữa
 - Line1 nếu chúng ta chọn chân PB1 là chân ngắt thì tất cả chân 1 ở các Port khác không được khai báo làm chân ngắt nữa.
+
 Các Line ngắt sẽ được phân vào các Vector ngắt tương ứng. Các Line ngắt của STM32F103 được phân bố vào các vector ngắt như sau:
 
 ![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/00906ed3-92a3-47a7-ad68-30534ce70607)
 ### 7.1.1 Độ ưu tiên ngắt
 Có 2 loại ưu tiên ngắt khác nhau trên MCU STM32F103C8T6 đó là **Preemption Priorities** và **Sub Priorities**:
-– Mặc định thì ngắt nào có Preemtion Priority cao hơn thì sẽ được thực hiện trước.
-– Khi nào 2 ngắt có cùng một mức Preemption Priority thì ngắt nào có Sub Priority cao hơn thì ngắt đó được thực hiện trước.
-– Còn trường hợp 2 ngắt có cùng mức Preemption và Sub Priority luôn thì ngắt nào đến trước được thực hiện trước.
+- Mặc định thì ngắt nào có Preemtion Priority cao hơn thì sẽ được thực hiện trước.
+- Khi nào 2 ngắt có cùng một mức Preemption Priority thì ngắt nào có Sub Priority cao hơn thì ngắt đó được thực hiện trước.
+- Còn trường hợp 2 ngắt có cùng mức Preemption và Sub Priority luôn thì ngắt nào đến trước được thực hiện trước.
 ### 7.1.2 Cấu hình ngắt ngoài (EXTI)
 Hàm `GPIO_EXTILineConfig(uint8_t GPIO_PortSource, uint8_t GPIO_PinSource)` cấu hình chân ở chế độ sử dụng ngắt ngoài:
 - `GPIO_PortSource`: Chọn Port để sử dụng làm nguồn cho ngắt ngoài.
@@ -887,7 +888,9 @@ void EXTI0_IRQHandler()
 ## 7.2 Ngắt Timer
 ### 7.2.1 Cấu hình ngắt Timer
 Sử dụng ngắt Timer, ta vẫn cấu hình các tham số trong **TIM_TimeBaseInitTypeDef** bình thường, riêng `TIM_Period`, đây là số chu kì mà timer sẽ ngắt. Ta tính toán và đặt giá trị để tạo khoảng thời gian ngắt mong muốn.
+
 Cài đặt Period = 10-1 ứng với ngắt mỗi 1ms.
+
 Hàm `TIM_ITConfig(TIMx, TIM_IT_Update, ENABLE)` kích hoạt ngắt cho TIMERx tương ứng.
 ```
 void TIM_Config(){
