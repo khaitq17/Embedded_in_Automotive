@@ -848,7 +848,7 @@ Bộ NVIC cấu hình các tham số ngắt và quản lý các vecto ngắt. C�
 - `NVIC_IRQChannelPreemptionPriority`: Cấu hình độ ưu tiên của ngắt.
 - `NVIC_IRQChannelSubPriority`: Cấu hình độ ưu tiên phụ.
 - `NVIC_IRQChannelCmd`: Cho phép ngắt.
-- 
+
 Ngoài ra, `NVIC_PriorityGroupConfig();` cấu hình các bit dành cho **ChannelPreemptionPriority** và **ChannelSubPriority**: 
 - `NVIC_PriorityGroup_0`: 0 bit pre-emption priority, 4 bit subpriority
 - `NVIC_PriorityGroup_1`: 1 bit pre-emption priority, 3 bit subpriority
