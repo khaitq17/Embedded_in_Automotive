@@ -829,7 +829,7 @@ Hàm `GPIO_EXTILineConfig(uint8_t GPIO_PortSource, uint8_t GPIO_PinSource)` cấ
 
 Các tham số ngắt ngoài được cấu hình trong Struct **EXTI_InitTypeDef**, gồm:
 - `EXTI_Line`: Chọn line ngắt.
-- `EXTI_Mode`: Chọn Mode cho ngắt là Ngắt(thực thi hàm ngắt) hay Sự kiện(Không thực thi)
+- `EXTI_Mode`: Chọn Mode cho ngắt là Ngắt (thực thi hàm ngắt) hay Sự kiện (không thực thi)
 - `EXTI_Trigger`: Cấu hình cạnh ngắt.
 - `EXTI_LineCmd`: Cho phép ngắt ở Line đã cấu hình.
 ```
