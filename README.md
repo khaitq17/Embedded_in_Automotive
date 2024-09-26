@@ -327,7 +327,7 @@ void SPI_Config(){
 - Hàm `SPI_I2S_GetFlagStatus(SPI_TypeDef* SPIx, uint16_t SPI_I2S_FLAG)` trả về giá trị 1 cờ trong thanh ghi của SPI. Các cờ thường được dùng:
 	- `SPI_I2S_FLAG_TXE`: Cờ báo truyền, cờ này sẽ set lên 1 khi truyền xong data trong buffer.
 	- `SPI_I2S_FLAG_RXNE`: Cờ báo nhận, cờ này set lên 1 khi nhận xong data.
-	- `SPI_I2S_FLAG_BSY`: Cờ báo bận,set lên 1 khi SPI đang bận truyền nhận.
+	- `SPI_I2S_FLAG_BSY`: Cờ báo bận, set lên 1 khi SPI đang bận truyền nhận.
 
 ### 4.2.4 Hàm truyền
 ```
@@ -381,10 +381,10 @@ void GPIO_Config(){
 ```
 ### 5.1.2 Cấu hình I2C
 ```
-#define WRITE_SDA_0 	GPIO_ResetBits(I2C_GPIO, I2C_SDA)			// Kéo chân SDA xuống 0
-#define WRITE_SDA_1 	GPIO_SetBits(I2C_GPIO, I2C_SDA)				// Kéo chân SDA lên 1
-#define WRITE_SCL_0 	GPIO_ResetBits(I2C_GPIO, I2C_SCL)			// Kéo chân SCL xuống 0
-#define WRITE_SCL_1 	GPIO_SetBits(I2C_GPIO, I2C_SCL)				// Kéo chân SDA lên 1
+#define WRITE_SDA_0 	GPIO_ResetBits(I2C_GPIO, I2C_SDA)	// Kéo chân SDA xuống 0
+#define WRITE_SDA_1 	GPIO_SetBits(I2C_GPIO, I2C_SDA)		// Kéo chân SDA lên 1
+#define WRITE_SCL_0 	GPIO_ResetBits(I2C_GPIO, I2C_SCL)	// Kéo chân SCL xuống 0
+#define WRITE_SCL_1 	GPIO_SetBits(I2C_GPIO, I2C_SCL)		// Kéo chân SDA lên 1
 #define READ_SDA_VAL 	GPIO_ReadInputDataBit(I2C_GPIO, I2C_SDA)	// Đọc chân SDA
 ```
 Khởi tạo I2C:
@@ -566,7 +566,7 @@ void I2C_Config(){
 ### 5.2.4 Hàm truyền
 - Bắt đầu truyền nhận, bộ I2C sẽ tạo 1 tín hiệu start. Đợi tín hiệu báo Bus sẵn sàng.
 - Gửi 7 bit địa chỉ để xác định slave. Đợi Slave xác nhận.
-- Gửi/đọc các byte data, Đợi truyền xong.
+- Gửi/đọc các byte data, đợi truyền xong.
 - Sau đó kết thúc bằng tín hiệu stop.
 
 ![Picture9](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/0cad7138-b611-4cc8-9626-5edac43008d3)
@@ -597,6 +597,7 @@ uint8_t Read_I2C_Data()
 ### 6.1.1 Cấu hình GPIO cho UART Software
 
 ![Picture10](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/020f6237-8485-407a-aad9-e687fd17181f)
+
 Định nghĩa các chân UART:
 ```
 #define TX_Pin 		GPIO_Pin_9
@@ -798,9 +799,9 @@ char UART_ReceiveChar(USART_TypeDef *USARTx)
 </details>
 
 <details>
-	<summary><strong>BÀI 7: NGẮT NGOÀI - NGẮT TIMER - NGẮT THUYỀN THÔNG</strong></summary>
+	<summary><strong>BÀI 7: NGẮT NGOÀI - NGẮT TIMER - NGẮT TRUYỀN THÔNG</strong></summary>
 
-# BÀI 7: NGẮT NGOÀI - NGẮT TIMER - NGẮT THUYỀN THÔNG
+# BÀI 7: NGẮT NGOÀI - NGẮT TIMER - NGẮT TRUYỀN THÔNG
 ## 7.1 Ngắt ngoài
 **External interrupt (EXTI)** hay còn gọi là ngắt ngoài là 1 sự kiện ngắt xảy ra khi có tín hiệu can thiệp từ bên ngoài, từ phần cứng, người sử dụng hay ngoại vi,… 
 
@@ -1137,10 +1138,12 @@ Cơ chế Master - Slave:
 - CPU sẽ điều khiển việc trao đổi data giữa Peripheral (UART, I2C, SPI, ...) và bộ nhớ (RAM) qua các đường bus. 
 - CPU phải lấy lệnh từ bộ nhớ (FLASH) để thực thi các lệnh của chương trình. 
 - Vì vậy, khi cần truyền dữ liệu liên tục giữa Peripheral và RAM, CPU sẽ bị chiếm dụng, và không có thời gian làm các công việc khác, hoặc có thể gây miss dữ liệu khi transfer.
+
 ![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/73fa284c-e98b-4163-94a1-8b9332fc93cc)
 
 ## 9.2 DMA (Direct Memory Access)
 **DMA** được sử dụng với mục đích truyền data với tốc độ cao từ thiết bị ngoại vi đến bộ nhớ cũng như từ bộ nhớ đến bộ nhớ. 
+
 ![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/d9800aa7-513a-42af-94b3-a4c7b359f890)
 
 DMA có thể điều khiển data truyền từ :
