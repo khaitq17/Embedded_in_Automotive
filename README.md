@@ -729,7 +729,7 @@ Tương tự các ngoại vi khác, các tham số Uart được cấu hình tro
 	- `USART_Mode_Tx`: Cấu hình truyền.
 	- `USART_Mode_Rx`: Cấu hình nhận.
 	- Có thể cấu hình cả 2 cùng lúc (song công).
-- `USART_BaudRate**: Cấu hình tốc độ baudrate cho uart.
+- `USART_BaudRate`: Cấu hình tốc độ baudrate cho uart.
 - `USART_HardwareFlowControl`: Cấu hình chế độ bắt tay cho uart.
 - `USART_WordLength`: Cấu hình số bit mỗi lần truyền.
 - `USART_StopBits`: Cấu hình số lượng stopbits.
@@ -775,10 +775,10 @@ Truyền 1 chuỗi:
 void UART_SendString(USART_TypeDef *USARTx, char *str)
 {
 	while(*str)
-		{
+	{
 		UART_SendChar(USARTx, *str);
 		str++;
-		}
+	}
 }
 ```
 ### 6.2.5 Hàm nhận
