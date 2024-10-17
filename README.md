@@ -1278,7 +1278,17 @@ Thông thường chương trình sẽ được nạp vào vùng nhớ bắt đ�
 - `FLASH_Status FLASH_EraseAllBank2Pages(void)`: Xóa tất cả các Page trong Bank 2 của Flash. 
 - `FLASH_Status FLASH_EraseAllPages(void)`: Xóa toàn bộ Flash.
 - `FLASH_Status FLASH_ErasePage(uint32_t Page_Address)`: Xóa 1 page cụ thể trong Flash, cụ thể là Page bắt đầu bằng địa chỉ Page_Address.
-
+- 
+Ví dụ: Xóa Flash
+```
+void Flash_Erase(uint32_t addresspage){
+	FLASH_Unlock();
+	while(FLASH_GetFlagStatus(FLASH_FLAG_BSY) == 1);
+	FLASH_ErasePage(addresspage);
+	while(FLASH_GetFlagStatus(FLASH_FLAG_BSY) == 1);
+	FLASH_Lock();
+}
+```
 #### 10.1.3.3 Các hàm ghi Flash
 - `FLASH_Status FLASH_ProgramHalfWord(uint32_t Address, uint16_t Data)`:  Ghi dữ liệu vào vùng nhớ Address với kích thước mỗi 2 byte (Halfword).
 - `FLASH_Status FLASH_ProgramWord(uint32_t Address, uint32_t Data)`: Ghi dữ liệu vào vùng nhớ Address với kích thước mỗi 4 byte (Word).
@@ -1307,14 +1317,65 @@ void Flash_WriteNumByte(uint32_t address, uint8_t *data, int num){
 	FLASH_Lock();
 }
 ```
-Xóa Flash
+
+## 10.2 Bootloader
+**Bootloader** là một ứng dụng có mục tiêu chính là nâng cấp hoặc sửa đổi phần mềm hệ thống mà không cần sự can thiệp của các công cụ nâng cấp chương trình cơ sở chuyên dụng. Bootloader có thể có nhiều chức năng, nhưng nó chủ yếu được sử dụng để quản lý ứng dụng. Nó cũng có thể sử dụng các giao thức khác nhau như UART, CAN, I2C, I2S, Ethernet hoặc USB để thiết lập giao tiếp và bắt đầu nâng cấp firmware.
+
+Bootloader là chương trình chạy đầu tiên khi khởi động, thường gồm 2 loại:
+- Bootloader do nhà sản xuất cung cấp
+- Bootloader do người dùng tự viết
+
+![image](https://github.com/user-attachments/assets/5144b079-48be-4199-8726-613c85eb7e6b)
+
+Quá trình từ lúc cấp nguồn hoặc reset cho đến khi chạy hàm `main()`:
+
+**Khi không có Bootloader**:
+- Đầu tiên, MCU đọc giá trị BOOT0 và BOOT1 để quyết định bắt đầu đọc dữ liệu tại nơi nào của bộ nhớ.
+- Địa chỉ bắt đầu của vùng nhớ đó sẽ được lưu vào thanh ghi **PC (Program Counter)** để tiến hành đọc lệnh từ đó.
+- Lấy giá trị của ô nhớ đầu tiên để khởi tạo **MSP (Main Stack Pointer)**.
+- Thanh ghi PC chạy đến ô nhớ tiếp theo, ô nhớ này chứa địa chỉ của **Reset_Handler**.
+- Chương trình sẽ nhảy đến **Reset_Handler** để thực thi và làm các nhiệm vụ:
+	- Khởi tạo hệ thống
+	- Sao chép các dữ liệu (biến) từ Flash qua RAM
+	- Gọi hàm `main()`
+
+ ![image](https://github.com/user-attachments/assets/b0c1c8e2-7235-4418-9d8b-4c4589734694)
+
+
+**Khi có Bootloader**:
+- Sau khi Reset thì vi điều khiển nhảy đến `Reset_Handler()` mặc định ở địa chỉ 0x08000000 và nhảy đến hàm `main()` của chương trình Boot. 
+- Chương trình Boot này nó sẽ lấy địa chỉ của chương trình ứng dụng muốn nhảy đến.
+- Gọi hàm `Bootloader()`, hàm này sẽ set thanh ghi **SCB_VTOR** theo địa chỉ App muốn nhảy đến, `SCB➔VTOR = Firmware address`. 
+- Sau đó gọi hàm Reset mềm (nhảy đến `Reset_Handler()`).
+- Bây giờ Firmware mới bắt đầu chạy và Vi xử lý đã nhận diện `Reset_Handler()` ở địa chỉ mới nên dù có nhấn nút Reset thì nó vẫn chạy trong Application.
+
+![image](https://github.com/user-attachments/assets/434575f7-32a6-4b9a-a57f-8fd6b858b45c)
+
 ```
-void Flash_Erase(uint32_t addresspage){
-	FLASH_Unlock();
-	while(FLASH_GetFlagStatus(FLASH_FLAG_BSY) == 1);
-	FLASH_ErasePage(addresspage);
-	while(FLASH_GetFlagStatus(FLASH_FLAG_BSY) == 1);
-	FLASH_Lock();
+#define ADDR_STR_BLINK	0x08008000
+
+void Boot(void)
+{
+	// Thiết lập lại hệ thống clock
+	RCC_DeInit();
+
+	// Vô hiệu hóa các lỗi ngắt để tránh lỗi trong quá trình chuyển giao
+	SCB->SHCSR &= ~(SCB_SHCSR_USGFAULTENA_Msk | SCB_SHCSR_BUSFAULTENA_Msk | SCB_SHCSR_MEMFAULTENA_Msk);
+
+	// Cập nhật Stack Pointer từ bảng vector ngắt của chương trình chính
+	__set_MSP(*(__IO uint32_t*) (ADDR_STR_BLINK));
+
+	// Cập nhật thanh ghi SCB->VTOR để trỏ đến bảng vector ngắt của chương trình chính
+	SCB->VTOR = ADDR_STR_BLINK;
+
+	// Lấy địa chỉ Reset Handler của chương trình chính	
+	uint32_t jumpAddress = *(__IO uint32_t*) (ADDR_STR_BLINK + 4);
+	
+	// Tạo con trỏ hàm đến Reset Handler
+	void (*reset_handler)(void) = (void (*) (void)) jumpAddress;
+
+	Nhảy vào Reset Handler của chương trình chính
+	reset_handler();
 }
 ```
 </details>
