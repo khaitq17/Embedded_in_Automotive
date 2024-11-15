@@ -1639,10 +1639,14 @@ void CAN_ReceiveData(uint8_t* data)
 	CAN_FIFORelease(CAN1, CAN_FIFO0);	// Giải phóng FIFO
 }
 ```
-
 </details>
 
 
+<details>
+	<summary><strong>BÀI 12: LIN</strong></summary>
+
+# BÀI 12: LIN
+</details>
 
 
 
