@@ -1646,6 +1646,25 @@ void CAN_ReceiveData(uint8_t* data)
 	<summary><strong>BÀI 12: LIN</strong></summary>
 
 # BÀI 12: LIN
+**LIN (Local Interconnect Network)** sinh ra nhằm giảm thiểu sự phức tạp và chi phí trong việc truyền thông giữa các thiết bị điện tử đơn giản trong xe.
+
+LIN thường được sử dụng trong các ứng dụng điều khiển các chức năng không an toàn của xe như điều khiển cửa sổ, đèn, gương và điều hòa không khí.
+
+![image](https://github.com/user-attachments/assets/c83153e7-1af0-42f2-8a84-75b3f86392c7)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </details>
 
 
