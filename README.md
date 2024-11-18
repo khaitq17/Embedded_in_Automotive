@@ -1389,7 +1389,7 @@ void Boot(void)
 
 CAN đặc biệt được ứng dụng nhiều trong ngành công nghiệp ô tô.
 
-![image](https://github.com/user-attachments/assets/977f9a07-d60d-4d3a-8e6e-3a616b2c4304)
+![image](https://github.com/user-attachments/assets/74754ed6-bd7b-450b-8cf8-849a2586449b)
 
 Mỗi khối được điều khiển bởi 1 vi điều khiển riêng biệt, và thông qua CAN Bus để kết nối, giao tiếp với nhau. Và thời gian phản hồi của mỗi khối VĐK là cực kì nhanh.
 ## 11.1 Mạng CAN
@@ -1650,7 +1650,7 @@ void CAN_ReceiveData(uint8_t* data)
 
 LIN thường được sử dụng trong các ứng dụng điều khiển các chức năng không an toàn của xe như điều khiển cửa sổ, đèn, gương và điều hòa không khí.
 
-![image](https://github.com/user-attachments/assets/c83153e7-1af0-42f2-8a84-75b3f86392c7)
+![image](https://github.com/user-attachments/assets/cbc8cc92-18f4-4fc1-ba59-ff5ecf680d21)
 
 ## 12.1 Đặc điểm 
 
