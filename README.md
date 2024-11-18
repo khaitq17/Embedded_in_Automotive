@@ -1389,7 +1389,7 @@ void Boot(void)
 
 CAN đặc biệt được ứng dụng nhiều trong ngành công nghiệp ô tô.
 
-![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/5e0c0725-c7ba-4604-9310-c6c803367ee8)
+![image](https://github.com/user-attachments/assets/977f9a07-d60d-4d3a-8e6e-3a616b2c4304)
 
 Mỗi khối được điều khiển bởi 1 vi điều khiển riêng biệt, và thông qua CAN Bus để kết nối, giao tiếp với nhau. Và thời gian phản hồi của mỗi khối VĐK là cực kì nhanh.
 ## 11.1 Mạng CAN
