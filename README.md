@@ -1652,18 +1652,46 @@ LIN thường được sử dụng trong các ứng dụng điều khiển các 
 
 ![image](https://github.com/user-attachments/assets/c83153e7-1af0-42f2-8a84-75b3f86392c7)
 
+## 12.1 Đặc điểm 
 
+![image](https://github.com/user-attachments/assets/2c13c18b-019a-4e27-b77c-429f800d13b5)
 
+- Mô hình **Master - Slave**.
+- Node Slave chỉ phản hồi khi có yêu cầu từ node Master.
+- Master quét yêu cầu tới tất cả các Slave để thăm dò thông tin.
+- Master có dữ liệu từ Slave sẽ gửi lên bus CAN để đi tới các LIN khác.
+- LIN sử dụng giao thức UART để truyền/nhận dữ liệu, với khung truyền dữ liệu sẽ là 1 start, 8 data, 1 hoặc 2 stop.
 
+1 node LIN bao gồm 1 MCU có bộ LIN Controller và 1 LIN Transceiver.
 
+![image](https://github.com/user-attachments/assets/0edeaadd-95e5-44ad-9f3d-58aea2d792d2)
 
+## 12.2 Cấu trúc khung LIN
+![image](https://github.com/user-attachments/assets/43bc1cbc-0f13-4123-8ca9-4644701be490)
 
+- **Break** (>= 13 bit): Báo hiệu bắt đầu khung.
+- **Sync** (8 bit): Byte đồng bộ hóa (0x55), điều chỉnh tốc độ truyền.	// 0x01010101
+- **ID** (6 bit ID + 2 bit parity): Xác định loại dữ liệu và Slave cần phản hồi.
+- **Data** (16 - 64 bit): Từ 2 đén 8 byte dữ liệu chứa nội dung chính của thông điệp.
+- **Checksum** (8 bit): Phát hiện lỗi trong quá trình truyền thông.
 
+## 12.3 Quá trình truyền thông LIN
+- Master sẽ gửi Header cho các Slave trước.
+- Nếu Master yêu cầu dữ liệu từ Slave thì Slave sẽ gửi lại Response cho Master.
+- Nếu Master muốn gửi dữ liệu cho Slave thì sẽ gửi kèm Response cho Slave.
 
+![image](https://github.com/user-attachments/assets/ebaa236d-f411-4cc2-8cb9-094290d59272)
 
+- Slave sẽ xem ID có khớp với mình không, nếu có thì xử lý còn không thì bỏ qua.
 
-
-
+## 12.4 Một số mạng thường dùng trên ô tô
+|	| LIN | CAN | FlexRay | Ethernet |
+|:-:|:---:|:---:|:-------:|:--------:|
+|Tốc độ truyền|1 - 20 kbps|Lên đến 1 Mbps|Lên đến 10 Mbps|Lên đến 100 Mbps|
+|Mô hình truyền|Master-Slave|Multi-Master|Multi-Master|Point-to-Point|
+|Ứng dụng|Điều khiển thiết bị đơn giản|Hệ thống phức tạp|Hệ thống an toàn cao|Kết nối mạng tốc độ cao|
+|Chi phí|Thấp|Trung bình|Cao|Cao|
+|Thời gian thực|Không hỗ trợ|Hỗ trợ|Hỗ trợ chính xác|Hỗ trợ chính xác|
 
 </details>
 
