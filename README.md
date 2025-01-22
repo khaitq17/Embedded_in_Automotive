@@ -5,7 +5,9 @@
 
 ## 1.1 Cấp xung clock cho GPIO
 Module RCC (Reset and Clock Control) cung cấp các hàm để cấu hình xung clock cho ngoại vi qua các Bus tương ứng.
-![Picture1](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/daacd745-60e6-4499-bb41-86c84afb9edd)
+
+![image](https://github.com/user-attachments/assets/3c717d69-8b75-47eb-83e6-d22c33b76a58)
+
 ```
 RCC_APB1PeriphClockCmd
 
@@ -86,14 +88,16 @@ Cấu hình Timer:
 - **MOSI** (Master Output Slave Input): Tín hiệu tạo bởi thiết bị Master và nhận bởi thiết bị Slave.
 - **SS** (Slave Select): Chọn thiết bị Slave cụ thể để giao tiếp. Để chọn Slave giao tiếp thiết bị Master chủ động kéo đường SS tương ứng xuống mức 0 (Low).
   
-![Picture2](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/59a2f364-6d36-4043-927f-1324d5c19944)
+![image](https://github.com/user-attachments/assets/623c061f-28e2-45fc-a316-bb815d17c5cd)
+
 ### 3.1.2 Quá trình truyền nhận dữ liệu
 - Master kéo chân SS của chân Slave muốn giao tiếp xuống mức 0 để báo hiệu muốn truyền nhận.
 - Master cấp xung clock, với mỗi xung clock, 1 bit sẽ được truyền từ Master đến Slave và ngược lại.
 - Các thanh ghi cập nhật giá trị và dịch 1 bit.
 - Lặp lại quá trình đến khi truyền xong 8 bit thanh ghi.
   
-![Picture3](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/f984fc6c-1364-4c0d-8566-e4bdb93302db)
+![image](https://github.com/user-attachments/assets/b29a9242-dfd1-4ae5-93b0-bc7148d76398)
+
 ### 3.1.3 Các chế độ hoạt động
 - Có 4 chế độ hoạt động phụ thuộc **Clock Polarity** (CPOL) và **Clock Phase** (CPHA).
 - CPOL: 
@@ -118,7 +122,8 @@ Cấu hình Timer:
 - **SDA** (Serial Data): Đường truyền cho Master và Slave để gửi và nhận dữ liệu.
 - **SCL** (Serial Clock): Thiết bị Master tạo xung tín hiệu SCK và cung cấp cho Slave.
       
-![Picture4](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/89a016e7-34fa-443d-8736-0102a2a6a62a)
+![image](https://github.com/user-attachments/assets/ccf142fd-7e87-4b3b-9e6d-6f593026c209)
+
 ### 3.2.2 Quá trình truyền nhận dữ liệu
 - Start: Điều kiện: Chân SDA xuống mức 0 trước chân SCL.
 - Truyền các bit địa chỉ để tìm Slave muốn giao tiếp.
@@ -128,7 +133,7 @@ Cấu hình Timer:
 - Tương tự cũng có ACK để chờ phản hồi.
 - Stop: Điều kiện: Chân SDA lên mức 1 trước chân SCL.
    
- ![Picture5](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/d5ba043a-1d63-4de2-a7a6-bdb783e4acee)
+![image](https://github.com/user-attachments/assets/8cbabb5d-13b1-4ac1-97b4-50e384364f61)
 
 ## 3.3 UART - Universal Asynchronous Receiver - Transmitter
 - Là chuẩn giao tiếp **KHÔNG** đồng bộ.
@@ -139,7 +144,8 @@ Cấu hình Timer:
 - TX: Truyền.
 - RX: Nhận.
       
-![Picture6](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/9a52fd6e-eb76-43f4-aa81-9cce344ae3a7)
+![image](https://github.com/user-attachments/assets/1d18eb54-3e1d-47fb-9e3b-69b7911d5322)
+
 ### 3.3.2 Quá trình truyền nhận dữ liệu
 - Start: 1 bit.
 - Bit dữ liệu: 5 đến 9 bit.
@@ -148,7 +154,8 @@ Cấu hình Timer:
 	- Quy luật lẻ: Thêm một bit '0' hoặc '1' để số bit '1' là số lẻ.
 - Stop: 1 đến 2 bit.
       
-![Picture7](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/56943f89-3f0a-4785-b944-51966027ff2b)
+![image](https://github.com/user-attachments/assets/f505b51b-b638-4bce-ae50-c5dec678cf1d)
+
 </details>
 
 <details>
@@ -160,7 +167,8 @@ Cấu hình Timer:
 ### 4.1.1 Cấu hình GPIO cho SPI Software
 SPI dùng 4 chân để truyền nhận, gồm MISO, MOSI, CS và SCK.
 
-![Picture8](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/35ea2e93-5df0-4663-b101-b708694557df)
+![image](https://github.com/user-attachments/assets/351515bb-90be-4045-9d44-d91dc759b0d6)
+
 - **SCK** (Serial Clock): Thiết bị Master tạo xung tín hiệu SCK và cung cấp cho Slave.
 - **MISO** (Master Input Slave Output): Tín hiệu tạo bởi thiết bị Slave và nhận bởi thiết bị Master.
 - **MOSI** (Master Output Slave Input): Tín hiệu tạo bởi thiết bị Master và nhận bởi thiết bị Slave.
@@ -168,11 +176,11 @@ SPI dùng 4 chân để truyền nhận, gồm MISO, MOSI, CS và SCK.
 
 Định nghĩa 4 chân sử dụng SPI:
 ```
-#define SPI_SCK_Pin		GPIO_Pin_0
+#define SPI_SCK_Pin	GPIO_Pin_0
 #define SPI_MISO_Pin	GPIO_Pin_1
 #define SPI_MOSI_Pin 	GPIO_Pin_2
-#define SPI_CS_Pin 		GPIO_Pin_3
-#define SPI_GPIO 		GPIOA
+#define SPI_CS_Pin	GPIO_Pin_3
+#define SPI_GPIO	GPIOA
 ```
 Cấu hình GPIO:
 ```
@@ -201,6 +209,9 @@ void Clock(){
 }
 ```
 ### 4.1.2 Khởi tạo các chân cho SPI
+
+![image](https://github.com/user-attachments/assets/b29a9242-dfd1-4ae5-93b0-bc7148d76398)
+
 ```
 void SPI_Init(){
 	GPIO_WriteBit(SPI_GPIO, SPI_SCK_Pin, Bit_RESET);
@@ -361,7 +372,8 @@ uint8_t SPI_Receive1Byte(void){
 Định nghĩa các chân I2C:
 I2C dùng 2 chân để truyền nhận, SCL và SDA.
 
-![Picture4](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/89a016e7-34fa-443d-8736-0102a2a6a62a)
+![image](https://github.com/user-attachments/assets/b42702da-8957-4765-b736-97a30d6f9220)
+
 ```
 #define I2C_SCL 	GPIO_Pin_6
 #define I2C_SDA		GPIO_Pin_7
@@ -380,6 +392,9 @@ void GPIO_Config(){
 }
 ```
 ### 5.1.2 Cấu hình I2C
+
+![image](https://github.com/user-attachments/assets/a89a8956-ca56-462b-bca0-97059feb973f)
+
 ```
 #define WRITE_SDA_0 	GPIO_ResetBits(I2C_GPIO, I2C_SDA)	// Kéo chân SDA xuống 0
 #define WRITE_SDA_1 	GPIO_SetBits(I2C_GPIO, I2C_SDA)		// Kéo chân SDA lên 1
@@ -569,7 +584,6 @@ void I2C_Config(){
 - Gửi/đọc các byte data, đợi truyền xong.
 - Sau đó kết thúc bằng tín hiệu stop.
 
-![Picture9](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/0cad7138-b611-4cc8-9626-5edac43008d3)
 ```
 void Send_I2C_Data(uint8_t data)
 {
@@ -596,7 +610,7 @@ uint8_t Read_I2C_Data()
 ## 6.1 UART Software
 ### 6.1.1 Cấu hình GPIO cho UART Software
 
-![Picture10](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/020f6237-8485-407a-aad9-e687fd17181f)
+![image](https://github.com/user-attachments/assets/c04668d8-67a4-4dc4-929e-dd853a78bef4)
 
 Định nghĩa các chân UART:
 ```
@@ -634,13 +648,15 @@ void UART_Config(){
 }
 ```
 ### 6.1.4 Hàm truyền
+
+![image](https://github.com/user-attachments/assets/797ef8d7-adef-4e50-926b-892991ac094e)
+
 - Hàm truyền sẽ truyền lần lượt 8 bit trong byte dữ liệu, sau khi tín hiệu start được gửi đi.
 - Tạo start, delay 1 period time.
 	- Truyền bit dữ liệu. mỗi bit truyền trong 1 period time.
 	- Dịch 1 bit.
 - Tạo stop, delay tương ứng với số bit stop.
 
-![Picture11](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/3c402c9a-1025-4a59-a9ee-7955a6d16b61)
 ```
 void UART_Transmit(const char DataValue)
 {
@@ -668,7 +684,8 @@ void UART_Transmit(const char DataValue)
 	- Delay 1 period time.
 - Delay 1 period time và đợi stop bit.
 
-![Picture12](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/2d3df3fe-402b-4560-a8e0-b61dcc6b2bf0)
+![image](https://github.com/user-attachments/assets/9f4e7693-ae3e-4481-a700-51ac6a774fd8)
+
 ```
 unsigned char UART_Receive(void){
 	unsigned char DataValue = 0;
@@ -766,7 +783,7 @@ void UART_SendChar(USART_TypeDef *USARTx, char data)
 	USARTx->DR = 0x00;
 	USART_SendData(USARTx, data);
 	
-	while(USART_GetFlagStatus(USARTx, USART_FLAG_TXE)==RESET);
+	while(USART_GetFlagStatus(USARTx, USART_FLAG_TXE) == RESET);
 }
 ```
 
@@ -791,7 +808,7 @@ char UART_ReceiveChar(USART_TypeDef *USARTx)
 	char tmp = 0x00;
 	tmp = USART_ReceiveData(USARTx);
 	
-	while(USART_GetFlagStatus(USARTx, USART_FLAG_RXNE)==RESET);
+	while(USART_GetFlagStatus(USARTx, USART_FLAG_RXNE) == RESET);
 	
 	return tmp;
 }
@@ -809,7 +826,7 @@ char UART_ReceiveChar(USART_TypeDef *USARTx)
 
 Ngắt ngoài của chip STM32F103 bao gồm có 16 line ngắt riêng biệt:
 
-![Picture13](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/9a1de6c2-af85-474e-a8ec-c6285231acdf)
+![image](https://github.com/user-attachments/assets/d6ce9f31-56ca-491d-b36f-787167c2cef1)
 
 Ví dụ:
 - Line0 nếu chúng ta đã chọn chân PA0 (chân 0 ở port A) làm chân ngắt thì tất cả các chân 0 ở các Port khác không được khai báo làm chân ngắt ngoài nữa
@@ -817,7 +834,8 @@ Ví dụ:
 
 Các Line ngắt sẽ được phân vào các Vector ngắt tương ứng. Các Line ngắt của STM32F103 được phân bố vào các vector ngắt như sau:
 
-![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/00906ed3-92a3-47a7-ad68-30534ce70607)
+![image](https://github.com/user-attachments/assets/0f96ad82-d598-4990-837a-e476723bcf1e)
+
 ### 7.1.1 Độ ưu tiên ngắt
 Có 2 loại ưu tiên ngắt khác nhau trên MCU STM32F103C8T6 đó là **Preemption Priorities** và **Sub Priorities**:
 - Mặc định thì ngắt nào có Preemtion Priority cao hơn thì sẽ được thực hiện trước.
@@ -1002,18 +1020,21 @@ void USART1_IRQHandler(){
 
 # BÀI 8: ADC
 **ADC (Analog-to-Digital Converter)** là 1 mạch điện tử lấy điện áp tương tự làm đầu vào và chuyển đổi nó thành dữ liệu số (1 giá trị đại diện cho mức điện áp trong mã nhị phân).
-![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/dc7a7df5-463d-4b44-a1a5-51c3e17109ea)
+
+![image](https://github.com/user-attachments/assets/69daa3d7-bde1-4fc1-812c-80ce7d54087d)
 
 Khả năng chuyển đổi của ADC được quyết định bởi 2 yếu tố chính:
 - **Độ phân giải**: Số bit mà ADC sử dụng để mã hóa tín hiệu. Có thể xem như là số mức mà tín hiệu tương tự được biểu diễn.
 	- ADC có độ phân giải càng cao thì cho ra kết quả chuyển đổi càng chi tiết. 
-![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/8540c0be-ba58-4259-9be3-c4eac58e1667)
+
+![image](https://github.com/user-attachments/assets/e010fb51-ef09-4c31-8960-d0390e15ffd1)
 
 - **Tần số/chu kì lấy mẫu**: Tốc độ/khoảng thời gian giữa 2 lần mã hóa. 
 	- Tần số lấy mẫu càng lớn thì tín hiệu sau khi chuyển đổi sẽ có độ chính xác càng cao. Khả năng tái tạo lại tín hiệu càng chính xác.
 	- Tần số lấy mẫu = 1/(Thời gian lấy mẫu + Thời gian chuyển đổi)
 	- Tần số lấy mẫu phải lớn hơn tần số của tín hiệu ít nhất 2 lần để đảm bảo độ chính xác khi khôi phục lại tín hiệu.
- ![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/6d62278e-1d3e-4f46-bcba-4421ab2d29c6)
+
+ ![image](https://github.com/user-attachments/assets/f19d0aed-1e95-43e5-8a48-9c0a6fb3265b)
 
 ## 8.1 ADC trong STM32 
 STM32F103C8 có 2 kênh ADC đó là ADC1 và ADC2, mỗi bộ có tối đa là 9 channel với nhiều mode hoạt động. 
@@ -1091,7 +1112,8 @@ void ADC_Config(){
 
 ## 8.4 Thuật toán lọc Kalman
 Giá trị đo được trên ADC có thể bị nhiễu, vọt lố do nhiều lý do khách quan về phần cứng.
-![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/9972cf65-ca7a-4235-8929-b02bedfd060a)
+
+![image](https://github.com/user-attachments/assets/081da493-a4e2-473f-b910-3d7e438ace11)
 
 Các giá trị x- và Pk- được cập nhật liên tục từ các giá trị trước đó, từ đó ước tính được giá trị tiếp theo với hệ số Q do người dùng thiết lập và giá trị thực tế y.
 
@@ -1139,12 +1161,12 @@ Cơ chế Master - Slave:
 - CPU phải lấy lệnh từ bộ nhớ (FLASH) để thực thi các lệnh của chương trình. 
 - Vì vậy, khi cần truyền dữ liệu liên tục giữa Peripheral và RAM, CPU sẽ bị chiếm dụng, và không có thời gian làm các công việc khác, hoặc có thể gây miss dữ liệu khi transfer.
 
-![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/73fa284c-e98b-4163-94a1-8b9332fc93cc)
+![image](https://github.com/user-attachments/assets/1d1d03fc-8429-49af-899c-477f5bed8a22)
 
 ## 9.2 DMA (Direct Memory Access)
 **DMA** được sử dụng với mục đích truyền data với tốc độ cao từ thiết bị ngoại vi đến bộ nhớ cũng như từ bộ nhớ đến bộ nhớ. 
 
-![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/d9800aa7-513a-42af-94b3-a4c7b359f890)
+![image](https://github.com/user-attachments/assets/8fec2a78-4b02-473e-a501-2dd7797a3ded)
 
 DMA có thể điều khiển data truyền từ :
 - Bộ nhớ đến Peripheral 
@@ -1153,7 +1175,7 @@ DMA có thể điều khiển data truyền từ :
 - Không thông qua data bus của CPU. 
 -> Giữ cho tài nguyên của CPU được rảnh rỗi cho các thao tác khác. Đồng thời tránh việc data nhận về từ ngoại vi bị mất mát.
 
-![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/9c3b9e9f-370c-4702-90ae-6a71f115dc59)
+![image](https://github.com/user-attachments/assets/269b041f-229a-4e05-9ab0-408ceb51a524)
 
 - Các Channel đều có thể được cấu hình riêng biệt.
 - Mỗi Channel được kết nối để dành riêng cho tín hiệu DMA từ các thiết bị ngoại vi hoặc tín hiệu từ bên trong MCU.
@@ -1167,7 +1189,7 @@ DMA có thể điều khiển data truyền từ :
 
 STM32F1 có 2 bộ DMA với nhiều kênh, mỗi kênh có nhiều ngoại vi có thể dùng DMA.
 
-![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/bd0aadd7-5a57-46a3-aa78-1b01cd762f62)
+![image](https://github.com/user-attachments/assets/08a86ac5-5f06-4fa2-8190-f5d2c9eced80)
 
 DMA có 2 chế độ hoạt động là **Normal** và **Circular**:
 - **Normal mode**: DMA truyền dữ liệu cho tới khi truyền đủ 1 lượng dữ liệu giới hạn đã khai báo DMA sẽ dừng hoạt động. Muốn nó tiếp tục hoạt động thì phải khởi động lại.
@@ -1186,7 +1208,7 @@ RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
 
 DMA có nhiều kênh, mỗi kênh phục vụ truyền DMA cho các ngoại vi riêng biệt. Cần cấu hình cho ngoại vi cần dùng DMA.
 
-![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/bd0aadd7-5a57-46a3-aa78-1b01cd762f62)
+![image](https://github.com/user-attachments/assets/08a86ac5-5f06-4fa2-8190-f5d2c9eced80)
 
 Các tham số cho bộ DMA được cấu hình trong struct **DMA_InitTypeDef** bao gồm:
 - `DMA_PeripheralBaseAddr`: Cấu hình địa chỉ của ngoại vi cho DMA. Đây là địa chỉ mà DMA sẽ lấy data hoặc truyền data tới cho ngoại vi.
@@ -1230,7 +1252,7 @@ Ví dụ: Ngoại vi SPI1, RX nhận tương ứng với Channel2
 # BÀI 10: FLASH VÀ BOOTLOADER
 ## 10.1 Flash
 
-![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/d605231e-21d6-47ab-8bb5-188f63bdaf6f)
+![image](https://github.com/user-attachments/assets/2ef7e549-88c6-4ce6-b640-75d25ae37c83)
 
 - STM32F1 không có EPROM mà chỉ được cung cấp sẵn 128/64Kb Flash. 
 - Được chia nhỏ thành các Page, mỗi Page có kích thước 1Kb.
@@ -1238,11 +1260,11 @@ Ví dụ: Ngoại vi SPI1, RX nhận tương ứng với Channel2
 - Trước khi ghi phải xóa Flash trước.
 - Thường được dùng để lưu chương trình.
 
-![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/f1c84e52-379a-4d81-98d6-3d7ba35b7537)
+![image](https://github.com/user-attachments/assets/efdc8879-cae4-4b1a-9b9a-a9d3a9d23bb2)
 
 Thông thường chương trình sẽ được nạp vào vùng nhớ bắt đầu ở 0x08000000, vùng nhớ phía sau sẽ là trống và người dùng có thể lưu trữ dữ liệu ở vùng này.
 
-![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/df0f830a-96ba-4f14-b566-e0aa27259bad)
+![image](https://github.com/user-attachments/assets/b834f6d1-0648-4c1e-a95c-514f2fbad1e8)
 
 ### 10.1.1 Xóa Flash
 - Mỗi lần ghi 2bytes hoặc 4bytes, tuy nhiên mỗi lần xóa phải xóa cả Page.
@@ -1253,7 +1275,7 @@ Thông thường chương trình sẽ được nạp vào vùng nhớ bắt đ�
 	- Set bit CR_STRT lên 1 để bắt đầu quá trình xóa.
 	- Kiểm tra cờ BSY đợi hoàn tất quá trình xóa.
 
-![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/69757aa1-64de-4060-a7c0-68e200abb934)
+![image](https://github.com/user-attachments/assets/c33ff15a-d27e-479b-9ee8-ee130bc95f54)
 
 ### 10.1.2 Ghi Flash
 - Flash có thể ghi theo 2/4bytes:
@@ -1263,7 +1285,7 @@ Thông thường chương trình sẽ được nạp vào vùng nhớ bắt đ�
 	- Quá trình ghi dữ liệu vào địa chỉ tương ứng sẽ được thực thi.
 	- Kiểm tra cờ BSY để đợi quá trình ghi hoàn tất.
 
-![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/f4d6f875-25ff-4f6b-a895-43d645afd9e5)
+![image](https://github.com/user-attachments/assets/e045ed43-cb23-4da6-a8a4-7e13fbfd461b)
 
 ### 10.1.3 Các hàm thông dụng
 #### 10.1.3.1 Các hàm LOCK, UNLOCK Flash
@@ -1695,7 +1717,70 @@ LIN thường được sử dụng trong các ứng dụng điều khiển các 
 
 </details>
 
+<details>
+	<summary><strong>BÀI 13: AUTOSAR CLASSIC</strong></summary>
 
+# BÀI 13: AUTOSAR CLASSIC
+## 13.1 Khái niệm
+- **AUTOSAR** (**AUT**omotive **O**pen **S**ystem **AR**chitecture) là một tiêu chuẩn toàn cầu cho phát triển phần mềm ô tô với mục tiêu là chuẩn hóa kiến trúc phần mềm cho các hệ thống điều khiển điện tử (ECU) trong ô tô, nhằm tăng tính khả chuyển, khả mở rộng và giảm chi phí phát triển.
+- AUTOSAR được chia làm 2 loại:
+    - **Autosar Classic**: Dành cho các hệ thống điều khiển điện tử (ECU) truyền thống với các yêu cầu thời gian thực khắt khe.
+    - **Autosar Adaptive**: Dành cho các ứng dụng có tính năng linh hoạt, yêu cầu khả năng tính toán cao hơn, như lái xe tự động và kết nối. Nó hỗ trợ khả năng cập nhật phần mềm theo thời gian thực và phát triển dựa trên các tiêu chuẩn hiện đại như POSIX.
+
+## 13.2 Kiến trúc phân lớp
+
+![image](https://github.com/user-attachments/assets/92a2e075-1a0b-41f3-8601-84a8f5c23262)
+
+### 13.2.1 Application layer
+- **Application layer** (Lớp ứng dụng) là một thành phần quan trọng trong kiến ​​trúc phần mềm tổng thể của các hệ thống ô tô, bao gồm nhiều thành phần phần mềm (**Software Component - SWC**) thực hiện tập hợp các tác vụ để hoàn thành chức năng của xe.
+- Mỗi SWC chứa nhiều chương trình, logic ứng dụng của hệ thống và không tương tác trực tiếp với phần cứng.
+- SWC giao tiếp với phần cứng thông qua RTE.
+
+### 13.2.2 Runtime Enviroment (RTE)
+- **RTE** đóng vai trò quan trọng trong việc kết nối **Software Components (SWC)** và **Basic Software (BSW)** thông qua một kiến trúc trừu tượng.
+- Khi SWC cần truy cập phần cứng, chúng không tương tác trực tiếp mà thông qua RTE. RTE sẽ xử lý việc ánh xạ này tới các thành phần BSW, bao gồm các lớp như **Microcontroller Abstraction Layer (MCAL)** và **ECU Abstraction Layer**.
+
+- Ví dụ: 
+    - 1 SWC cần gửi dữ liệu qua giao thức CAN: SWC sẽ gửi yêu cầu này qua cổng của mình, RTE sẽ ánh xạ tới lớp CAN Driver trong MCAL của BSW.
+    - SWC cần đọc cảm biến: RTE sẽ ánh xạ yêu cầu này tới lớp Driver của cảm biến trong MCAL.
+
+### 13.2.3 Basic software (BSW)
+**Basic Software** (BSW) là một trong ba thành phần chính của kiến trúc AUTOSAR, đóng vai trò nền tảng để hỗ trợ phần mềm ứng dụng (SWC) hoạt động trên phần cứng. BSW cung cấp các dịch vụ cơ bản như quản lý phần cứng, giao tiếp, chẩn đoán, và các dịch vụ hệ thống.
+
+BSW được chia thành 3 lớp chính:
+- **Service Layer** (Lớp dịch vụ)
+- **ECU Abstraction Layer** (Lớp trừu tượng hóa ECU)
+- **Microcontroller Abstraction Layer - MCAL** (Lớp trừu tượng hóa vi điều khiển)
+
+#### 13.2.3.1 Service Layer
+Đây là lớp cao nhất trong BSW, cung cấp các dịch vụ hệ thống và tiện ích cho các phần mềm ứng dụng (SWC) và các lớp khác của BSW. Các dịch vụ này bao gồm quản lý thời gian thực, chẩn đoán, quản lý lỗi, quản lý nguồn, v.v.
+- **OS (Operating System)**: Cung cấp các chức năng của hệ điều hành thời gian thực, bao gồm quản lý task, quản lý tài nguyên và đồng bộ hóa.
+- **Memory Services**: Quản lý bộ nhớ không chỉ đọc/ghi mà còn các dịch vụ liên quan đến bảo mật dữ liệu, như Flash EEPROM.
+- **Diagnostic Services**: Quản lý và xử lý chẩn đoán hệ thống, bao gồm chẩn đoán giao tiếp và xử lý lỗi.
+
+#### 13.2.3.2 ECU Abstraction Layer
+Lớp này cung cấp một giao diện trừu tượng cho tất cả các thiết bị ngoại vi và phần cứng cụ thể của ECU. Nó ẩn đi sự khác biệt về phần cứng của các thiết bị ngoại vi khác nhau và cung cấp một giao diện tiêu chuẩn cho các lớp bên trên (Service Layer và SWC).
+- **I/O Hardware Abstraction (IoHwAb)**: đóng vai trò giao tiếp SWC và phần cứng, giúp trừu tượng hóa việc truy cập các thiết bị ngoại vi. Nó sẽ chuyển đổi các yêu cầu từ SWC thành các lệnh mà phần cứng có thể hiểu, giúp ứng dụng có thể dễ dàng tương thích với nhiều loại phần cứng khác nhau.
+- **Communication Hardware Abstraction**: Hỗ trợ giao tiếp với các mạng truyền thông khác nhau, ví dụ như các giao thức truyền thông nội bộ ECU hoặc mạng xe.
+- **Memory Hardware Abstraction**: Cung cấp giao diện để truy cập các loại bộ nhớ khác nhau mà không quan tâm đến cách thức thực hiện cụ thể.
+
+#### 13.2.3.3 Microcontroller Abstraction Layer (MCAL)
+Đây là lớp thấp nhất trong BSW, cung cấp giao diện trừu tượng để tương tác trực tiếp với các thành phần phần cứng của vi điều khiển, chẳng hạn như bộ xử lý trung tâm (CPU), các thiết bị ngoại vi tích hợp (như ADC, PWM, UART), và các bộ định thời (timer).
+- **Microcontroller Drivers**: Điều khiển các tính năng cụ thể của vi điều khiển như bộ định thời (timer), bộ watchdog.
+- **Memory Drivers**: Hỗ trợ giao tiếp, cấu hình với các bộ nhớ khác nhau như RAM, EEPROM, Flash, v.v.
+- **Crypto Drivers**: Cung cấp các chức năng mã hóa hoặc giải mã.
+- **Wireless Communication Drivers**: Hỗ trợ các giao thức truyền thông không dây như Bluetooth, WiFi.
+- **Communication Drivers**: Hỗ trợ giao tiếp với CAN, LIN, SPI, Ethernet, v.v.
+- **I/O Drivers**: Cung cấp cấu hình về ADC, PWM, ICU, v.v, .
+
+### 13.2.3.4 Complex Device Driver
+Đây là lớp chứa những tính răng riêng biệt của từng hãng xe.
+
+Ví dụ:
+
+![image](https://github.com/user-attachments/assets/f5a5465f-7dcd-4f93-9d94-6afe924867fb)
+
+</details>
 
 
 
