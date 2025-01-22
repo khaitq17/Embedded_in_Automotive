@@ -1,0 +1,2 @@
+## Sử dụng ADC để đọc giá trị của biến trở, sử dụng bộ lọc Kalman
+**Bộ lọc Kalman** là thuật toán sử dụng chuỗi các giá trị đo lường, bị ảnh hưởng bởi nhiễu hoặc sai số, để ước đoán biến số nhằm tăng độ chính xác so với việc sử dụng duy nhất một giá trị đo lường.
