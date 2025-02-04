@@ -984,7 +984,7 @@ void UART_Config(){
 }
 ```
 ### 7.3.2 Cấu hình NVIC
-Ở NVIC, ta cấu hình tương tự như ngắt ngoài EXTI, ngắt Timer, tuy nhiên `NVIC_IRQChannel` được đổi thành `UARTx_IRQn` để khớp với line ngắt Timer.
+Ở NVIC, ta cấu hình tương tự như ngắt ngoài EXTI, ngắt Timer, tuy nhiên `NVIC_IRQChannel` được đổi thành `UARTx_IRQn` để khớp với line ngắt UART tương ứng.
 ```
 	NVIC_InitTypeDef NVIC_InitStruct;
 
