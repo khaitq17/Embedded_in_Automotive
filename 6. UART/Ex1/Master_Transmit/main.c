@@ -6,17 +6,16 @@
 
 #define TX_Pin 			GPIO_Pin_9
 #define RX_Pin			GPIO_Pin_10
-#define UART1_GPIO	GPIOA
+#define UART1_GPIO		GPIOA
 
-int fputc(int ch, FILE *f);
 void RCC_Config(void);
 void GPIO_Config(void);
 void UART_Config(void);
-void UART_SendChar(USART_TypeDef *USARTx, char data);
+void UART_SendChar(USART_TypeDef *USARTx, char c);
 void UART_SendString(USART_TypeDef *USARTx, char *str);
 char UART_ReceiveChar(USART_TypeDef *USARTx);
 
-char data;
+char c;
 
 int main(void)
 {
@@ -30,10 +29,10 @@ int main(void)
 	while(1)
 	{		
 		
-		if(USART_GetFlagStatus(USART1, USART_FLAG_RXNE) == SET)
+		if (USART_GetFlagStatus(USART1, USART_FLAG_RXNE) == SET)
 		{
-			data = UART_ReceiveChar(USART1);
-			UART_SendChar(USART1, data);
+			c = UART_ReceiveChar(USART1);
+			UART_SendChar(USART1, c);
 		}
 	}
 }
@@ -74,26 +73,29 @@ void UART_Config(void)
 	USART_Cmd(USART1, ENABLE);
 }
 
-void UART_SendChar(USART_TypeDef *USARTx, char _data)
+void UART_SendChar(USART_TypeDef *USARTx, char c)
 {
-	//USARTx->DR = 0x00; 
-	USART_SendData(USARTx, _data);
-	while(USART_GetFlagStatus(USARTx, USART_FLAG_TXE) == RESET);
+	USART_SendData(USARTx, c);
+
+	// Chờ đến khi truyền xong
+	while (!USART_GetFlagStatus(USARTx, USART_FLAG_TXE));
 }
 
 void UART_SendString(USART_TypeDef *USARTx, char *str)
 {
 	while (*str)
 	{
-		USART_SendData(USARTx, *str);
-		while (USART_GetFlagStatus(USARTx, USART_FLAG_TXE) == RESET);
+		UART_SendChar(USARTx, *str);
+		while (!USART_GetFlagStatus(USARTx, USART_FLAG_TXE)); // Chờ đến khi truyền xong
 		str++;
 	}
 }
 
 char UART_ReceiveChar(USART_TypeDef *USARTx)
 {
-	while(USART_GetFlagStatus(USARTx, USART_FLAG_RXNE) == RESET);
+	// Chờ đến khi nhận xong
+	while (!USART_GetFlagStatus(USARTx, USART_FLAG_RXNE));
+
 	return (uint8_t) USART_ReceiveData(USARTx);
 }
 
@@ -105,4 +107,3 @@ int fputc(int ch, FILE *f)
     
   return ch;
 }
-

@@ -7,7 +7,6 @@ void GPIO_Config(void);
 void delay(uint32_t timedelay);
 void chaseLed(uint8_t loop);
 
-
 int main(void)
 {
 	RCC_Config();
@@ -37,16 +36,16 @@ void GPIO_Config(void)
 
 void delay(uint32_t timedelay)
 {
-	for(uint32_t i=0;i<timedelay;i++){}
+	for (uint32_t i = 0; i < timedelay; i++) {}
 }
 
 void chaseLed(uint8_t loop)
 {
 	uint16_t LedVal;
 	GPIO_Write(GPIOC, 0x00);
-	for(uint8_t i=0;i<loop;i++){
-		LedVal = 0x08;
-		for(int j=0;j<5;j++){
+	for (uint8_t i = 0; i < loop; i++) {
+		LedVal = 0x08; // 0b1000
+		for (uint8_t j = 0; j < 5; j++) {
 			LedVal = LedVal << 1;
 			GPIO_Write(GPIOC, LedVal);
 			delay(2000000);

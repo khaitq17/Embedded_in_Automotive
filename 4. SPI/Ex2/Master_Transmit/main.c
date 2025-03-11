@@ -17,7 +17,7 @@ void TIMER_Config(void);
 void delay_ms(uint16_t time);
 void SPI_Send1Byte(uint8_t data);
 
-uint8_t array[] = {1,3,5,7,2,4,6,8};
+uint8_t array[] = {1, 3, 5, 7, 2, 4, 6, 8};
 
 int main()
 {
@@ -50,19 +50,16 @@ void GPIO_Master_Config(void)
 	GPIO_InitStruct.GPIO_Pin = SPI1_SCK | SPI1_MOSI;
 	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF_PP;
 	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-	
 	GPIO_Init(SPI1_GPIO, &GPIO_InitStruct);
 	
 	GPIO_InitStruct.GPIO_Pin = SPI1_MISO;
 	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
 	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-	
 	GPIO_Init(SPI1_GPIO, &GPIO_InitStruct);
 	
 	GPIO_InitStruct.GPIO_Pin = SPI1_NSS;
 	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_Out_PP;
 	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-	
 	GPIO_Init(SPI1_GPIO, &GPIO_InitStruct);
 }
 
@@ -100,7 +97,7 @@ void TIMER_Config(void)
 void delay_ms(uint16_t time)
 {
 	TIM_SetCounter(TIM2, 0);
-	while(TIM_GetCounter(TIM2) < time * 10){}
+	while (TIM_GetCounter(TIM2) < time * 10) {}
 }
 
 void SPI_Send1Byte(uint8_t data)
@@ -112,119 +109,3 @@ void SPI_Send1Byte(uint8_t data)
 	
 	GPIO_WriteBit(SPI1_GPIO, SPI1_NSS, Bit_SET);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -2,7 +2,7 @@
 
 #define CAN_RX_PIN	GPIO_Pin_11
 #define CAN_TX_PIN	GPIO_Pin_12
-#define CAN_GPIO		GPIOA
+#define CAN_GPIO	GPIOA
 
 void GPIO_Config(void);
 void CAN_Config(void);
@@ -23,7 +23,7 @@ int main(void)
 	}
 }
 
-void GPIO_Config()
+void GPIO_Config(void)
 {
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
 	
@@ -40,31 +40,31 @@ void GPIO_Config()
 	GPIO_Init(CAN_GPIO, &GPIO_InitStruct);
 }
 
-void CAN_Config()
+void CAN_Config(void)
 {
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_CAN1, ENABLE);
 	
 	CAN_InitTypeDef CAN_InitStruct;
 	
-	// Cau hinh CAN
+	// Cấu hình CAN
 	CAN_InitStruct.CAN_Mode = CAN_Mode_Normal;
 	CAN_InitStruct.CAN_TTCM = DISABLE;	// Time Triggered Communication Mode
-	CAN_InitStruct.CAN_ABOM = ENABLE;		// Automatic Bus-Off Management
-	CAN_InitStruct.CAN_AWUM = ENABLE;		// Automatic Wake-Up Mode
+	CAN_InitStruct.CAN_ABOM = ENABLE;	// Automatic Bus-Off Management
+	CAN_InitStruct.CAN_AWUM = ENABLE;	// Automatic Wake-Up Mode
 	CAN_InitStruct.CAN_NART = DISABLE;	// No Automatic Retransmission
 	CAN_InitStruct.CAN_RFLM = DISABLE;	// Receive FIFO Locked Mode
 	CAN_InitStruct.CAN_TXFP = DISABLE;	// Transmit FIFO Priority
 	
-	// Cau hinh thoi gian truyen
+	// Cấu hình thời gian truyền
 	CAN_InitStruct.CAN_SJW = CAN_SJW_1tq;	// Synchronization Jump Width = 1 time quantum
 	CAN_InitStruct.CAN_BS1 = CAN_BS1_6tq;	// Bit Segment 1 = 6 time quanta
 	CAN_InitStruct.CAN_BS2 = CAN_BS2_8tq;	// Bit Segment 2 = 8 time quanta
-	CAN_InitStruct.CAN_Prescaler = 6;			// Toc do baudrate = 36 MHz / (Prescaler * 12) = 500 Kbps 
+	CAN_InitStruct.CAN_Prescaler = 6;		// Tốc độ baudrate = 36 MHz / (Prescaler * 12) = 500 Kbps 
 	
 	CAN_Init(CAN1, &CAN_InitStruct);
 }
 
-void CAN_FilterConfig()
+void CAN_FilterConfig(void)
 {
 	CAN_FilterInitTypeDef CAN_FilterInitStruct;
 	
@@ -83,15 +83,19 @@ void CAN_FilterConfig()
 
 void CAN_ReceiveData(uint8_t* data)
 {
-	while(CAN_MessagePending(CAN1, CAN_FIFO0) < 1);
+	// Kiểm tra bộ FIFO có dữ liệu không
+	while (CAN_MessagePending(CAN1, CAN_FIFO0) < 1);
+
 	CanRxMsg RxMessage;
-	
+
+	// Nhận dữ liệu từ bộ FIFO
 	CAN_Receive(CAN1, CAN_FIFO0, &RxMessage);
-	
+
+	// Lưu dữ liệu nhận được vào RxMessage
 	for (int i = 0; i < RxMessage.DLC; i++) {
 		data[i] = RxMessage.Data[i];
 	}
-	
-	CAN_FIFORelease(CAN1, CAN_FIFO0);
-}
 
+	// Giải phóng FIFO
+	CAN_FIFORelease(CAN1, CAN_FIFO0);	
+}

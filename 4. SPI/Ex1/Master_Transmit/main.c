@@ -17,7 +17,6 @@ void delay_ms(uint16_t timedelay);
 void Clock(void);
 void SPI_Init(void);
 void SPI_Master_Transmit(uint8_t u8Data);
-uint8_t SPI_Slave_Receive(void);
 
 uint8_t array[] = {7, 8, 4, 2};
 
@@ -30,17 +29,17 @@ int main()
     
     while (1)
     {
-			for (int i = 0; i < 4; i++)
-      {
-				SPI_Master_Transmit(array[i]);
-        delay_ms(1000);  
-      }
+        for (int i = 0; i < 4; i++)
+        {
+            SPI_Master_Transmit(array[i]);
+            delay_ms(1000);  
+        }
     }
 }
 
 void RCC_Config(void)
 {
-    RCC_APB2PeriphClockCmd(SPI_RCC | RCC_APB2Periph_GPIOA, ENABLE);
+    RCC_APB2PeriphClockCmd(SPI_RCC, ENABLE);
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
 }
 
@@ -51,13 +50,11 @@ void GPIO_Config(void)
     GPIO_InitStruct.GPIO_Pin = SPI_SCK_Pin | SPI_MOSI_Pin | SPI_CS_Pin;
     GPIO_InitStruct.GPIO_Mode = GPIO_Mode_Out_PP;
     GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-
     GPIO_Init(SPI_GPIO, &GPIO_InitStruct);
 
     GPIO_InitStruct.GPIO_Pin = SPI_MISO_Pin;
     GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
     GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-
     GPIO_Init(SPI_GPIO, &GPIO_InitStruct);
 }
 
@@ -96,13 +93,14 @@ void SPI_Init(void)
     GPIO_WriteBit(SPI_GPIO, SPI_MISO_Pin, Bit_RESET);
 }
 
-void SPI_Master_Transmit(uint8_t u8Data) {//0b10010000
-	uint8_t u8Mask = 0x80;// 0b10000000
+void SPI_Master_Transmit(uint8_t u8Data) {
+	uint8_t u8Mask = 0x80; // 0b1000 0000
 	uint8_t tempData;
+
 	GPIO_WriteBit(SPI_GPIO, SPI_CS_Pin, Bit_RESET);
 	delay_ms(1);
 	
-	for (int i = 0; i < 8; i++) {
+	for (uint8_t i = 0; i < 8; i++) {
 		tempData = u8Data & u8Mask;
 		if (tempData) {
 			GPIO_WriteBit(SPI_GPIO, SPI_MOSI_Pin, Bit_SET);
@@ -114,7 +112,7 @@ void SPI_Master_Transmit(uint8_t u8Data) {//0b10010000
 		u8Data <<= 1;
 		Clock();
 	}
+    
 	GPIO_WriteBit(SPI_GPIO, SPI_CS_Pin, Bit_SET);
 	delay_ms(1);
 }
-

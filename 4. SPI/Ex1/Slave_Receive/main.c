@@ -17,7 +17,7 @@ void delay_ms(uint16_t timedelay);
 void SPI_Init(void);
 uint8_t SPI_Slave_Receive(void);
 
-uint8_t array[4];
+uint8_t received_data[4];
 
 int main()
 {
@@ -28,19 +28,19 @@ int main()
     
     while (1)
     {
-			for (int i = 0; i < 4; i++)
+		for (int i = 0; i < 4; i++)
+		{
+			if (!GPIO_ReadInputDataBit(SPI_GPIO, SPI_CS_Pin))  
 			{
-				if (!GPIO_ReadInputDataBit(SPI_GPIO, SPI_CS_Pin))  
-				{
-					array[i] = SPI_Slave_Receive(); 
-				}
+				received_data[i] = SPI_Slave_Receive(); 
 			}
+		}
     }
 }
 
 void RCC_Config(void)
 {
-    RCC_APB2PeriphClockCmd(SPI_RCC | RCC_APB2Periph_GPIOA, ENABLE);
+    RCC_APB2PeriphClockCmd(SPI_RCC, ENABLE);
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
 }
 
@@ -51,13 +51,11 @@ void GPIO_Config(void)
     GPIO_InitStruct.GPIO_Pin = SPI_SCK_Pin | SPI_MOSI_Pin | SPI_CS_Pin;
     GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
     GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-
     GPIO_Init(SPI_GPIO, &GPIO_InitStruct);
 
     GPIO_InitStruct.GPIO_Pin = SPI_MISO_Pin;
     GPIO_InitStruct.GPIO_Mode = GPIO_Mode_Out_PP;
     GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-
     GPIO_Init(SPI_GPIO, &GPIO_InitStruct);
 }
 
@@ -90,12 +88,14 @@ void SPI_Init(void)
 
 uint8_t SPI_Slave_Receive(void)
 {	
-	uint8_t dataReceive = 0x00;//0b11000000
+	uint8_t dataReceive = 0x00;
 	uint8_t temp = 0x00;
+
 	while (GPIO_ReadInputDataBit(SPI_GPIO, SPI_CS_Pin));
 	while (!GPIO_ReadInputDataBit(SPI_GPIO, SPI_SCK_Pin));
+
 	for (int i = 0; i < 8; i++)
-  { 
+    { 
 		if(GPIO_ReadInputDataBit(SPI_GPIO, SPI_SCK_Pin))
 		{
 			while (GPIO_ReadInputDataBit(SPI_GPIO, SPI_SCK_Pin)) 
@@ -104,9 +104,9 @@ uint8_t SPI_Slave_Receive(void)
 			}	
 		dataReceive <<= 1;
 		dataReceive |= temp;
-    		}
+    	}
 	while (!GPIO_ReadInputDataBit(SPI_GPIO, SPI_SCK_Pin));
 	}
+
 	return dataReceive;
 }
-

@@ -13,7 +13,7 @@
 typedef enum {
     NOT_OK = 0,
     OK = !NOT_OK
-} status;
+} Status;
 
 typedef enum {
     ACK = 0,
@@ -27,13 +27,13 @@ void delay_us(uint32_t timedelay);
 void I2C_Init(void);
 void I2C_Start(void);
 void I2C_Stop(void);
-status I2C_Write(uint8_t u8Data);
+Status I2C_Write(uint8_t u8Data);
 uint8_t I2C_Read(ACK_Bit _ACK);
-status EEPROM_Write(uint16_t memAddr, uint8_t slaveAddr, uint8_t numByte, uint8_t *pData);
-status EEPROM_Read(uint16_t memAddr, uint8_t slaveAddr, uint8_t numByte, uint8_t *pData);
+Status EEPROM_Write(uint16_t memAddr, uint8_t slaveAddr, uint8_t numByte, uint8_t *pData);
+Status EEPROM_Read(uint16_t memAddr, uint8_t slaveAddr, uint8_t numByte, uint8_t *pData);
 
 uint8_t data[10] = {0x01, 0x03, 0x06, 0x07, 0x10, 0x1c, 0x35, 0x58, 0x8d, 0x17};
-uint8_t rcv[10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+uint8_t rcv[10] = {0x00};
 
 int main(void)
 {
@@ -91,7 +91,7 @@ void TIMER_Config(void)
 void delay_us(uint32_t timedelay)
 {
     TIM_SetCounter(TIM2, 0);
-    while(TIM_GetCounter(TIM2) < timedelay) { }
+    while (TIM_GetCounter(TIM2) < timedelay) {}
 }
 
 void I2C_Init(void)
@@ -126,10 +126,10 @@ void I2C_Stop(void)
     delay_us(3);
 }
 
-status I2C_Write(uint8_t u8Data)
+Status I2C_Write(uint8_t u8Data)
 {
     uint8_t i;
-    status stRet;
+    Status stRet;
 	
     for (i = 0; i < 8; i++)
     {
@@ -157,6 +157,7 @@ status I2C_Write(uint8_t u8Data)
     } else {
         stRet = OK;                    
     }
+
     delay_us(2);
     WRITE_SCL_0;
     delay_us(5);
@@ -203,30 +204,34 @@ uint8_t I2C_Read(ACK_Bit _ACK)
     return u8Ret;
 }
 
-status EEPROM_Write(uint16_t memAddr, uint8_t slaveAddr, uint8_t numByte, uint8_t *pData)
+Status EEPROM_Write(uint16_t memAddr, uint8_t slaveAddr, uint8_t numByte, uint8_t *pData)
 {
     uint8_t i;
     
     I2C_Start();
     
+    // Gửi 7 bit địa chỉ Slave
     if (I2C_Write((uint8_t)(slaveAddr << 1)) == NOT_OK)
     {
         I2C_Stop();
         return NOT_OK;
     }
     
+    // Gửi byte địa chỉ cao trong EEPROM
     if (I2C_Write((uint8_t)(memAddr >> 8)) == NOT_OK)
     {
         I2C_Stop();
         return NOT_OK;
     }
     
+    // Gửi byte địa chỉ thấp trong EEPROM
     if (I2C_Write((uint8_t)(memAddr)) == NOT_OK)
     {
         I2C_Stop();
         return NOT_OK;
     }
     
+    // Ghi dữ liệu vào EEPROM
     for (i = 0; i < numByte; i++)
     {
         if (I2C_Write(pData[i]) == NOT_OK)
@@ -242,24 +247,27 @@ status EEPROM_Write(uint16_t memAddr, uint8_t slaveAddr, uint8_t numByte, uint8_
     return OK;
 }
 
-status EEPROM_Read(uint16_t memAddr, uint8_t slaveAddr, uint8_t numByte, uint8_t *pData)
+Status EEPROM_Read(uint16_t memAddr, uint8_t slaveAddr, uint8_t numByte, uint8_t *pData)
 {
     uint8_t i;
     
     I2C_Start();
         
+    // Gửi 7 bit địa chỉ Slave
     if (I2C_Write((uint8_t)(slaveAddr << 1)) == NOT_OK)
     {
         I2C_Stop();
         return NOT_OK;
     }
     
+    // Gửi byte địa chỉ cao trong EEPROM
     if (I2C_Write((uint8_t)(memAddr >> 8)) == NOT_OK)
     {
         I2C_Stop();
         return NOT_OK;
     }
     
+    // Gửi byte địa chỉ thấp trong EEPROM
     if (I2C_Write((uint8_t)(memAddr)) == NOT_OK)
     {
         I2C_Stop();
@@ -268,12 +276,14 @@ status EEPROM_Read(uint16_t memAddr, uint8_t slaveAddr, uint8_t numByte, uint8_t
     
     I2C_Start();
     
+    // Gửi địa chỉ Slave, đặt bit Read
     if (I2C_Write((uint8_t)(slaveAddr << 1) | 1) == NOT_OK)
     {
         I2C_Stop();
         return NOT_OK;
     }
     
+    // Đọc dữ liệu từ EEPROM
     for (i = 0; i < numByte - 1; ++i)
     {
         pData[i] = I2C_Read(ACK);

@@ -10,6 +10,7 @@ int main()
 	RCC_Config();
 	GPIO_Config();
 	TIM_Config();
+	
 	while(1)
 	{
 		GPIO_SetBits(GPIOC, GPIO_Pin_13);
@@ -54,6 +55,5 @@ void TIM_Config(void)
 void delay_ms(uint16_t timedelay)
 {
 	TIM_SetCounter(TIM2, 0);
-	while(TIM_GetCounter(TIM2) < timedelay * 10){}
+	while (TIM_GetCounter(TIM2) < timedelay * 10) {}
 }
-

@@ -15,7 +15,7 @@
 typedef enum {
 	NOT_OK = 0,
 	OK = !NOT_OK
-} status;
+} Status;
 
 typedef enum {
 	ACK = 0,
@@ -29,7 +29,7 @@ void delay_us(uint32_t timedelay);
 void I2C_Init(void);
 void I2C_Start(void);
 void I2C_Stop(void);
-status I2C_Write(uint8_t u8Data);
+Status I2C_Write(uint8_t u8Data);
 uint8_t I2C_Read(ACK_Bit _ACK);
 void EEPROM_WriteByte(uint16_t address, uint8_t data);
 uint8_t EEPROM_ReadByte(uint16_t address);
@@ -41,32 +41,30 @@ uint8_t writeData = 0x5A;
 int main(void)
 {
 	
+	RCC_Config();
+	GPIO_Config();
+	TIMER_Config();
+	I2C_Init();
 
-    // Kh?i t?o c�c c?u h�nh
-  RCC_Config();
-  GPIO_Config();
-  TIMER_Config();
-  I2C_Init();
+    // Ghi dữ liệu vào EEPROM
+	EEPROM_WriteByte(eepromAddress, writeData);
 
-    // Ghi d? li?u v�o EEPROM
-  EEPROM_WriteByte(eepromAddress, writeData);
+    // Đọc lại dữ liệu từ EEPROM
+  	readData = EEPROM_ReadByte(eepromAddress);
 
-    // �?c l?i d? li?u t? EEPROM
-  readData = EEPROM_ReadByte(eepromAddress);
-
-    // Ki?m tra k?t qu?
-  if (readData == writeData) 
+    // Kiểm tra kết quả
+  	if (readData == writeData) 
 	{
-        // N?u d?c th�nh c�ng, b?n c� th? d?t m?t di?m ng?t ho?c d�n LED b�o hi?u
-  } else 
+        // Xử lý nếu đọc dữ liệu thành công
+  	} else 
 	{
-        // N?u kh�ng th�nh c�ng, x? l� l?i
-  }
+        // Xử lý lỗi nếu đọc không thành công
+  	}
 
-  while(1) 
+  	while(1) 
 	{
-        // V�ng l?p v� h?n
-  }
+        
+  	}
 }
 
 void RCC_Config(void)
@@ -102,7 +100,7 @@ void TIMER_Config(void)
 void delay_us(uint32_t timedelay)
 {
 	TIM_SetCounter(TIM2, 0);
-	while(TIM_GetCounter(TIM2) < timedelay){}
+	while (TIM_GetCounter(TIM2) < timedelay) {}
 }
 
 void I2C_Init(void)
@@ -137,12 +135,12 @@ void I2C_Stop(void)
 	delay_us(3);
 }
 
-status I2C_Write(uint8_t u8Data)
+Status I2C_Write(uint8_t u8Data)
 {
 	uint8_t i;
-	status stRet;
+	Status stRet;
 	
-	// Truyen 8 bit data
+	// Truyền 8 bit data
 	for (i = 0; i < 8; i++)
 	{
 		if (u8Data & 0x80) {	// 0b1000 0000
@@ -159,14 +157,13 @@ status I2C_Write(uint8_t u8Data)
 		u8Data <<= 1;
 	}
 	
-	// Bit ACK set len 1 de chua co xac nhan
+
 	WRITE_SDA_1;					
 	delay_us(3);
-	// Tao 1 xung
 	WRITE_SCL_1;					
 	delay_us(3);
 	
-	// Doc gia tri SDA, '1' la khong xac nhan, '0' la xac nhan
+	// Đọc giá trị SDA, '1' là không xác nhận, '0' là xác nhận
 	if (READ_SDA_VAL) {	
 		stRet = NOT_OK;				
 	} else {
@@ -184,7 +181,7 @@ uint8_t I2C_Read(ACK_Bit _ACK)
 	uint8_t i;
 	uint8_t u8Ret = 0x00;
 	
-	// Tao xung va doc data tu SDA
+	// Tạo xung và đọc dữ liệu từ SDA
 	WRITE_SDA_1;
 	delay_us(3);
 	
@@ -222,26 +219,26 @@ uint8_t I2C_Read(ACK_Bit _ACK)
 void EEPROM_WriteByte(uint16_t address, uint8_t data) {
     I2C_Start();
     
-    // G?i d?a ch? thi?t b? v?i y�u c?u ghi
+    // Gửi địa chỉ thiết bị với yêu cầu ghi
     if (I2C_Write(EEPROM_ADDRESS | ((address & 0x0700) >> 7)) != OK) {
         I2C_Stop();
         return;
     }
     
-    // G?i byte d?a ch? cao
+    // Gửi byte địa chỉ cao
     if (I2C_Write((uint8_t)(address & 0xFF)) != OK) {
         I2C_Stop();
         return;
     }
     
-    // G?i d? li?u
+    // Gửi dữ liệu
     if (I2C_Write(data) != OK) {
         I2C_Stop();
         return;
     }
     
     I2C_Stop();
-    delay_us(5000); // Th?i gian ch? EEPROM ho�n th�nh ghi
+    delay_us(5000); // Thời gian chờ EEPROM hoàn thành ghi
 }
 
 uint8_t EEPROM_ReadByte(uint16_t address) {
@@ -249,26 +246,26 @@ uint8_t EEPROM_ReadByte(uint16_t address) {
 
     I2C_Start();
     
-    // G?i d?a ch? thi?t b? v?i y�u c?u ghi
+    // Gửi địa chỉ thiết bị với yêu cầu ghi
     if (I2C_Write(EEPROM_ADDRESS | ((address & 0x0700) >> 7)) != OK) {
         I2C_Stop();
-        return 0xFF; // Gi� tr? tr? v? n?u c� l?i
+        return 0xFF; // Giá trị trả về nếu có lỗi
     }
     
-    // G?i byte d?a ch? cao
+    // Gửi byte địa chỉ cao
     if (I2C_Write((uint8_t)(address & 0xFF)) != OK) {
         I2C_Stop();
         return 0xFF;
     }
     
-    // Restart v� chuy?n sang d?c
+    // Restart và chuyển sang đọc
     I2C_Start();
     if (I2C_Write(EEPROM_ADDRESS | ((address & 0x0700) >> 7) | 0x01) != OK) {
         I2C_Stop();
         return 0xFF;
     }
     
-    // �?c d? li?u t? EEPROM
+    // Đọc dữ liệu từ EEPROM
     data = I2C_Read(NOT_ACK);
     I2C_Stop();
     

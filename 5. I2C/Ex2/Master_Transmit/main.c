@@ -20,8 +20,6 @@ int main(void)
 	GPIO_Config();
 	I2C_Config();
 	
-	
-	
 	while(1)
 	{
 		
@@ -61,24 +59,31 @@ void I2C_Config(void)
 void I2C_Start(uint8_t address)
 {
 	I2C_GenerateSTART(I2C1, ENABLE);
-	// Waiting for flag
+
+	// Đợi đến khi bus I2C rảnh
 	while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_MODE_SELECT));
+
 	I2C_Send7bitAddress(I2C1, (uint8_t) (address << 1), I2C_Direction_Transmitter);
-	// And check the transmitting
+
+	// Đợi xác nhận của Slave với yêu cầu ghi của Master
 	while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED));
 }
 
 void Send_I2C_Data(uint8_t data)
 {
 	I2C_SendData(I2C1, data);
-	// wait for the data trasnmitted flag
-	while(!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_TRANSMITTED));
+
+	// Đợi đến khi truyền xong 1 byte data 
+	while (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_TRANSMITTED));
 }
 
 uint8_t Read_I2C_Data(void)
 {
 	uint8_t data = I2C_ReceiveData(I2C1);
+
+	// Đợi đến khi Master nhận đủ 1 byte data
 	while(!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_RECEIVED));
+	
 	return data;
 }
 
@@ -100,5 +105,5 @@ void TIM_Config(void)
 void delay_ms(uint16_t time_delay)
 {
 	TIM_SetCounter(TIM2, 0);
-	while(TIM_GetCounter(TIM2) < time_delay * 10);
+	while (TIM_GetCounter(TIM2) < time_delay * 10) {}
 }

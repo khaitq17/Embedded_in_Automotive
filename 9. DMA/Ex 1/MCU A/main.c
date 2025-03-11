@@ -21,7 +21,6 @@ void GPIO_Config(void);
 void ADC_Config(void);
 void SPI_Config(void);
 void SPI_Send1Byte(uint8_t data);
-uint8_t SPI_Receive1Byte(void);
 void TIMER_Config(void);
 void delay_us(uint16_t time);
 
@@ -36,7 +35,7 @@ int main(void)
 	ADC_Config();
 	SPI_Config();
 	TIMER_Config();
-	SimpleKalmanFilter(1,2,0.001f);
+	SimpleKalmanFilter(1, 2, 0.001f);
 	
 	while(1)
 	{
@@ -47,7 +46,6 @@ int main(void)
 		angle = (uint8_t)((updateVal * 180.0f) / 4096.0f); // ADC 2^12
 		
 		SPI_Send1Byte(angle);
-
 	}
 }
 
@@ -61,28 +59,26 @@ void GPIO_Config(void)
 {
 	GPIO_InitTypeDef GPIO_InitStruct;
 	
+	// Cấu hình GPIO cho ADC
 	GPIO_InitStruct.GPIO_Pin = ADC_Pin;
 	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AIN;
 	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-	
 	GPIO_Init(ADC_GPIO, &GPIO_InitStruct);
 	
+	// Cấu hình GPIO cho SPI
 	GPIO_InitStruct.GPIO_Pin = SPI1_SCK | SPI1_MOSI;
 	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF_PP;
 	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-	
 	GPIO_Init(SPI1_GPIO, &GPIO_InitStruct);
 	
 	GPIO_InitStruct.GPIO_Pin = SPI1_MISO;
 	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
 	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-	
 	GPIO_Init(SPI1_GPIO, &GPIO_InitStruct);
 	
 	GPIO_InitStruct.GPIO_Pin = SPI1_NSS;
 	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_Out_PP;
 	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-	
 	GPIO_Init(SPI1_GPIO, &GPIO_InitStruct);
 }
 
@@ -127,17 +123,10 @@ void SPI_Send1Byte(uint8_t data)
 	GPIO_WriteBit(SPI1_GPIO, SPI1_NSS, Bit_RESET);
 	
 	SPI_I2S_SendData(SPI1, data);
-	while(SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == RESET);
-	GPIO_WriteBit(SPI1_GPIO, SPI1_NSS, Bit_SET);
-}
 
-uint8_t SPI_Receive1Byte(void)
-{
-	uint8_t temp;
-	while(SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_BSY) == SET);
-	temp = (uint8_t)SPI_I2S_ReceiveData(SPI1);
-	while(SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE) == RESET);
-	return temp;
+	while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == RESET);
+
+	GPIO_WriteBit(SPI1_GPIO, SPI1_NSS, Bit_SET);
 }
 
 void TIMER_Config(void)
@@ -156,133 +145,5 @@ void TIMER_Config(void)
 void delay_us(uint16_t time)
 {
 	TIM_SetCounter(TIM2, 0);
-	while(TIM_GetCounter(TIM2) < time){}
+	while (TIM_GetCounter(TIM2) < time) {}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

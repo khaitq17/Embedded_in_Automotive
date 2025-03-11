@@ -9,8 +9,10 @@ void LIN_SendID(uint8_t id);
 void LIN_SendData(uint8_t *data, uint8_t length);
 uint8_t LIN_CalculateChecksum(uint8_t *data, uint8_t length);
 void LIN_SendChecksum(uint8_t *data, uint8_t length);
+uint8_t LIN_ReceiveData(uint8_t *buffer, uint8_t length);
+void LIN_SlaveReceive(uint8_t id, uint8_t *buffer, uint8_t length);
 
-uint8_t dataToSend[4] = {0x17, 0x05, 0x20, 0x02};
+uint8_t receivedData[4];
 
 int main(void)
 {
@@ -18,8 +20,7 @@ int main(void)
 	
 	while(1)
 	{
-		LIN_MasterSend(0x10, dataToSend, 4);
-		for (int i = 0; i < 1000000; i++);
+		LIN_SlaveReceive(0x10, receivedData, 4);
 	}
 }
 	
@@ -27,7 +28,7 @@ void LIN_UART_Init(void)
 {
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1 | RCC_APB2Periph_GPIOA, ENABLE);
 	
-	// Cau hinh GPIO 
+	// Cấu hình GPIO 
 	GPIO_InitTypeDef GPIO_InitStruct;
 	
 	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_9;	// TX
@@ -40,7 +41,7 @@ void LIN_UART_Init(void)
 	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(GPIOA, &GPIO_InitStruct);
 	
-	// Cau hinh UART
+	// Cấu hình UART
 	USART_InitTypeDef UART_InitStruct;
 	
 	UART_InitStruct.USART_BaudRate = 19200;		// LIN Standard Baudrate
@@ -71,7 +72,7 @@ void LIN_SendBreak(void)
 void LIN_SendSync(void)
 {
 	while (!USART_GetFlagStatus(USART1, USART_FLAG_TXE));
-	USART_SendData(USART1, 0x55);	// 0x01010101
+	USART_SendData(USART1, 0x55);	// 0b01010101
 	while (!USART_GetFlagStatus(USART1, USART_FLAG_TC));
 }
 
@@ -120,4 +121,47 @@ void LIN_SendChecksum(uint8_t *data, uint8_t length)
 	uint8_t checksum = LIN_CalculateChecksum(data, length);
 	USART_SendData(USART1, checksum);
 	while (!USART_GetFlagStatus(USART1, USART_FLAG_TC));
+}
+
+uint8_t LIN_ReceiveData(uint8_t *buffer, uint8_t length)
+{
+	for (uint8_t i = 0; i < length; i++)
+	{
+		while (!USART_GetFlagStatus(USART1, USART_FLAG_RXNE));
+		buffer[i] = USART_ReceiveData(USART1);
+	}
+	
+	return LIN_CalculateChecksum(buffer, length);
+}
+
+void LIN_SlaveReceive(uint8_t id, uint8_t *buffer, uint8_t length)
+{
+	uint8_t receiveId;
+	
+	// Chờ nhận ID từ Master
+	while (!USART_GetFlagStatus(USART1, USART_FLAG_RXNE));
+
+	receiveId = USART_ReceiveData(USART1);
+	
+	// Kiểm tra ID, nếu khớp với ID yêu cầu thì tiếp tục nhận dữ liệu
+	if (receiveId == (id | LIN_CalculateParity(id)))
+	{
+		// Nhận dữ liệu từ Master
+		LIN_ReveiceData(buffer, length);
+		
+		// Kiểm tra checksum
+		uint8_t receivedChecksum = USART_ReceiveData(USART1);
+		if (receivedChecksum == LIN_CalculateChecksum(buffer, length))
+		{
+			// Dữ liệu hợp lệ, xử lý dữ liệu nhận được trong buffer
+		}
+		else 
+		{
+			// Xử lý lỗi checksum
+		}
+	}
+	else 
+	{
+		// Xử lý lỗi Parity hoặc ID không đúng
+	}
 }

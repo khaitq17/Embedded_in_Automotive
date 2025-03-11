@@ -17,7 +17,7 @@ void TIMER_Config(void);
 void delay_ms(uint16_t time);
 uint8_t SPI_Receive1Byte(void);
 
-uint8_t array[8] = {0,0,0,0,0,0,0,0};
+uint8_t received_data[8] = {0};
 
 int main()
 {
@@ -25,13 +25,14 @@ int main()
 	GPIO_Slave_Config();
 	SPI_Slave_Config();
 	TIMER_Config();
+
 	while(1)
 	{
 		while (GPIO_ReadInputDataBit(SPI1_GPIO, SPI1_NSS));
 		if (GPIO_ReadInputDataBit(SPI1_GPIO, SPI1_NSS) == 0)
 		{
 			for (int i = 0; i < 8; i++) {
-				array[i] = SPI_Receive1Byte();
+				received_data[i] = SPI_Receive1Byte();
 				delay_ms(1000);
 			}
 		}
@@ -51,19 +52,16 @@ void GPIO_Slave_Config(void)
 	GPIO_InitStruct.GPIO_Pin = SPI1_MISO ;
 	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF_PP;
 	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-	
 	GPIO_Init(SPI1_GPIO, &GPIO_InitStruct);
 	
 	GPIO_InitStruct.GPIO_Pin = SPI1_MOSI | SPI1_SCK;
 	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
 	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-	
 	GPIO_Init(SPI1_GPIO, &GPIO_InitStruct);
 	
 	GPIO_InitStruct.GPIO_Pin = SPI1_NSS;
 	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
 	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-	
 	GPIO_Init(SPI1_GPIO, &GPIO_InitStruct);
 }
 
@@ -101,128 +99,18 @@ void TIMER_Config(void)
 void delay_ms(uint16_t time)
 {
 	TIM_SetCounter(TIM2, 0);
-	while(TIM_GetCounter(TIM2) < time * 10){}
+	while (TIM_GetCounter(TIM2) < time * 10) {}
 }
 
 uint8_t SPI_Receive1Byte(void)
 {
 	uint8_t temp;
-	while(SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_BSY) == SET);
+
+	while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_BSY) == SET);
+
 	temp = (uint8_t) SPI_I2S_ReceiveData(SPI1);
-	while(SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE) == RESET);
+
+	while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE) == RESET);
+
 	return temp;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -6,7 +6,7 @@ void GPIO_Config(void);
 void EXTI_Config(void);
 void NVIC_Config(void);
 
-uint32_t count = 0;
+volatile uint32_t count = 0;
 
 int main(void)
 {
@@ -54,13 +54,13 @@ void EXTI_Config(void)
 	
 void NVIC_Config(void)
 {
-	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2); // 2 bits for pre-emption priority, 2 bits for subpriority
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2); // 2 bit pre-emption priority, 2 bit sub priority
 	
 	NVIC_InitTypeDef NVIC_InitStruct;
 	
 	NVIC_InitStruct.NVIC_IRQChannel = EXTI0_IRQn;
-	NVIC_InitStruct.NVIC_IRQChannelPreemptionPriority = 0x00;	// 2 bits for pre-emption priority: 0x00 --> 0x03
-	NVIC_InitStruct.NVIC_IRQChannelSubPriority = 0x00;	// 2 bits for subpriority: 0x00 --> 0x03
+	NVIC_InitStruct.NVIC_IRQChannelPreemptionPriority = 0x00;	
+	NVIC_InitStruct.NVIC_IRQChannelSubPriority = 0x00;	
 	NVIC_InitStruct.NVIC_IRQChannelCmd = ENABLE;
 	
 	NVIC_Init(&NVIC_InitStruct);
@@ -68,10 +68,12 @@ void NVIC_Config(void)
 
 void EXTI0_IRQHandler(void)
 {
-	if (EXTI_GetITStatus(EXTI_Line0) != RESET)	// Kiem tra co ngat line 0
+	// Kiểm tra cờ ngắt Line 0
+	if (EXTI_GetITStatus(EXTI_Line0) != RESET)	
 	{
 		count++;
-  }
+  	}
 		
-	EXTI_ClearITPendingBit(EXTI_Line0);	// Xoa co ngat line 0
+	// Xoá cờ ngắt Line 0
+	EXTI_ClearITPendingBit(EXTI_Line0);	
 }

@@ -10,8 +10,8 @@ void GPIO_Config(void);
 void ADC_Config(void);
 void TIMER_Config(void);
 void delay_ms(uint32_t time);
-static uint16_t val;
-static float valupdate;
+uint16_t val;
+float valupdate;
 
 int main(void)
 {
@@ -19,7 +19,7 @@ int main(void)
 	GPIO_Config();
 	ADC_Config();
 	TIMER_Config();
-	SimpleKalmanFilter(1,2,0.001f);
+	SimpleKalmanFilter(1, 2, 0.001f);
 	
 	while(1)
 	{
@@ -80,6 +80,5 @@ void TIMER_Config(void)
 void delay_ms(uint32_t time)
 {
 	TIM_SetCounter(TIM2, 0);
-	while(TIM_GetCounter(TIM2) < time * 10){}
+	while (TIM_GetCounter(TIM2) < time * 10) {}
 }
-

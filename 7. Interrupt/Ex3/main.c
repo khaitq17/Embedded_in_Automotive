@@ -2,13 +2,13 @@
 
 #define TX_Pin 			GPIO_Pin_9
 #define RX_Pin			GPIO_Pin_10
-#define UART1_GPIO	GPIOA
+#define UART1_GPIO		GPIOA
 
 void RCC_Config(void);
 void GPIO_Config(void);
 void UART_Config(void);
 void NVIC_Config(void);
-void UART_SendChar(USART_TypeDef *USARTx, char data);
+void UART_SendChar(USART_TypeDef *USARTx, char c);
 void UART_SendString(USART_TypeDef *USARTx, char *str);
 char UART_ReceiveChar(USART_TypeDef *USARTx);
 
@@ -57,7 +57,7 @@ void UART_Config(void)
 	USART_InitStruct.USART_Parity = USART_Parity_No;
 	
 	USART_Init(USART1, &USART_InitStruct);
-	USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
+	USART_ITConfig(USART1, USART_IT_RXNE, ENABLE); // Ngắt khi có dữ liệu truyền đến
 	USART_Cmd(USART1, ENABLE);
 }
 
@@ -73,39 +73,46 @@ void NVIC_Config(void)
 	NVIC_Init(&NVIC_InitStruct);
 }
 
-void UART_SendChar(USART_TypeDef *USARTx, char _data)
+void UART_SendChar(USART_TypeDef *USARTx, char c)
 {
-	USART_SendData(USARTx, _data);
-	while(USART_GetFlagStatus(USARTx, USART_FLAG_TXE) == RESET);
+	USART_SendData(USARTx, c);
+
+	// Chờ đến khi truyền xong
+	while (!USART_GetFlagStatus(USARTx, USART_FLAG_TXE));
 }
 
 void UART_SendString(USART_TypeDef *USARTx, char *str)
 {
 	while (*str)
 	{
-		USART_SendData(USARTx, *str);
-		while (USART_GetFlagStatus(USARTx, USART_FLAG_TXE) == RESET);
+		UART_SendChar(USARTx, *str);
+		while (!USART_GetFlagStatus(USARTx, USART_FLAG_TXE)); // Chờ đến khi truyền xong
 		str++;
 	}
 }
 
 char UART_ReceiveChar(USART_TypeDef *USARTx)
 {
-	while(USART_GetFlagStatus(USARTx, USART_FLAG_RXNE) == RESET);
+	// Chờ đến khi nhận xong
+	while (!USART_GetFlagStatus(USARTx, USART_FLAG_RXNE));
+
 	return (uint8_t) USART_ReceiveData(USARTx);
 }
 
 void USART1_IRQHandler()
 {
 	uint8_t data = 0x00;
+
 	if (USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
 	{
 		data = USART_ReceiveData(USART1);
 		
 		USART_SendData(USART1, data);
+
+		// Đợi đến khi dữ liệu truyền xong
 		while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
 		
+		// Xóa cờ ngắt nhận
 		USART_ClearITPendingBit(USART1, USART_IT_RXNE);
 	}
 }
-

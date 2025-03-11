@@ -69,24 +69,21 @@ void NVIC_Config(void)
 	NVIC_Init(&NVIC_InitStruct);
 }
 
-
-
 volatile uint16_t count;
 
 void delay(int time)
 {
 	count = 0;
-	while (count < time){}
+	while (count < time) {}
 }
 
 void TIM2_IRQHandler(void)
 {
-	if (TIM_GetITStatus(TIM2, TIM_IT_Update) == SET)
+	if (TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET)
 	{
 		count++;
+
+		// Xóa cờ ngắt
 		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
 	}
-	
 }
-	
-

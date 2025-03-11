@@ -32,6 +32,7 @@ int main(void)
 	SPI_Config();
 	DMA_Config();
 	TIMER_Config();
+
 	while(1)
 	{
 		while(GPIO_ReadInputDataBit(SPI1_GPIO, SPI1_NSS));
@@ -55,28 +56,26 @@ void GPIO_Config(void)
 {
 	GPIO_InitTypeDef GPIO_InitStruct;
 	
-	GPIO_InitStruct.GPIO_Pin = SPI1_MISO ;
+	// Cấu hình GPIO cho SPI
+	GPIO_InitStruct.GPIO_Pin = SPI1_MISO;
 	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF_PP;
 	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-	
 	GPIO_Init(SPI1_GPIO, &GPIO_InitStruct);
 	
 	GPIO_InitStruct.GPIO_Pin = SPI1_MOSI | SPI1_SCK;
 	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
 	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-	
 	GPIO_Init(SPI1_GPIO, &GPIO_InitStruct);
 	
 	GPIO_InitStruct.GPIO_Pin = SPI1_NSS;
 	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
 	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-	
 	GPIO_Init(SPI1_GPIO, &GPIO_InitStruct);
 	
+	// Cấu hình GPIO cho Servo
 	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_0;
 	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF_PP;
 	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-	
 	GPIO_Init(GPIOA, &GPIO_InitStruct);
 }
 
@@ -101,7 +100,7 @@ void SPI_Config(void)
 uint8_t Receive1Byte(void)
 {
 	while (!SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE)) {}
-  return (uint8_t)SPI_I2S_ReceiveData(SPI1);
+  	return (uint8_t)SPI_I2S_ReceiveData(SPI1);
 }
 
 void DMA_Config(void)
@@ -157,11 +156,11 @@ void delay_us(uint16_t time)
 	TIM_InitStruct.TIM_Period = 20000 - 1;
 	TIM_InitStruct.TIM_CounterMode = TIM_CounterMode_Up;
 	
-	TIM_TimeBaseInit(TIM2, &TIM_InitStruct);
-	TIM_Cmd(TIM2, ENABLE);
+	TIM_TimeBaseInit(TIM3, &TIM_InitStruct);
+	TIM_Cmd(TIM3, ENABLE);
 	
-	TIM_SetCounter(TIM2, 0);
-	while(TIM_GetCounter(TIM2) < time){}
+	TIM_SetCounter(TIM3, 0);
+	while (TIM_GetCounter(TIM3) < time) {}
 }
 
 void setPWM(uint16_t angle)
@@ -170,4 +169,3 @@ void setPWM(uint16_t angle)
 	TIM_SetCompare1(TIM2, pulseWidth);
 	delay_us(100);
 }
-	

@@ -14,6 +14,7 @@ int main()
 	RCC_Config();
 	GPIO_Config();
 	TIM_Config();
+
 	while(1)
 	{
 		chaseLed(3);
@@ -54,23 +55,19 @@ void TIM_Config(void)
 void delay_ms(uint16_t timedelay)
 {
 	TIM_SetCounter(TIM2, 0);
-	while(TIM_GetCounter(TIM2) < timedelay * 1000){}
+	while (TIM_GetCounter(TIM2) < timedelay * 1000) {}
 }
 
 void chaseLed(uint8_t loop)
 {
 	uint16_t LedVal;
 	GPIO_Write(GPIOC, 0x00);
-	for(uint8_t i=0;i<loop;i++){
+	for (uint8_t i = 0; i < loop; i++) {
 		LedVal = 0x08;
-		for(int j=0;j<5;j++){
+		for (uint8_t j = 0; j < 5; j++) {
 			LedVal <<= 1;
 			GPIO_Write(GPIOC, LedVal);
 			delay_ms(5000);	// 5000 ms = 5 s
 			}
 		}
 }
-		
-
-
-
