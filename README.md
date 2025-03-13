@@ -68,7 +68,7 @@ void GPIO_Write(GPIO_TypeDef* GPIOx, uint16_t PortVal); // Ghi giá trị cho m�
 
 ## 2.1 Lý thuyết ngắt
 - **Ngắt (Interrupt)** là 1 sự kiện khẩn cấp xảy ra trong hay ngoài vi điều khiển. Khi xảy ra ngắt, MCU phải dừng chương trình chính và thực thi chương trình ngắt.
-- **Program Counter (PC)**: Là mộ thanh ghi Core. Trong chương trình chính, khi đang thực hiện 1 lệnh thì PC sẽ trỏ tới địa chỉ của lệnh tiếp theo sẽ thực hiện.
+- **Program Counter (PC)**: Là một thanh ghi Core. Trong chương trình chính, khi đang thực hiện 1 lệnh thì PC sẽ trỏ tới địa chỉ của lệnh tiếp theo sẽ thực hiện.
 - Các loại ngắt thông dụng:
     - **Reset**: Xảy ra khi có thao tác reset vi điều khiển.
     - **Ngắt ngoài**: Xảy ra khi có thay đổi điện áp trên các chân GPIO được cấu hình làm ngõ vào ngắt.
