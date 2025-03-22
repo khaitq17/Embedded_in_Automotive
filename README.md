@@ -98,7 +98,7 @@ void TIM_Config(void)
 	TIM_TimeBaseInitStruct.TIM_ClockDivision = TIM_CKD_DIV1; // 72 MHz / 1 = 72 MHz
 	TIM_TimeBaseInitStruct.TIM_Prescaler = 72 - 1; // Bộ đếm tăng lên sau mỗi 72 xung hệ thống
 	TIM_TimeBaseInitStruct.TIM_Period = 20000 - 1; // Bộ đếm sẽ đếm tới 20000 và sau đó sẽ đếm lại từ đầu
-	TIM_TimeBaseInitStruct.TIM_CounterMode = TIM_CounterMode_Up; // Chế dộ đếm lên
+	TIM_TimeBaseInitStruct.TIM_CounterMode = TIM_CounterMode_Up; // Chế độ đếm lên
 	
 	TIM_TimeBaseInit(TIM2, &TIM_TimeBaseInitStruct); // Khởi tạo cấu hình cho TIM2
 	
@@ -1977,12 +1977,12 @@ Lớp này cung cấp một giao diện trừu tượng cho tất cả các thi�
 - **Communication Drivers**: Hỗ trợ giao tiếp với CAN, LIN, SPI, Ethernet, v.v.
 - **I/O Drivers**: Cung cấp cấu hình về ADC, PWM, ICU, v.v, .
 
-### 13.2.3.4 Complex Device Driver
+#### 13.2.3.4 Complex Device Driver
 Đây là lớp chứa những tính răng riêng biệt của từng hãng xe.
 
 Ví dụ:
 
-![image](https://github.com/user-attachments/assets/f5a5465f-7dcd-4f93-9d94-6afe924867fb)
+![image](https://github.com/user-attachments/assets/6c545103-16ee-4c1e-84d4-08bcea2e61b2)
 
 </details>
 
