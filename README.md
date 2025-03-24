@@ -1634,7 +1634,7 @@ Một Node trong bus CAN bao gồm:
 
 ![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/d8958672-8ccc-4b34-b280-b34147b0286e)
 
-**Trạng thái "dominant" và "recessive"**: Can Bus định nghĩa 2 trạng thái điện áp là "dominant" (mức 0) và "recessive" (mức 1). Hai trạng thái này được xử lý bởi Transceiver của Node. Có 2 loại CAN tương ứng với các giá trị điện áp khác nha:
+**Trạng thái "dominant" và "recessive"**: Can Bus định nghĩa 2 trạng thái điện áp là "dominant" (mức 0) và "recessive" (mức 1). Hai trạng thái này được xử lý bởi Transceiver của Node. Có 2 loại CAN tương ứng với các giá trị điện áp khác nhau:
 - **CAN low speed**
 
 ![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/2c3c7083-c0a9-4804-872f-3bab731012a5)
@@ -1689,7 +1689,7 @@ Cấu trúc của một Data Frame:
 
 Có 2 loại Data Frame là **Standard Frame (Khung chuẩn)** và **Extended Frame (Khung mở rộng)**.
 
-**Standard Frame**
+**Standard Frame (Khung chuẩn)**
 
 ![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/3e34403a-df6b-4cda-9f24-11501ba23266)
 
@@ -1709,7 +1709,7 @@ Có 2 loại Data Frame là **Standard Frame (Khung chuẩn)** và **Extended Fr
     - **ACK Delimiter**: Có độ dài 1 bit, nó luôn là 1 bit **Recessive** để phân cách trường ACK với trường phía sau.
 - **End Of Frame Field – EOF** (Trường kết thúc): Thông báo kết thúc một Data Frame hay Remote Frame. Trường này gồm 7 bit **Recessive**.
 
-**Extended Frame**
+**Extended Frame (Khung mở rộng)**
 
 ![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/44e167be-b619-4060-a749-8d3a65424ace)
 
@@ -1829,7 +1829,7 @@ VD: Trong hệ thống ô tô, module CAN trên MCU có thể phát ra Overload 
 - Khả năng ưu tiên: Mỗi thông điệp trong mạng CAN đều có một ID xác định mức độ ưu tiên của nó. ID càng thấp, mức độ ưu tiên càng cao.
 - Truyền dữ liệu: Dữ liệu có thể truyền đi qua bus CAN với kích thước tối đa là 8 byte mỗi khung. Điều này là đặc trưng của CAN 2.0A, giúp quản lý hiệu quả băng thông và độ trễ.
 
-## 11.5.2 CAN 2.0B
+### 11.5.2 CAN 2.0B
 Đặc điểm chính của CAN 2.0B:
 - 29 bit ID: Phiên bản CAN 2.0B mở rộng định dạng ID từ 11 bit trong CAN 2.0A lên 29 bit. Với 29 bit, có thể biểu diễn 2^29 ID khác nhau, cho phép phân bổ số lượng ID lớn hơn và hỗ trợ các hệ thống phức tạp với nhiều node hơn.
 - Tương thích ngược: CAN 2.0B vẫn tương thích ngược với CAN 2.0A, có nghĩa là các node sử dụng CAN 2.0B có thể hiểu được và giao tiếp với các node sử dụng CAN 2.0A. Các node CAN 2.0B có thể nhận diện giữa các khung dữ liệu tiêu chuẩn và khung dữ liệu mở rộng thông qua bit điều khiển IDE (Identifier Extension).
@@ -1852,7 +1852,7 @@ Khung dữ liệu CAN 2.0B bao gồm các trường sau:
 - **End of Frame (EOF)**: Kết thúc frame, gồm 7 bit liên tiếp có giá trị 1.
 - **Intermission Frame Space (IFS)**: 3 bit dành cho thời gian nghỉ giữa hai frame truyền liên tiếp.
 
-## 11.5.3 CAN FD 
+### 11.5.3 CAN FD 
 **CAN FD (Flexible Data-rate)** là một phiên bản cải tiến của giao thức CAN tiêu chuẩn, được phát triển để giải quyết các hạn chế về tốc độ truyền dữ liệu và kích thước khung dữ liệu trong các phiên bản trước đó.
 
 Đặc điểm chính của CAN FD:
@@ -1913,7 +1913,7 @@ Các tham số cho CAN được cấu hình trong struct **CAN_InitTypeDef** bao
 
 Tốc độ truyền CAN = 1/(`SJW`+`BS1`+`BS2`)
 
-## 11.7 CAN Mask & Filter
+## 11.7 Bộ lọc CAN
 CAN hỗ trợ bộ lọc ID, giúp các Node có thể lọc ra ID từ các message trên Bus để quyết định sẽ nhận massge nào. Các tham số cho bộ lọc được cấu hình trong **CAN_FilterInitTypeDef**:
 - `CAN_FilterNumber`: Chọn bộ lọc để dùng, từ 0-13.
 - `CAN_FilterMode`: Chế độ bộ lọc: 
@@ -1944,11 +1944,11 @@ Thanh ghi chứa giá trị ID của gói tin:
 Để áp dụng được Mask và ID cho gói tin với ID là stdID, cần setup 11 bit cao của Mask cùng như của Filter.
 
 ## 11.8 Truyền - nhận CAN
-Để xác định được 1 gói tin, cần có **ID**, các bit **RTR**, **IDE**, **DLC** và tối đa 8 byte data như bài trước đã đề cập. Các thành phần này được tổ chức trong **CanRxMsg**.
+Để xác định được 1 gói tin, cần có **ID**, các bit **RTR**, **IDE**, **DLC** và tối đa 8 byte data. Các thành phần này được tổ chức trong **CanTxMsg**.
 
-Hàm truyền: `uint8_t CAN_Transmit(CAN_TypeDef CANx, CanTxMsg TxMessage)`:
+Hàm truyền: `uint8_t CAN_Transmit(CAN_TypeDef CANx, CanTxMsg TxMessage)` với
 - `CANx`: Bộ CAN cần dùng.
-- `TxMessage`: Struct `CanRxMsg` cần truyền.
+- `TxMessage`: Struct `CanTxMsg` cần truyền.
 
 ```
 void CAN_TransmitData(uint8_t* data, uint8_t length)
@@ -1991,7 +1991,7 @@ void CAN_ReceiveData(uint8_t* data)
 	CAN_Receive(CAN1, CAN_FIFO0, &RxMessage);
 
 	// Lưu dữ liệu nhận được vào RxMessage
-	for (int i = 0; i < RxMessage.DLC; i++) {
+	for (uint8_t i = 0; i < RxMessage.DLC; i++) {
 		data[i] = RxMessage.Data[i];
 	}
 
@@ -1999,6 +1999,232 @@ void CAN_ReceiveData(uint8_t* data)
 	CAN_FIFORelease(CAN1, CAN_FIFO0);	
 }
 ```
+
+## 11.9 Ví dụ với các loại khung truyền
+Đầu tiên, cần cấu hình cho CAN:
+```
+void CAN_Configuration(void) {
+    // Cấp clock cho CAN1 và GPIOA
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_CAN1, ENABLE);
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
+
+    CAN_InitTypeDef        CAN_InitStruct;
+    CAN_FilterInitTypeDef  CAN_FilterInitStruct;
+    GPIO_InitTypeDef       GPIO_InitStruct;
+
+    
+    // Cấu hình GPIO cho chân CAN RX và CAN TX
+    GPIO_InitStruct.GPIO_Pin = GPIO_Pin_11;  // CAN RX (PA11)
+    GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IPU;
+    GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+    GPIO_InitStruct.GPIO_Pin = GPIO_Pin_12;  // CAN TX (PA12)
+    GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF_PP;
+    GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+    // Cấu hình CAN
+	CAN_InitStruct.CAN_Mode = CAN_Mode_Normal; // Chế độ bình thường
+	CAN_InitStruct.CAN_TTCM = DISABLE;	// Không sử dụng chế độ giao tiếp kích hoạt theo thời gian
+	CAN_InitStruct.CAN_ABOM = ENABLE;	// Tự động ngắt ra khỏi bus nếu ở trạng thái Bus-Off
+	CAN_InitStruct.CAN_AWUM = ENABLE;	// Tự động thức dậy khi nhận được một thông điệp trên bus CAN
+	CAN_InitStruct.CAN_NART = DISABLE;	// Node tự động truyền lại khung dữ liệu nếu không nhận được ACK
+	CAN_InitStruct.CAN_RFLM = DISABLE;	// Dữ liệu mới sẽ ghi đè lên dữ liệu cũ nếu FIFO đầy
+	CAN_InitStruct.CAN_TXFP = DISABLE;	// Khung dữ liệu sẽ được truyền theo thứ tự, không theo mức ưu tiên
+	
+	// Cấu hình thời gian truyền
+	CAN_InitStruct.CAN_SJW = CAN_SJW_1tq;	// Thời gian trễ phần cứng = 1 tq
+	CAN_InitStruct.CAN_BS1 = CAN_BS1_6tq;	// Thời gian đồng bộ đầu frame truyền = 6 tq
+	CAN_InitStruct.CAN_BS2 = CAN_BS2_8tq;	// Thời gian đồng bộ cuối frame truyền = 8 tq
+	CAN_InitStruct.CAN_Prescaler = 12;	// Tốc độ baudrate = 72 MHz / (Prescaler * 12) = 500 Kbps
+    CAN_Init(CAN1, &CAN_InitStruct);
+
+    // Cấu hình bộ lọc CAN
+    CAN_FilterInitStruct.CAN_FilterNumber = 0; // Bộ lọc 0
+	CAN_FilterInitStruct.CAN_FilterMode = CAN_FilterMode_IdMask; // Dùng mặt nạ bit để lọc ID
+	CAN_FilterInitStruct.CAN_FilterScale = CAN_FilterScale_32bit; // Kích thước bộ lọc 32 bit
+	// Cài đặt giá trị cho bộ lọc (32 bit)
+	CAN_FilterInitStruct.CAN_FilterIdHigh = 0x0000;  
+	CAN_FilterInitStruct.CAN_FilterIdLow = 0x0000;
+	// Cài đặt giá trị cho Mask (32 bit)
+	CAN_FilterInitStruct.CAN_FilterMaskIdHigh = 0x0000;
+	CAN_FilterInitStruct.CAN_FilterMaskIdLow = 0x0000;
+	CAN_FilterInitStruct.CAN_FilterFIFOAssignment = CAN_FIFO0; // Bộ đệm FIFO0
+	CAN_FilterInitStruct.CAN_FilterActivation = ENABLE; // Kích hoạt bộ lọc ID
+	CAN_FilterInit(&CAN_FilterInitStruct);
+
+	// Cấu hình ngắt CAN
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
+	NVIC_InitTypeDef NVIC_InitStruct;
+
+	NVIC_InitStruct.NVIC_IRQChannel = USB_LP_CAN1_RX0_IRQn;
+	NVIC_InitStruct.NVIC_IRQChannelPreemptionPriority = 0x00;
+	NVIC_InitStruct.NVIC_IRQChannelSubPriority = 0x00;
+	NVIC_InitStruct.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStruct);
+	
+	CAN_ITConfig(CAN1, CAN_IT_FF0, ENABLE); // Ngắt khi FIFO đầy -> Sử dụng trong ví dụ với Overload Frame
+	CAN_ITConfig(CAN1, CAN_IT_ERR, ENABLE); // Ngắt khi xảy ra lỗi -> Sử dụng trong ví dụ với Error Frame
+}
+```
+
+### 11.9.1 Data Frame
+VD: Gửi một Data Frame chứa 8 byte dữ liệu từ một node đến một node khác trên mạng CAN
+```
+void CAN_TransmitData(uint8_t* data, uint8_t length)
+{
+    CanTxMsg TxMessage;
+    
+    TxMessage.StdId = 0x123;  // 11 bit ID thông điệp
+    TxMessage.RTR = CAN_RTR_DATA;  // Sử dụng Data Frame
+    TxMessage.IDE = CAN_ID_STD;  // Standard ID 
+    TxMessage.DLC = length;  // Độ dài dữ liệu
+
+    // Lưu dữ liệu truyền vào TxMessage
+    for (int i = 0; i < length; i++) {
+        TxMessage.Data[i] = data[i];
+    }
+
+    // Sử dụng mailbox để truyền dữ liệu đi
+	uint8_t mailbox = CAN_Transmit(CAN1, &TxMessage);
+
+	// Chờ đến khi truyền xong
+	while (CAN_TransmitStatus(CAN1, mailbox) != CAN_TxStatus_Ok);
+}
+
+int main(void)
+{
+    uint8_t dataToSend[8] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08};
+
+    CAN_Configuration();  // Cấu hình CAN
+
+    while (1)
+	{
+        CAN_TransmitData(dataToSend, 8);  // Gửi Data Frame với 8 byte dữ liệu
+        for (volatile int i = 0; i < 500000; i++);  // Delay để tránh quá tải
+    }
+}
+```
+
+### 11.9.2 Remote Frame
+VD: Gửi một Remote Frame để yêu cầu Data Frame từ node khác
+```
+void CAN_TransmitRemoteRequest(uint16_t id, uint8_t dlc) 
+{
+    CanTxMsg TxMessage;
+
+    TxMessage.StdId = id; // ID của node được yêu cầu gửi Data Frame
+    TxMessage.RTR = CAN_RTR_REMOTE; // Sử dụng Remote Frame
+    TxMessage.IDE = CAN_ID_STD; // Standard ID
+    TxMessage.DLC = dlc; // Độ dài dữ liệu yêu cầu
+
+    // Sử dụng mailbox để gửi khung yêu cầu đi
+	uint8_t mailbox = CAN_Transmit(CAN1, &TxMessage);
+
+    // Chờ đến khi truyền xong
+    while (CAN_TransmitStatus(CAN1, mailbox) != CAN_TxStatus_Ok);
+}
+
+int main(void)
+{
+    CAN_Configuration();  // Cấu hình CAN
+
+    while (1)
+	{
+        CAN_TransmitRemoteRequest(0x123, 8);  // Gửi Remote Frame yêu cầu Data Frame với ID 0x123
+        for (volatile int i = 0; i < 500000; i++);  // Delay để tránh gửi quá nhanh
+    }
+}
+```
+
+### 11.9.3 Error Frame
+VD: Kiểm soát trạng thái lỗi thông qua CAN Error Counter và nhận dạng loại lỗi dựa trên trạng thái của node.
+```
+void CAN_Check_Error(void)
+{
+	// Lấy mã lỗi từ CAN
+	uint8_t error_code = CAN_GetLastErrorCode(CAN1);
+		
+	// Xử lý lỗi
+	if (error_code == CAN_ErrorCode_BitDominantErr || error_code == CAN_ErrorCode_BitRecessiveErr) {
+		// Xử lý lỗi Bit Error (Bit truyền khác bit nhận)
+	} else if (error_code == CAN_ErrorCode_FormErr) {
+		// Xử lý lỗi Form Error (Không dùng định dạng CAN)
+	} else if (error_code == CAN_ErrorCode_StuffErr) {
+		// Xử lý lỗi Stuff Error (Nhiều hơn 5 bit giống nhau liên tiếp)
+	} else if (error_code == CAN_ErrorCode_ACKErr) {
+		// Xử lý lỗi ACK Error (Không có phản hồi ACK)
+	} else if (error_code == CAN_ErrorCode_CRCErr) {
+		// Xử lý lỗi CRC Error (Giá trị CRC so sánh khác nhau)
+	} 
+	// Các lỗi khác nếu có
+	
+	// Kiểm tra Error Counter
+	uint8_t txErrorCounter = CAN_GetLSBTransmitErrorCounter(CAN1);	// Lấy bộ đếm lỗi truyền
+	uint8_t rxErrorCounter = CAN_GetReceiveErrorCounter(CAN1);	// Lấy bộ đếm lỗi nhận
+	
+	if (txErrorCounter <= 127 && rxErrorCounter <= 127) {
+		// Node đang ở trạng thái Active Error
+		// Node vẫn có thể phát hiện và sửa lỗi chủ động
+	} else if (txErrorCounter > 127 || rxErrorCounter > 127) {
+		// Node đang ở trạng thái Passive Error
+		// Node đã gặp nhiều lỗi, không thể can thiệp sửa lỗi
+	}
+}
+
+// Xử lý trong hàm ngắt khi phát hiện lỗi
+void USB_LP_CAN1_RX0_IRQHandler(void)
+{
+	// Kiểm tra cờ ngắt lỗi
+    if (CAN_GetITStatus(CAN1, CAN_IT_ERR) != RESET) {
+        CAN_Check_Error();  // Gọi hàm kiểm tra và xử lý lỗi
+        CAN_ClearITPendingBit(CAN1, CAN_IT_ERR);  // Xóa cờ lỗi
+    }
+}
+
+int main(void)
+{
+    CAN_Configuration();  // Cấu hình CAN
+
+    while (1)
+	{
+        // Kiểm tra và giám sát trạng thái lỗi
+        CAN_Check_Error();
+        for (volatile int i = 0; i < 500000; i++);  // Delay để tránh kiểm tra quá thường xuyên
+    }
+}
+```
+
+### 11.9.4 Overload Frame
+VD: Node phát tự động phát ra khung quá tải khi cần thêm thời gian xử lý dữ liệu.
+
+Lưu ý: Overload Frame không được cấu hình hoặc kích hoạt bởi phần mềm mà được phần cứng CAN xử lý. Tuy nhiên có thể sử dụng ngắt để phát hiện các trạng thái CAN như FIFO đầy hoặc các trạng thái khác có thể dẫn đến Overload Frame.
+
+```
+// Xử lý khi FIFO đầy, có khả năng phát ra Overload Frame
+void USB_LP_CAN1_RX0_IRQHandler(void) {
+    // Kiểm tra trạng thái FIFO Full
+    if (CAN_GetITStatus(CAN1, CAN_IT_FF0) != RESET) {
+        // Xử lý khi FIFO đầy
+        // Lúc này phần cứng CAN sẽ tự động phát Overload Frame để trì hoãn giao tiếp
+
+        // Xóa cờ FIFO Full
+        CAN_ClearITPendingBit(CAN1, CAN_IT_FF0);
+    }
+}
+
+int main(void)
+{
+    CAN_Configuration();  // Cấu hình CAN và kích hoạt ngắt FIFO đầy
+
+    while (1)
+	{
+        // Chương trình chính
+        // Node sẽ tự động phát Overload Frame nếu cần thêm thời gian xử lý dữ liệu
+    }
+}
+```
+
 </details>
 
 
@@ -2006,7 +2232,7 @@ void CAN_ReceiveData(uint8_t* data)
 	<summary><strong>BÀI 12: LIN</strong></summary>
 
 # BÀI 12: LIN
-**LIN (Local Interconnect Network)** sinh ra nhằm giảm thiểu sự phức tạp và chi phí trong việc truyền thông giữa các thiết bị điện tử đơn giản trong xe.
+Giao thức **LIN (Local Interconnect Network)** sinh ra nhằm giảm thiểu sự phức tạp và chi phí trong việc truyền thông giữa các thiết bị điện tử đơn giản trong xe.
 
 LIN thường được sử dụng trong các ứng dụng điều khiển các chức năng không an toàn của xe như điều khiển cửa sổ, đèn, gương và điều hòa không khí.
 
@@ -2020,31 +2246,228 @@ LIN thường được sử dụng trong các ứng dụng điều khiển các 
 - Node Slave chỉ phản hồi khi có yêu cầu từ node Master.
 - Master quét yêu cầu tới tất cả các Slave để thăm dò thông tin.
 - Master có dữ liệu từ Slave sẽ gửi lên bus CAN để đi tới các LIN khác.
-- LIN sử dụng giao thức UART để truyền/nhận dữ liệu, với khung truyền dữ liệu sẽ là 1 start, 8 data, 1 hoặc 2 stop.
+- Giao tiếp không đồng bộ dựa trên giao thức UART để truyền/nhận dữ liệu, với khung truyền dữ liệu sẽ là 1 start, 8 data, 1 hoặc 2 stop.
 
-1 node LIN bao gồm 1 MCU có bộ LIN Controller và 1 LIN Transceiver.
+Một node LIN bao gồm 1 MCU có bộ **LIN Controller** và 1 bộ **LIN Transceiver** có chức năng chuyển đổi tín hiệu UART của vi điều khiển thành tín hiệu điện áp vật lý theo tiêu chuẩn LIN.
 
 ![image](https://github.com/user-attachments/assets/0edeaadd-95e5-44ad-9f3d-58aea2d792d2)
 
 ## 12.2 Cấu trúc khung LIN
 ![image](https://github.com/user-attachments/assets/43bc1cbc-0f13-4123-8ca9-4644701be490)
 
-- **Break** (>= 13 bit): Báo hiệu bắt đầu khung.
-- **Sync** (8 bit): Byte đồng bộ hóa (0x55), điều chỉnh tốc độ truyền.	// 0x01010101
-- **ID** (6 bit ID + 2 bit parity): Xác định loại dữ liệu và Slave cần phản hồi.
-- **Data** (16 - 64 bit): Từ 2 đén 8 byte dữ liệu chứa nội dung chính của thông điệp.
-- **Checksum** (8 bit): Phát hiện lỗi trong quá trình truyền thông.
+- **Break Field** (Trường Break): Một chuỗi ít nhất 13 bit 0 báo hiệu bắt đầu khung truyền.
+
+Trường Break giúp các node slave nhận biết rằng master đang chuẩn bị gửi một khung truyền và giúp chúng đồng bộ lại trạng thái nhận dữ liệu. Thời gian của Break dài hơn một ký tự UART tiêu chuẩn để đảm bảo tất cả các node slave nhận ra tín hiệu này.
+
+- **Sync Field** (Trường Sync): Byte đồng bộ hóa (có định là 0x55) giúp các node slave điều chỉnh tốc độ truyền của chúng cho phù hợp với node master.
+
+Giá trị 0x55 (0b01010101) giúp dễ dàng phát hiện lỗi trong quá trình đồng bộ hóa, để các node slave điều chỉnh tốc độ truyền sao cho đồng bộ với node master.
+
+- **Identifier Field** (Trường định danh - ID): Xác định loại khung dữ liệu và Slave cần phản hồi. Trường ID gồm 6 bit dữ liệu và 2 bit kiểm tra chẵn lẻ (parity).
+	- 6 bit ID (Bit 0 - 5): Xác định loại thông điệp hoặc hành động cần thực hiện. 6 bit này cho phép có tối đa 64 ID khác nhau và mỗi ID đại diện cho một nhóm dữ liệu cụ thể. 
+	- 2 bit Parity (Bit 6 - 7): 2 bit này được sử dụng để kiểm tra chẵn lẻ nhằm phát hiện lỗi khi truyền ID, được tính toán dựa trên 6 bit ID. Có 2 loại parity là even parity (chẵn) và odd parity (lẻ), giúp phát hiện nếu có bất kỳ lỗi đơn bit nào xảy ra trong quá trình truyền ID.
+		- P0 được tính bằng phép XOR giữa bit 0, bit 1, bit 2 và bit 4 của ID.
+		- P1 được tính bằng phép XOR giữa bit 1, bit 3, bit 4, và bit 5 của ID.
+	- Với 2 bit kiểm tra này, node slave có thể phát hiện lỗi trong quá trình truyền ID và báo cáo lỗi nếu cần thiết.
+
+- **Data Field** (Trường dữ liệu): Chứa nội dung dữ liệu chính được truyền giữa các node trong mạng LIN. Trường này có độ dài từ 2 đến 8 byte tùy thuộc vào loại thông tin được gửi.
+
+Trường Data chứa thông tin điều khiển, trạng thái của các thiết bị hoặc dữ liệu cảm biến. Nội dung của trường Data phụ thuộc vào loại thông điệp được truyền và nó có thể bao gồm các lệnh điều khiển, phản hồi từ cảm biến hoặc các trạng thái hệ thống.
+
+- **Checksum Field** (Trường kiểm tra tổng - Checksum): Byte cuối cùng trong khung LIN, được sử dụng để phát hiện lỗi trong quá trình truyền dữ liệu. Checksum giúp đảm bảo rằng dữ liệu không bị thay đổi trong quá trình truyền từ master đến slave hoặc ngược lại. Có 2 loại checksum:
+	- **Classic Checksum**: Được sử dụng cho tất cả các khung truyền ngoại trừ khung chứa trường ID. Checksum được tính toán dựa trên các byte dữ liệu trong trường Data, giá trị checksum là tổng (không dấu) của tất cả các byte dữ liệu, sau đó lấy phần bù của tổng này.
+	- **Enhanced Checksum**: Được sử dụng trong các phiên bản LIN mới hơn và bao gồm cả byte ID trong phép tính checksum. Tương tự như Classic Checksum, Enhanced Checksum tính tổng tất cả các byte trong khung (bao gồm cả byte ID), sau đó lấy phần bù của tổng này.
+
+Việc tính toán checksum đảm bảo rằng nếu có bất kỳ thay đổi nào trong dữ liệu, giá trị checksum sẽ khác đi và hệ thống sẽ phát hiện ra lỗi. Với phương pháp Enhanced Checksum có mức độ bảo mật cao hơn cho dữ liệu so với Classic Checksum.
+
+|Thành phần|Số lượng bit|Chức năng|
+|:--------:|:----------:|:-------:|
+|Break|>= 13 bit|Báo hiệu bắt đầu khung|
+|Sync|8 bit|Byte đồng bộ hóa (0x55), điều chỉnh tốc độ truyền|
+|ID|6 bit ID + 2 bit parity|Xác định loại dữ liệu và slave cần phản hồi|
+|Data|16 - 64 bit|Từ 2 đến 8 byte dữ liệu chứa nội dung chính của thông điệp|
+|Checksum|8 bit|Phát hiện lỗi trong quá trình truyền thông|
 
 ## 12.3 Quá trình truyền thông LIN
-- Master sẽ gửi Header cho các Slave trước.
-- Nếu Master yêu cầu dữ liệu từ Slave thì Slave sẽ gửi lại Response cho Master.
-- Nếu Master muốn gửi dữ liệu cho Slave thì sẽ gửi kèm Response cho Slave.
+Quá trình truyền thông trong giao thức LIN hoạt động dựa trên cơ chế **polling**, nghĩa là node master sẽ điều khiển toàn bộ quá trình truyền thông bằng cách gửi các khung điều khiển (header) đến các node slave. Sau khi nhận được các header từ master, các node slave sẽ phản hồi dựa trên yêu cầu của master. 
+
+Quá trình này bao gồm 2 giai đoạn chính: **Header (Khung điều khiển)** và **Response (Phản hồi)**.
+- **Quá trình Header (Khung điều khiển)**: Header được gửi bởi node master và bao gồm 3 thành phần: **Break Field**, **Sync Field**, và **Identifier Field (ID)**. Header có nhiệm vụ thông báo cho tất cả các node slave rằng một khung truyền mới sắp diễn ra và xác định node nào trong mạng LIN cần phản hồi dữ liệu.
+- **Quá trình Response (Phản hồi)**: Sau khi node master phát xong header, các node slave có thể phản hồi bằng cách gửi lại dữ liệu hoặc thực hiện hành động theo yêu cầu. Phần Response được chia thành 2 loại, tùy thuộc vào nội dung của ID:
+	- **Response từ master**: Node master sẽ gửi dữ liệu trong phần Response, ví dụ khi master cần truyền dữ liệu điều khiển đến một node slave hoặc phát thông tin cho tất cả các node trong mạng. Response từ master sẽ bao gồm các byte dữ liệu và checksum.
+	- **Response từ slave**: Nếu ID trong header yêu cầu dữ liệu từ một node slave cụ thể, node slave tương ứng sẽ phản hồi bằng cách gửi các byte dữ liệu chứa thông tin hoặc trạng thái của nó. Node slave sẽ gửi dữ liệu theo cấu trúc Data Field và kèm theo checksum để phát hiện lỗi trong quá trình truyền.
 
 ![image](https://github.com/user-attachments/assets/ebaa236d-f411-4cc2-8cb9-094290d59272)
 
-- Slave sẽ xem ID có khớp với mình không, nếu có thì xử lý còn không thì bỏ qua.
+## 12.4 Cấu hình LIN qua mmodule UART
+### 12.4.1 Khởi tạo UART cho LIN
+Tốc độ truyền cho LIN thường là 19200 bps.
+```
+void LIN_UART_Init(void)
+{
+    USART_InitTypeDef USART_InitStructure;
+    GPIO_InitTypeDef GPIO_InitStructure;
 
-## 12.4 Một số mạng thường dùng trên ô tô
+    // Bật clock cho GPIO và UART
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_USART1, ENABLE);
+
+    // Cấu hình chân TX (PA9) và RX (PA10)
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9; // TX
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10; // RX
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+    // Cấu hình UART
+    USART_InitStructure.USART_BaudRate = 19200; // Baud rate 19200 bps
+    USART_InitStructure.USART_WordLength = USART_WordLength_8b; // Truyền 8 bit dữ liệu
+    USART_InitStructure.USART_StopBits = USART_StopBits_1; // 1 bit stop
+    USART_InitStructure.USART_Parity = USART_Parity_No; // Không sử dụng bit chẵn lẻ
+    USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None; // Không sử dụng điều khiển luồng phần cứng
+    USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx; // Chế độ song công (cả TX và RX)
+
+    USART_Init(USART1, &USART_InitStructure);
+
+    // Bật UART
+    USART_Cmd(USART1, ENABLE);
+}
+```
+
+### 12.4.2 Tạo khung LIN
+- Tạo **Break Field**: Trường Break gồm một chuỗi bit 0 dài ít nhất 13 bit.
+```
+// Gửi trường Break
+void LIN_SendBreak(void)
+{
+    USART_SendBreak(USART1);
+}
+```
+
+- Tạo **Sync Field**: Byte cố định với giá trị 0x55, giúp đồng bộ tốc độ truyền giữa master và slave.
+```
+// Gửi trường Sync
+void LIN_SendSync(void)
+{
+    USART_SendData(USART1, 0x55);
+    while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET); // Chờ truyền xong
+}
+```
+
+- Tạo **Identifier Field (ID)**: ID là byte bao gồm 6 bit dữ liệu và 2 bit kiểm tra parity nên cần tính toán bit parity trước khi gửi ID.
+```
+// Tính toán bit parity
+uint8_t LIN_CalculateParity(uint8_t id)
+{
+    uint8_t p0 = ((id >> 0) & 0x01) ^ ((id >> 1) & 0x01) ^ ((id >> 2) & 0x01);
+    uint8_t p1 = ~(((id >> 1) & 0x01) ^ ((id >> 3) & 0x01) ^ ((id >> 4) & 0x01) ^ ((id >> 5) & 0x01));
+    return (p0 | (p1 << 1)) << 6;
+}
+
+// Gửi ID kèm theo 2 bit parity
+void LIN_SendID(uint8_t id)
+{
+    uint8_t id_with_parity = id | LIN_CalculateParity(id);
+    USART_SendData(USART1, id_with_parity);
+    while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
+}
+```
+
+### 12.4.3 Gửi và nhận khung LIN
+Sau khi tạo được các trường Break, Sync và ID, cần gửi hoặc nhận phần **Data Field** và **Checksum Field**.
+
+- Gửi **Data Field**: Dữ liệu truyền có thể từ 2 đến 8 byte. 
+```
+// Gửi dữ liệu
+void LIN_SendData(uint8_t *data, uint8_t length)
+{
+    for (uint8_t i = 0; i < length; i++)
+    {
+        USART_SendData(USART1, data[i]);
+        while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET); // Chờ truyền xong
+    }
+}
+```
+
+- Tính toán và gửi **Checksum**: Checksum trong LIN có thể là **Classic** hoặc **Enhanced**, tùy thuộc vào phiên bản giao thức LIN. Đây là cách tính Classic Checksum (chỉ dựa trên dữ liệu mà không dựa trên ID).
+```
+// Tính toán Checksum
+uint8_t LIN_CalculateChecksum(uint8_t *data, uint8_t length)
+{
+    uint16_t checksum = 0;
+    for (uint8_t i = 0; i < length; i++)
+    {
+        checksum += data[i];
+        if (checksum > 0xFF)
+        {
+            checksum -= 0xFF;
+        }
+    }
+    return ~checksum; // Bù 1 của checksum
+}
+
+// Gửi Checksum
+void LIN_SendChecksum(uint8_t *data, uint8_t length)
+{
+    uint8_t checksum = LIN_CalculateChecksum(data, length);
+    USART_SendData(USART1, checksum);
+    while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET); // Chờ truyền xong
+}
+```
+
+- Nhận dữ liệu và kiểm tra lỗi: Khi nhận dữ liệu cũng cần kiểm tra checksum để đảm bảo tính toàn vẹn.
+```
+// Nhận dữ liệu
+uint8_t LIN_ReceiveData(uint8_t *buffer, uint8_t length)
+{
+    for (uint8_t i = 0; i < length; i++)
+    {
+        while (USART_GetFlagStatus(USART1, USART_FLAG_RXNE) == RESET);
+        buffer[i] = USART_ReceiveData(USART1);
+    }
+    return LIN_CalculateChecksum(buffer, length);
+}
+```
+
+- Quản lý node master/slave: Để quản lý quá trình truyền thông giữa node master và các node slave, lớp phần mềm cần kiểm soát việc gửi các khung điều khiển và phản hồi phù hợp dựa trên vai trò của node.
+```
+// Master gửi Header + Response
+void LIN_MasterSend(uint8_t id, uint8_t *data, uint8_t length)
+{
+	// Header
+    LIN_SendBreak(); // Trường Break
+    LIN_SendSync(); // Trường Sync
+    LIN_SendID(id); // Trường ID
+
+	// Response
+    LIN_SendData(data, length); // Trường Data
+    LIN_SendChecksum(data, length); // Trường Checksum
+}
+
+// Slave nhận Header + Response từ Master
+void LIN_SlaveReceive(uint8_t id, uint8_t *buffer, uint8_t length)
+{
+    uint8_t received_id;
+
+    while (USART_GetFlagStatus(USART1, USART_FLAG_RXNE) == RESET);
+
+    received_id = USART_ReceiveData(USART1);
+    if (received_id == (id | LIN_CalculateParity(id)))
+    {
+        uint8_t checksum = LIN_ReceiveData(buffer, length);
+        if (checksum != USART_ReceiveData(USART1))
+        {
+            // Xử lý lỗi checksum
+        }
+    }
+}
+```
+
+- Xử lý lỗi: Nếu phát hiện lỗi trong quá trình truyền, như sai checksum hoặc sai ID, lớp phần mềm sẽ cần xử lý thích hợp. Điều này có thể bao gồm bỏ qua dữ liệu hoặc báo cáo lỗi.
+
+## 12.5 Một số mạng thường dùng trên ô tô
 |	| LIN | CAN | FlexRay | Ethernet |
 |:-:|:---:|:---:|:-------:|:--------:|
 |Tốc độ truyền|1 - 20 kbps|Lên đến 1 Mbps|Lên đến 10 Mbps|Lên đến 100 Mbps|
@@ -2091,7 +2514,7 @@ BSW được chia thành 3 lớp chính:
 - **Microcontroller Abstraction Layer - MCAL** (Lớp trừu tượng hóa vi điều khiển)
 
 #### 13.2.3.1 Service Layer
-Đây là lớp cao nhất trong BSW, cung cấp các dịch vụ hệ thống và tiện ích cho các phần mềm ứng dụng (SWC) và các lớp khác của BSW. Các dịch vụ này bao gồm quản lý thời gian thực, chẩn đoán, quản lý lỗi, quản lý nguồn, v.v.
+Đây là lớp cao nhất trong BSW, cung cấp các dịch vụ hệ thống và tiện ích cho các phần mềm ứng dụng (SWC) và các lớp khác của BSW. Các dịch vụ này bao gồm quản lý thời gian thực, chẩn đoán, quản lý lỗi, quản lý nguồn,...
 - **OS (Operating System)**: Cung cấp các chức năng của hệ điều hành thời gian thực, bao gồm quản lý task, quản lý tài nguyên và đồng bộ hóa.
 - **Memory Services**: Quản lý bộ nhớ không chỉ đọc/ghi mà còn các dịch vụ liên quan đến bảo mật dữ liệu, như Flash EEPROM.
 - **Diagnostic Services**: Quản lý và xử lý chẩn đoán hệ thống, bao gồm chẩn đoán giao tiếp và xử lý lỗi.
@@ -2105,11 +2528,11 @@ Lớp này cung cấp một giao diện trừu tượng cho tất cả các thi�
 #### 13.2.3.3 Microcontroller Abstraction Layer (MCAL)
 Đây là lớp thấp nhất trong BSW, cung cấp giao diện trừu tượng để tương tác trực tiếp với các thành phần phần cứng của vi điều khiển, chẳng hạn như bộ xử lý trung tâm (CPU), các thiết bị ngoại vi tích hợp (như ADC, PWM, UART), và các bộ định thời (timer).
 - **Microcontroller Drivers**: Điều khiển các tính năng cụ thể của vi điều khiển như bộ định thời (timer), bộ watchdog.
-- **Memory Drivers**: Hỗ trợ giao tiếp, cấu hình với các bộ nhớ khác nhau như RAM, EEPROM, Flash, v.v.
+- **Memory Drivers**: Hỗ trợ giao tiếp, cấu hình với các bộ nhớ khác nhau như RAM, EEPROM, Flash,...
 - **Crypto Drivers**: Cung cấp các chức năng mã hóa hoặc giải mã.
 - **Wireless Communication Drivers**: Hỗ trợ các giao thức truyền thông không dây như Bluetooth, WiFi.
-- **Communication Drivers**: Hỗ trợ giao tiếp với CAN, LIN, SPI, Ethernet, v.v.
-- **I/O Drivers**: Cung cấp cấu hình về ADC, PWM, ICU, v.v, .
+- **Communication Drivers**: Hỗ trợ giao tiếp với CAN, LIN, SPI, Ethernet,...
+- **I/O Drivers**: Cung cấp cấu hình về ADC, PWM, ICU,...
 
 #### 13.2.3.4 Complex Device Driver
 Đây là lớp chứa những tính răng riêng biệt của từng hãng xe.
