@@ -47,36 +47,42 @@ void CAN_Config(void)
 	CAN_InitTypeDef CAN_InitStruct;
 	
 	// Cấu hình CAN
-	CAN_InitStruct.CAN_Mode = CAN_Mode_Normal;
-	CAN_InitStruct.CAN_TTCM = DISABLE;	// Time Triggered Communication Mode
-	CAN_InitStruct.CAN_ABOM = ENABLE;	// Automatic Bus-Off Management
-	CAN_InitStruct.CAN_AWUM = ENABLE;	// Automatic Wake-Up Mode
-	CAN_InitStruct.CAN_NART = DISABLE;	// No Automatic Retransmission
-	CAN_InitStruct.CAN_RFLM = DISABLE;	// Receive FIFO Locked Mode
-	CAN_InitStruct.CAN_TXFP = DISABLE;	// Transmit FIFO Priority
+	CAN_InitStruct.CAN_Mode = CAN_Mode_Normal; // Chế độ bình thường
+	CAN_InitStruct.CAN_TTCM = DISABLE;	// Không sử dụng chế độ giao tiếp kích hoạt theo thời gian
+	CAN_InitStruct.CAN_ABOM = ENABLE;	// Tự động ngắt ra khỏi bus nếu ở trạng thái Bus-Off
+	CAN_InitStruct.CAN_AWUM = ENABLE;	// Tự động thức dậy khi nhận được một thông điệp trên bus CAN
+	CAN_InitStruct.CAN_NART = DISABLE;	// Node tự động truyền lại khung dữ liệu nếu không nhận được ACK
+	CAN_InitStruct.CAN_RFLM = DISABLE;	// Dữ liệu mới sẽ ghi đè lên dữ liệu cũ nếu FIFO đầy
+	CAN_InitStruct.CAN_TXFP = DISABLE;	// Khung dữ liệu sẽ được truyền theo thứ tự, không theo mức ưu tiên
 	
 	// Cấu hình thời gian truyền
-	CAN_InitStruct.CAN_SJW = CAN_SJW_1tq;	// Synchronization Jump Width = 1 time quantum
-	CAN_InitStruct.CAN_BS1 = CAN_BS1_6tq;	// Bit Segment 1 = 6 time quanta
-	CAN_InitStruct.CAN_BS2 = CAN_BS2_8tq;	// Bit Segment 2 = 8 time quanta
-	CAN_InitStruct.CAN_Prescaler = 6;		// Tốc độ baudrate = 36 MHz / (Prescaler * 12) = 500 Kbps 
+	CAN_InitStruct.CAN_SJW = CAN_SJW_1tq;	// Thời gian trễ phần cứng = 1 tq
+	CAN_InitStruct.CAN_BS1 = CAN_BS1_6tq;	// Thời gian đồng bộ đầu frame truyền = 6 tq
+	CAN_InitStruct.CAN_BS2 = CAN_BS2_8tq;	// Thời gian đồng bộ cuối frame truyền = 8 tq
+	CAN_InitStruct.CAN_Prescaler = 12;		// Tốc độ baudrate = 72 MHz / (Prescaler * 12) = 500 Kbps 
 	
 	CAN_Init(CAN1, &CAN_InitStruct);
 }
 
 void CAN_FilterConfig(void)
 {
+	// Cấu hình bộ lọc CAN
 	CAN_FilterInitTypeDef CAN_FilterInitStruct;
 	
-	CAN_FilterInitStruct.CAN_FilterNumber = 0;
-	CAN_FilterInitStruct.CAN_FilterMode = CAN_FilterMode_IdMask;
-	CAN_FilterInitStruct.CAN_FilterScale = CAN_FilterScale_32bit;
-	CAN_FilterInitStruct.CAN_FilterIdHigh = 0x123 << 5;
+	CAN_FilterInitStruct.CAN_FilterNumber = 0; // Bộ lọc 0
+	CAN_FilterInitStruct.CAN_FilterMode = CAN_FilterMode_IdMask; // Dùng mặt nạ bit để lọc ID
+	CAN_FilterInitStruct.CAN_FilterScale = CAN_FilterScale_32bit; // Kích thước bộ lọc 32 bit
+
+	// Cài đặt giá trị cho bộ lọc (32 bit)
+	CAN_FilterInitStruct.CAN_FilterIdHigh = 0x123 << 5;  
 	CAN_FilterInitStruct.CAN_FilterIdLow = 0x00;
+
+	// Cài đặt giá trị cho Mask (32 bit)
 	CAN_FilterInitStruct.CAN_FilterMaskIdHigh = 0xFFE0;
 	CAN_FilterInitStruct.CAN_FilterMaskIdLow = 0x00;
-	CAN_FilterInitStruct.CAN_FilterFIFOAssignment = CAN_FIFO0;
-	CAN_FilterInitStruct.CAN_FilterActivation = ENABLE;
+
+	CAN_FilterInitStruct.CAN_FilterFIFOAssignment = CAN_FIFO0; // Bộ đệm FIFO0
+	CAN_FilterInitStruct.CAN_FilterActivation = ENABLE; // Kích hoạt bộ lọc ID
 	
 	CAN_FilterInit(&CAN_FilterInitStruct);
 }

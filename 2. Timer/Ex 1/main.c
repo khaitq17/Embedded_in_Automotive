@@ -42,10 +42,10 @@ void TIM_Config(void)
 {
 	TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStruct;
 	
-	TIM_TimeBaseInitStruct.TIM_ClockDivision = TIM_CKD_DIV1;	// 72MHz
-	TIM_TimeBaseInitStruct.TIM_Prescaler = 72 - 1;
-	TIM_TimeBaseInitStruct.TIM_Period = 20000 - 1;
-	TIM_TimeBaseInitStruct.TIM_CounterMode = TIM_CounterMode_Up;
+	TIM_TimeBaseInitStruct.TIM_ClockDivision = TIM_CKD_DIV1; // 72MHz
+	TIM_TimeBaseInitStruct.TIM_Prescaler = 72 - 1; // Bộ đếm tăng lên sau mỗi 72 chu kỳ xung
+	TIM_TimeBaseInitStruct.TIM_Period = 20000 - 1; // Reset về 0 khi bộ đếm đếm đến 20000
+	TIM_TimeBaseInitStruct.TIM_CounterMode = TIM_CounterMode_Up; // Chế độ đếm lên
 	
 	TIM_TimeBaseInit(TIM2, &TIM_TimeBaseInitStruct);
 	
@@ -61,7 +61,9 @@ void delay_ms(uint16_t timedelay)
 void chaseLed(uint8_t loop)
 {
 	uint16_t LedVal;
+
 	GPIO_Write(GPIOC, 0x00);
+
 	for (uint8_t i = 0; i < loop; i++) {
 		LedVal = 0x08;
 		for (uint8_t j = 0; j < 5; j++) {

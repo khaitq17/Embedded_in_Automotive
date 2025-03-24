@@ -1,25 +1,23 @@
 #include "stm32f10x.h"              
 
-#define EEPROM_ADDRESS 0xA0
+#define I2C_SCL             GPIO_Pin_6
+#define I2C_SDA             GPIO_Pin_7
+#define I2C_GPIO            GPIOB
 
-#define I2C_SCL 			GPIO_Pin_6
-#define I2C_SDA 			GPIO_Pin_7
-#define I2C_GPIO 			GPIOB
-
-#define WRITE_SDA_0		GPIO_ResetBits(I2C_GPIO, I2C_SDA)
-#define WRITE_SDA_1		GPIO_SetBits(I2C_GPIO, I2C_SDA)
-#define WRITE_SCL_0		GPIO_ResetBits(I2C_GPIO, I2C_SCL)
-#define WRITE_SCL_1		GPIO_SetBits(I2C_GPIO, I2C_SCL)
-#define	READ_SDA_VAL	GPIO_ReadInputDataBit(I2C_GPIO, I2C_SDA)
+#define WRITE_SDA_0         GPIO_ResetBits(I2C_GPIO, I2C_SDA)
+#define WRITE_SDA_1         GPIO_SetBits(I2C_GPIO, I2C_SDA)
+#define WRITE_SCL_0         GPIO_ResetBits(I2C_GPIO, I2C_SCL)
+#define WRITE_SCL_1         GPIO_SetBits(I2C_GPIO, I2C_SCL)
+#define READ_SDA_VAL        GPIO_ReadInputDataBit(I2C_GPIO, I2C_SDA)
 
 typedef enum {
-	NOT_OK = 0,
-	OK = !NOT_OK
+    NOT_OK = 0,
+    OK = !NOT_OK
 } Status;
 
 typedef enum {
-	ACK = 0,
-	NOT_ACK = !ACK
+    ACK = 0,
+    NOT_ACK = !ACK
 } ACK_Bit;
 
 void RCC_Config(void);
@@ -31,243 +29,276 @@ void I2C_Start(void);
 void I2C_Stop(void);
 Status I2C_Write(uint8_t u8Data);
 uint8_t I2C_Read(ACK_Bit _ACK);
-void EEPROM_WriteByte(uint16_t address, uint8_t data);
-uint8_t EEPROM_ReadByte(uint16_t address);
+Status EEPROM_Write(uint16_t memAddr, uint8_t slaveAddr, uint8_t numByte, uint8_t *pData);
+Status EEPROM_Read(uint16_t memAddr, uint8_t slaveAddr, uint8_t numByte, uint8_t *pData);
 
-uint8_t readData;
-uint16_t eepromAddress = 0x0010; 
-uint8_t writeData = 0x5A;        
+uint8_t data[10] = {0x01, 0x03, 0x06, 0x07, 0x10, 0x1c, 0x35, 0x58, 0x8d, 0x17};
+uint8_t rcv[10] = {0x00};
 
 int main(void)
 {
-	
-	RCC_Config();
-	GPIO_Config();
-	TIMER_Config();
-	I2C_Init();
-
-    // Ghi dữ liệu vào EEPROM
-	EEPROM_WriteByte(eepromAddress, writeData);
-
-    // Đọc lại dữ liệu từ EEPROM
-  	readData = EEPROM_ReadByte(eepromAddress);
-
-    // Kiểm tra kết quả
-  	if (readData == writeData) 
-	{
-        // Xử lý nếu đọc dữ liệu thành công
-  	} else 
-	{
-        // Xử lý lỗi nếu đọc không thành công
-  	}
-
-  	while(1) 
-	{
-        
-  	}
+    RCC_Config();
+    GPIO_Config();
+    TIMER_Config();
+    I2C_Init();
+    
+    if (EEPROM_Write(0x0045, 0x57, 10, data) == NOT_OK)
+    {
+        while(1);
+    }
+    
+    delay_us(50000);
+    
+    while(1)
+    {
+        if (EEPROM_Read(0x0045, 0x57, 10, rcv) == NOT_OK)
+        {
+            while(1);
+        }
+    }
 }
 
 void RCC_Config(void)
 {
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
 }
 
 void GPIO_Config(void)
 {
-	GPIO_InitTypeDef GPIO_InitStruct;
-	
-	GPIO_InitStruct.GPIO_Pin = I2C_SCL | I2C_SDA;
-	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_Out_OD;
-	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-	
-	GPIO_Init(I2C_GPIO, &GPIO_InitStruct);
+    GPIO_InitTypeDef GPIO_InitStruct;
+    
+    GPIO_InitStruct.GPIO_Pin = I2C_SCL | I2C_SDA;
+    GPIO_InitStruct.GPIO_Mode = GPIO_Mode_Out_OD;
+    GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
+    
+    GPIO_Init(I2C_GPIO, &GPIO_InitStruct);
 }
 
 void TIMER_Config(void)
 {
-	TIM_TimeBaseInitTypeDef TIM_InitStruct;
-	
-	TIM_InitStruct.TIM_ClockDivision = TIM_CKD_DIV1;
-	TIM_InitStruct.TIM_Prescaler = 72 - 1;
-	TIM_InitStruct.TIM_Period = 0xFFFF - 1;
-	TIM_InitStruct.TIM_CounterMode = TIM_CounterMode_Up;
-	
-	TIM_TimeBaseInit(TIM2, &TIM_InitStruct);
-	TIM_Cmd(TIM2, ENABLE);
+    TIM_TimeBaseInitTypeDef TIM_InitStruct;
+    
+    TIM_InitStruct.TIM_ClockDivision = TIM_CKD_DIV1;
+    TIM_InitStruct.TIM_Prescaler = 72 - 1;
+    TIM_InitStruct.TIM_Period = 0xFFFF - 1;
+    TIM_InitStruct.TIM_CounterMode = TIM_CounterMode_Up;
+    
+    TIM_TimeBaseInit(TIM2, &TIM_InitStruct);
+    TIM_Cmd(TIM2, ENABLE);
 }
 
 void delay_us(uint32_t timedelay)
 {
-	TIM_SetCounter(TIM2, 0);
-	while (TIM_GetCounter(TIM2) < timedelay) {}
+    TIM_SetCounter(TIM2, 0);
+    while (TIM_GetCounter(TIM2) < timedelay) {}
 }
 
 void I2C_Init(void)
 {
-	WRITE_SCL_1;
-	delay_us(1);
-	WRITE_SDA_1;
-	delay_us(1);
+    WRITE_SCL_1;
+    delay_us(1);
+    WRITE_SDA_1;
+    delay_us(1);
 }
 
 void I2C_Start(void)
 {
-	WRITE_SCL_1;
-	delay_us(3);
-	WRITE_SDA_1;
-	delay_us(3);
-	
-	WRITE_SDA_0;
-	delay_us(3);
-	WRITE_SCL_0;
-	delay_us(3);
+    // Chân SDA xuống mức 0 trước chân SCL
+    WRITE_SCL_1;
+    delay_us(3);
+    WRITE_SDA_1;
+    delay_us(3);
+    
+    WRITE_SDA_0;
+    delay_us(3);
+    WRITE_SCL_0;
+    delay_us(3);
 }
 
 void I2C_Stop(void)
 {
-	WRITE_SDA_0;
-	delay_us(3);
-	
-	WRITE_SCL_1;
-	delay_us(3);
-	WRITE_SDA_1;
-	delay_us(3);
+    // Chân SDA lên mức 1 trước chân SCL
+    WRITE_SDA_0;
+    delay_us(3);
+    
+    WRITE_SCL_1;
+    delay_us(3);
+    WRITE_SDA_1;
+    delay_us(3);
 }
 
 Status I2C_Write(uint8_t u8Data)
 {
-	uint8_t i;
-	Status stRet;
+    uint8_t i;
+    Status stRet;
 	
-	// Truyền 8 bit data
-	for (i = 0; i < 8; i++)
-	{
-		if (u8Data & 0x80) {	// 0b1000 0000
-			WRITE_SDA_1;
-		} else {
-			WRITE_SDA_0;
-		}
-		
-		delay_us(3);
-		WRITE_SCL_1;
-		delay_us(5);
-		WRITE_SCL_0;
-		delay_us(2);
-		u8Data <<= 1;
-	}
-	
+    // Lần lượt ghi dữ liệu vào chân SDA
+    for (i = 0; i < 8; i++)
+    {
+        if (u8Data & 0x80) {    
+            WRITE_SDA_1;
+        } else {
+            WRITE_SDA_0;
+        }
+        
+        // Tạo 1 chu kỳ xung
+        delay_us(3);
+        WRITE_SCL_1;
+        delay_us(5);
+        WRITE_SCL_0;
+        delay_us(2);
 
-	WRITE_SDA_1;					
-	delay_us(3);
-	WRITE_SCL_1;					
-	delay_us(3);
-	
-	// Đọc giá trị SDA, '1' là không xác nhận, '0' là xác nhận
-	if (READ_SDA_VAL) {	
-		stRet = NOT_OK;				
-	} else {
-		stRet = OK;					
-	}
-	delay_us(2);
-	WRITE_SCL_0;
-	delay_us(5);
-	
-	return stRet;
+        u8Data <<= 1; // Dịch 1 bit
+    }
+    
+    // Chờ ACK từ Slave
+    WRITE_SDA_1; // Kéo SDA lên 1 để Slave có thể kéo xuống nếu gửi ACK
+    delay_us(3);
+    WRITE_SCL_1; // Tạo xung để Slave phản hồi ACK
+    delay_us(3);
+    
+    // Nếu SDA vẫn ở mức cao -> Không nhận ACK
+    if (READ_SDA_VAL) {    
+        stRet = NOT_OK; // Ghi dữ liệu thất bại                
+    } else {
+        stRet = OK; // Ghi dữ liệu thành công                    
+    }
+
+    delay_us(2);
+    WRITE_SCL_0; // Kéo SCL xuống 0 để kết thúc ACK
+    delay_us(5);
+    
+    return stRet; // Trả về kết quả của quá trình ghi
 }
 
 uint8_t I2C_Read(ACK_Bit _ACK)
 {
-	uint8_t i;
-	uint8_t u8Ret = 0x00;
-	
-	// Tạo xung và đọc dữ liệu từ SDA
-	WRITE_SDA_1;
-	delay_us(3);
-	
-	for (i = 0; i < 8 ; i++)
-	{
-		u8Ret <<= 1;
-		WRITE_SCL_1;
-		delay_us(3);
-		
-		if (READ_SDA_VAL) 
-		{
-			u8Ret |= 0x01;
-		}
-		
-		delay_us(2);
-		WRITE_SCL_0;
-		delay_us(5);
-	}
-	
-	if (_ACK) {	
-		WRITE_SDA_0;
-	} else {
-		WRITE_SDA_1;
-	}
-	delay_us(3);
-	
-	WRITE_SCL_1;
-	delay_us(5);
-	WRITE_SCL_0;
-	delay_us(5);
+    uint8_t i;
+    uint8_t u8Ret = 0x00;
+    
+    WRITE_SDA_1;
+    delay_us(3);
+    
+    for (i = 0; i < 8 ; i++)
+    {
+        u8Ret <<= 1;
+        WRITE_SCL_1; // Kéo SCL lên mức 1 để đọc bit từ Slave
+        delay_us(3);
+        
+        // Kiểm tra bit nhận được
+        if (READ_SDA_VAL) 
+        {
+            u8Ret |= 0x01;
+        }
+        
+        delay_us(2);
+        WRITE_SCL_0;
+        delay_us(5);
+    }
+    
+    // Gửi ACK hoặc NACK
+    if (_ACK) {    
+        WRITE_SDA_0; // Nếu ACK = 1, kéo SDA xuống để gửi ACK
+    } else {
+        WRITE_SDA_1; // Nếu ACK = 0, giữ SDA cao để gửi NACK
+    }
+    delay_us(3);
+    
+    WRITE_SCL_1; // Kéo SCL lên để Slave nhận ACK/NACK
+    delay_us(5);
+    WRITE_SCL_0; // Kéo SCL xuống để kết thúc
+    delay_us(5);
 
-	return u8Ret;
+    return u8Ret;
 }
 
-void EEPROM_WriteByte(uint16_t address, uint8_t data) {
+Status EEPROM_Write(uint16_t memAddr, uint8_t slaveAddr, uint8_t numByte, uint8_t *pData)
+{
+    uint8_t i;
+    
     I2C_Start();
     
-    // Gửi địa chỉ thiết bị với yêu cầu ghi
-    if (I2C_Write(EEPROM_ADDRESS | ((address & 0x0700) >> 7)) != OK) {
+    // Gửi 7 bit địa chỉ Slave
+    if (I2C_Write((uint8_t)(slaveAddr << 1)) == NOT_OK)
+    {
         I2C_Stop();
-        return;
+        return NOT_OK;
     }
     
-    // Gửi byte địa chỉ cao
-    if (I2C_Write((uint8_t)(address & 0xFF)) != OK) {
+    // Gửi byte địa chỉ cao trong EEPROM
+    if (I2C_Write((uint8_t)(memAddr >> 8)) == NOT_OK)
+    {
         I2C_Stop();
-        return;
+        return NOT_OK;
     }
     
-    // Gửi dữ liệu
-    if (I2C_Write(data) != OK) {
+    // Gửi byte địa chỉ thấp trong EEPROM
+    if (I2C_Write((uint8_t)(memAddr)) == NOT_OK)
+    {
         I2C_Stop();
-        return;
+        return NOT_OK;
+    }
+    
+    // Ghi dữ liệu vào EEPROM
+    for (i = 0; i < numByte; i++)
+    {
+        if (I2C_Write(pData[i]) == NOT_OK)
+        {
+            I2C_Stop();
+            return NOT_OK;
+        }
     }
     
     I2C_Stop();
-    delay_us(5000); // Thời gian chờ EEPROM hoàn thành ghi
+    delay_us(10000);
+    
+    return OK;
 }
 
-uint8_t EEPROM_ReadByte(uint16_t address) {
-    uint8_t data;
-
-    I2C_Start();
+Status EEPROM_Read(uint16_t memAddr, uint8_t slaveAddr, uint8_t numByte, uint8_t *pData)
+{
+    uint8_t i;
     
-    // Gửi địa chỉ thiết bị với yêu cầu ghi
-    if (I2C_Write(EEPROM_ADDRESS | ((address & 0x0700) >> 7)) != OK) {
+    I2C_Start();
+        
+    // Gửi 7 bit địa chỉ Slave
+    if (I2C_Write((uint8_t)(slaveAddr << 1)) == NOT_OK)
+    {
         I2C_Stop();
-        return 0xFF; // Giá trị trả về nếu có lỗi
+        return NOT_OK;
     }
     
-    // Gửi byte địa chỉ cao
-    if (I2C_Write((uint8_t)(address & 0xFF)) != OK) {
+    // Gửi byte địa chỉ cao trong EEPROM
+    if (I2C_Write((uint8_t)(memAddr >> 8)) == NOT_OK)
+    {
         I2C_Stop();
-        return 0xFF;
+        return NOT_OK;
     }
     
-    // Restart và chuyển sang đọc
-    I2C_Start();
-    if (I2C_Write(EEPROM_ADDRESS | ((address & 0x0700) >> 7) | 0x01) != OK) {
+    // Gửi byte địa chỉ thấp trong EEPROM
+    if (I2C_Write((uint8_t)(memAddr)) == NOT_OK)
+    {
         I2C_Stop();
-        return 0xFF;
+        return NOT_OK;
+    }
+    
+    I2C_Start();
+    
+    // Gửi địa chỉ Slave, đặt bit Read
+    if (I2C_Write((uint8_t)(slaveAddr << 1) | 1) == NOT_OK)
+    {
+        I2C_Stop();
+        return NOT_OK;
     }
     
     // Đọc dữ liệu từ EEPROM
-    data = I2C_Read(NOT_ACK);
-    I2C_Stop();
+    for (i = 0; i < numByte - 1; ++i)
+    {
+        pData[i] = I2C_Read(ACK);
+    }
+    pData[i] = I2C_Read(NOT_ACK);
     
-    return data;
+    I2C_Stop();
+    return OK;
 }

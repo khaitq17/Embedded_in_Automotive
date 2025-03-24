@@ -37,7 +37,7 @@ void TIM_Config(void)
 	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(GPIOA, &GPIO_InitStruct);
 	
-	
+	// Cấu hình TIM2 để sử dụng PWM
 	TIM_TimeBaseInitTypeDef TIM_InitStruct;
 	
 	TIM_InitStruct.TIM_ClockDivision = TIM_CKD_DIV1;
@@ -46,7 +46,7 @@ void TIM_Config(void)
 	TIM_InitStruct.TIM_CounterMode = TIM_CounterMode_Up;
 	TIM_TimeBaseInit(TIM2, &TIM_InitStruct);
 	
-	
+	// Cấu hình chế độ Output Compare để sử dụng PWM
 	TIM_OCInitTypeDef TIM_OCInitStruct;
 	
 	TIM_OCInitStruct.TIM_OCMode = TIM_OCMode_PWM1;

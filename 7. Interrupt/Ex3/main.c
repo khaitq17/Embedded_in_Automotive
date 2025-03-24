@@ -19,10 +19,7 @@ int main(void)
 	UART_Config();
 	NVIC_Config();
 	
-	while(1)
-	{		
-		
-	}
+	while(1);
 }
 
 void RCC_Config(void)
@@ -47,17 +44,24 @@ void GPIO_Config(void)
 
 void UART_Config(void)
 {
-	USART_InitTypeDef USART_InitStruct;
-	
-	USART_InitStruct.USART_Mode = USART_Mode_Tx | USART_Mode_Rx; 
-	USART_InitStruct.USART_BaudRate = 9600;
-	USART_InitStruct.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
-	USART_InitStruct.USART_WordLength = USART_WordLength_8b;
-	USART_InitStruct.USART_StopBits = USART_StopBits_1;
-	USART_InitStruct.USART_Parity = USART_Parity_No;
-	
-	USART_Init(USART1, &USART_InitStruct);
-	USART_ITConfig(USART1, USART_IT_RXNE, ENABLE); // Ngắt khi có dữ liệu truyền đến
+	USART_InitTypeDef UART_InitStruct;
+
+	// Cấu hình UART
+	UART_InitStruct.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
+	UART_InitStruct.USART_BaudRate = 9600;
+	UART_InitStruct.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+	UART_InitStruct.USART_WordLength = USART_WordLength_8b;
+	UART_InitStruct.USART_StopBits = USART_StopBits_1;
+	UART_InitStruct.USART_Parity = USART_Parity_No;
+	USART_Init(USART1, &UART_InitStruct);
+
+	// Xóa cờ ngắt nhận ban đầu
+	USART_ClearFlag(USART1, USART_IT_RXNE);
+
+	// Kích hoạt ngắt nhận cho USART1
+	USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
+
+	// Bật USART1
 	USART_Cmd(USART1, ENABLE);
 }
 

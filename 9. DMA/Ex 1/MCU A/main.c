@@ -39,12 +39,15 @@ int main(void)
 	
 	while(1)
 	{
+		// Đọc giá trị biến trở từ ADC, sử dụng bộ lọc Kalman để giảm nhiễu
 		val = ADC_GetConversionValue(ADC1);
 		updateVal = updateEstimate((float)val);
 		delay_us(100);
 		
+		// Chuyển đổi giá trị đọc được sang giá trị góc (từ 0° đến 180°)
 		angle = (uint8_t)((updateVal * 180.0f) / 4096.0f); // ADC 2^12
 		
+		// Gửi giá trị góc qua SPI
 		SPI_Send1Byte(angle);
 	}
 }

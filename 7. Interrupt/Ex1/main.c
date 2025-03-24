@@ -15,10 +15,7 @@ int main(void)
 	EXTI_Config();
 	NVIC_Config();
 	
-	while(1)
-	{
-		
-	}
+	while(1);
 }
 
 void RCC_Config(void)
@@ -44,10 +41,10 @@ void EXTI_Config(void)
 	
 	EXTI_InitTypeDef EXTI_InitStruct;
 	
-	EXTI_InitStruct.EXTI_Line = EXTI_Line0;
-	EXTI_InitStruct.EXTI_Mode = EXTI_Mode_Interrupt;
-	EXTI_InitStruct.EXTI_Trigger = EXTI_Trigger_Falling;
-	EXTI_InitStruct.EXTI_LineCmd = ENABLE;
+	EXTIInit_Struct.EXTI_Line = EXTI_Line0; // Cấu hình ngắt Line 0
+	EXTIInit_Struct.EXTI_Mode = EXTI_Mode_Interrupt; // Chế độ ngắt
+	EXTIInit_Struct.EXTI_Trigger = EXTI_Trigger_Falling; // Ngắt khi có sự thay đổi tín hiệu điện áp từ mức 1 xuống mức 0
+	EXTIInit_Struct.EXTI_LineCmd = ENABLE; // Bật ngắt
 	
 	EXTI_Init(&EXTI_InitStruct);
 }

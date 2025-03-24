@@ -62,12 +62,12 @@ void UART_Config(void)
 {
 	USART_InitTypeDef USART_InitStruct;
 	
-	USART_InitStruct.USART_Mode = USART_Mode_Tx | USART_Mode_Rx; 
-	USART_InitStruct.USART_BaudRate = 9600;
-	USART_InitStruct.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
-	USART_InitStruct.USART_WordLength = USART_WordLength_8b;
-	USART_InitStruct.USART_StopBits = USART_StopBits_1;
-	USART_InitStruct.USART_Parity = USART_Parity_No;
+	USART_InitStruct.USART_Mode = USART_Mode_Tx | USART_Mode_Rx; // Chế độ song công (cả truyền và nhận)
+	USART_InitStruct.USART_BaudRate = 9600; // Tốc độ truyền 9600 bit/s
+	USART_InitStruct.USART_HardwareFlowControl = USART_HardwareFlowControl_None; // Không sử dụng điều khiển luồng phần cứng
+	USART_InitStruct.USART_WordLength = USART_WordLength_8b; // Truyền 8 bit
+	USART_InitStruct.USART_StopBits = USART_StopBits_1; // 1 bit stop
+	USART_InitStruct.USART_Parity = USART_Parity_No; // Không dùng bit parity
 	
 	USART_Init(USART1, &USART_InitStruct);
 	USART_Cmd(USART1, ENABLE);
@@ -83,10 +83,13 @@ void UART_SendChar(USART_TypeDef *USARTx, char c)
 
 void UART_SendString(USART_TypeDef *USARTx, char *str)
 {
+	// Gửi lần lượt từng kí tự
 	while (*str)
 	{
 		UART_SendChar(USARTx, *str);
-		while (!USART_GetFlagStatus(USARTx, USART_FLAG_TXE)); // Chờ đến khi truyền xong
+
+		// Chờ đến khi truyền xong
+		while (!USART_GetFlagStatus(USARTx, USART_FLAG_TXE)); 
 		str++;
 	}
 }
@@ -102,8 +105,10 @@ char UART_ReceiveChar(USART_TypeDef *USARTx)
 int fputc(int ch, FILE *f)
 {
 	while (!USART_GetFlagStatus(USART1, USART_FLAG_TXE));
+
 	USART_SendData(USART1, (uint8_t)ch);
-	while (!USART_GetFlagStatus(USART1, USART_FLAG_TC)){}
+
+	while (!USART_GetFlagStatus(USART1, USART_FLAG_TC));
     
   return ch;
 }

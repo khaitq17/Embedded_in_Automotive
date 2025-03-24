@@ -23,8 +23,12 @@ int main(void)
 	
 	while(1)
 	{
+		// Đọc giá trị chuyển đổi từ ADC
 		val = ADC_GetConversionValue(ADC1);
+
+		// Sử dụng bộ lọc Kalman để giảm nhiễu
 		valupdate = (float)updateEstimate((float)val);
+
 		delay_ms(100);
 	}
 }
@@ -50,17 +54,22 @@ void ADC_Config(void)
 {
 	ADC_InitTypeDef ADC_InitStruct;
 	
-	ADC_InitStruct.ADC_Mode = ADC_Mode_Independent;
-	ADC_InitStruct.ADC_NbrOfChannel = 1;
-	ADC_InitStruct.ADC_ContinuousConvMode = ENABLE;
-	ADC_InitStruct.ADC_DataAlign = ADC_DataAlign_Right;
-	ADC_InitStruct.ADC_ExternalTrigConv = ADC_ExternalTrigConv_None;
-	ADC_InitStruct.ADC_ScanConvMode = DISABLE;
+	ADC_InitStruct.ADC_Mode = ADC_Mode_Independent; // Chế độ đơn kênh
+	ADC_InitStruct.ADC_NbrOfChannel = 1; // 1 kênh
+	ADC_InitStruct.ADC_ContinuousConvMode = ENABLE; // Chế độ chuyển đổi liên tục
+	ADC_InitStruct.ADC_DataAlign = ADC_DataAlign_Right; // Căn lề phải
+	ADC_InitStruct.ADC_ExternalTrigConv = ADC_ExternalTrigConv_None; // Không sử dụng nguồn kích hoạt ngoài
+	ADC_InitStruct.ADC_ScanConvMode = DISABLE; // Không quét lần lượt từng kênh
+
+	ADC_Init(ADC1, &ADC_InitStruct);
+
+	// Cấu hình kênh 0 của ADC1
 	ADC_RegularChannelConfig(ADC1, ADC_Channel_0, 1, ADC_SampleTime_55Cycles5);
 	
-	ADC_Init(ADC1, &ADC_InitStruct);
+	// Bật ADC1
 	ADC_Cmd(ADC1, ENABLE);
 	
+	// Bật chuyển đổi ADC bằng phần mềm
 	ADC_SoftwareStartConvCmd(ADC1, ENABLE);
 }
 

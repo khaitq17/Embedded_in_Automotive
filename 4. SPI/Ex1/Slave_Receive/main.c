@@ -80,6 +80,7 @@ void delay_ms(uint16_t timedelay)
 
 void SPI_Init(void)
 {
+    // Khởi tạo ban đầu cho SPI, trong đó chân CS phải ở mức 1
     GPIO_WriteBit(SPI_GPIO, SPI_SCK_Pin, Bit_RESET);
     GPIO_WriteBit(SPI_GPIO, SPI_CS_Pin, Bit_SET);
     GPIO_WriteBit(SPI_GPIO, SPI_MOSI_Pin, Bit_RESET);
@@ -91,20 +92,26 @@ uint8_t SPI_Slave_Receive(void)
 	uint8_t dataReceive = 0x00;
 	uint8_t temp = 0x00;
 
-	while (GPIO_ReadInputDataBit(SPI_GPIO, SPI_CS_Pin));
-	while (!GPIO_ReadInputDataBit(SPI_GPIO, SPI_SCK_Pin));
+    // Chờ đến khi chân CS được kéo xuống mức 0
+	while (GPIO_ReadInputDataBit(SPI_GPIO, SPI_CS_Pin)); 
 
+    // Chờ đến khi chân SCK lên mức 1 -> Có xung, Master bắt đầu truyền dữ liệu
+	while (!GPIO_ReadInputDataBit(SPI_GPIO, SPI_SCK_Pin));  
+
+    // Lần lượt đọc dữ liệu từ chân MOSI
 	for (int i = 0; i < 8; i++)
     { 
-		if(GPIO_ReadInputDataBit(SPI_GPIO, SPI_SCK_Pin))
+		if (GPIO_ReadInputDataBit(SPI_GPIO, SPI_SCK_Pin))
 		{
 			while (GPIO_ReadInputDataBit(SPI_GPIO, SPI_SCK_Pin)) 
 			{
 				temp = GPIO_ReadInputDataBit(SPI_GPIO, SPI_MOSI_Pin);
-			}	
+			}
 		dataReceive <<= 1;
 		dataReceive |= temp;
     	}
+
+    // Chờ chân SCK lên mức 1 -> Tiếp tục đọc bit tiếp theo được truyền đến
 	while (!GPIO_ReadInputDataBit(SPI_GPIO, SPI_SCK_Pin));
 	}
 

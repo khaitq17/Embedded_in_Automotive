@@ -79,6 +79,7 @@ void delay_ms(uint16_t timedelay)
 
 void Clock(void)
 {
+    // Tạo chu kỳ xung
     GPIO_WriteBit(SPI_GPIO, SPI_SCK_Pin, Bit_SET);
     delay_ms(1); 
     GPIO_WriteBit(SPI_GPIO, SPI_SCK_Pin, Bit_RESET);
@@ -87,6 +88,7 @@ void Clock(void)
 
 void SPI_Init(void)
 {
+    // Khởi tạo ban đầu cho SPI, trong đó chân CS phải ở mức 1
     GPIO_WriteBit(SPI_GPIO, SPI_SCK_Pin, Bit_RESET);
     GPIO_WriteBit(SPI_GPIO, SPI_CS_Pin, Bit_SET); 
     GPIO_WriteBit(SPI_GPIO, SPI_MOSI_Pin, Bit_RESET);
@@ -97,9 +99,11 @@ void SPI_Master_Transmit(uint8_t u8Data) {
 	uint8_t u8Mask = 0x80; // 0b1000 0000
 	uint8_t tempData;
 
-	GPIO_WriteBit(SPI_GPIO, SPI_CS_Pin, Bit_RESET);
+    // Kéo chân CS xuống mức 0 để bắt đầu truyền dữ liệu
+	GPIO_WriteBit(SPI_GPIO, SPI_CS_Pin, Bit_RESET); 
 	delay_ms(1);
 	
+    // Lần lượt ghi dữ liệu ra chân MOSI
 	for (uint8_t i = 0; i < 8; i++) {
 		tempData = u8Data & u8Mask;
 		if (tempData) {
@@ -109,10 +113,11 @@ void SPI_Master_Transmit(uint8_t u8Data) {
 			GPIO_WriteBit(SPI_GPIO, SPI_MOSI_Pin, Bit_RESET);
 			delay_ms(1);
 		}
-		u8Data <<= 1;
-		Clock();
+		u8Data <<= 1; // Dịch bit
+		Clock(); // Tạo clock -> 1 bit được truyền đi
 	}
     
-	GPIO_WriteBit(SPI_GPIO, SPI_CS_Pin, Bit_SET);
+    // Kéo chân CS lên mức 1 để kết thúc truyền dữ liệu
+	GPIO_WriteBit(SPI_GPIO, SPI_CS_Pin, Bit_SET); 
 	delay_ms(1);
 }

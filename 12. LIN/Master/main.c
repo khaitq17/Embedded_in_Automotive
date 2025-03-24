@@ -43,7 +43,7 @@ void LIN_UART_Init(void)
 	// Cấu hình UART
 	USART_InitTypeDef UART_InitStruct;
 	
-	UART_InitStruct.USART_BaudRate = 19200;		// LIN Standard Baudrate
+	UART_InitStruct.USART_BaudRate = 19200; // Tốc độ truyền tiêu chuẩn của LIN
 	UART_InitStruct.USART_Mode = USART_Mode_Tx | USART_Mode_Rx;
 	UART_InitStruct.USART_WordLength = USART_WordLength_8b;
 	UART_InitStruct.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
@@ -54,22 +54,25 @@ void LIN_UART_Init(void)
 	USART_Cmd(USART1, ENABLE);
 	USART_LINCmd(USART1, ENABLE);
 }
+
 void LIN_MasterSend(uint8_t id, uint8_t *data, uint8_t length)
 {
-	LIN_SendBreak();
-	LIN_SendSync();
-	LIN_SendID(id);
-	LIN_SendData(data, length);
-	LIN_SendChecksum(data, length);
+	LIN_SendBreak(); // Gửi trường Break
+	LIN_SendSync(); // Gửi trường Sync
+	LIN_SendID(id); // Gửi trường ID kèm 2 bit parity
+	LIN_SendData(data, length); // Gửi trường Data
+	LIN_SendChecksum(data, length); // Gửi trường Checksum
 }
 
 void LIN_SendBreak(void)
 {
+	// Gửi trường Break
 	USART_SendBreak(USART1);
 }
 
 void LIN_SendSync(void)
 {
+	// Gửi trường Sync, giá trị cố định 0x55
 	while (!USART_GetFlagStatus(USART1, USART_FLAG_TXE));
 	USART_SendData(USART1, 0x55);	// 0x01010101
 	while (!USART_GetFlagStatus(USART1, USART_FLAG_TC));
@@ -77,6 +80,7 @@ void LIN_SendSync(void)
 
 uint8_t LIN_CalculateParity(uint8_t id)
 {
+	// Tính toán 2 bit parity dựa trên ID
 	uint8_t p0 = ((id >> 0) & 0x01) ^ ((id >> 1) & 0x01) ^ ((id >> 2) & 0x01) ^ ((id >> 4) & 0x01);
 	uint8_t p1 = ~((id >> 1) & 0x01) ^ ((id >> 3) & 0x01) ^ ((id >> 4) & 0x01) ^ ((id >> 5) & 0x01);
 	
@@ -85,6 +89,7 @@ uint8_t LIN_CalculateParity(uint8_t id)
 
 void LIN_SendID(uint8_t id)
 {
+	// Gửi trường ID kèm theo 2 bit parity
 	uint8_t id_with_parity = id | LIN_CalculateParity(id);
 	USART_SendData(USART1, id_with_parity);
 	while (!USART_GetFlagStatus(USART1, USART_FLAG_TC));
@@ -92,6 +97,7 @@ void LIN_SendID(uint8_t id)
 
 void LIN_SendData(uint8_t *data, uint8_t length)
 {
+	// Gửi trường Data
 	for (uint8_t i = 0; i < length; i++)
 	{
 		USART_SendData(USART1, data[i]);
@@ -101,6 +107,7 @@ void LIN_SendData(uint8_t *data, uint8_t length)
 
 uint8_t LIN_CalculateChecksum(uint8_t *data, uint8_t length)
 {
+	// Tính toán checksum dựa trên dữ liệu
 	uint16_t checksum = 0;
 	for (uint8_t i = 0; i < length; i++)
 	{
@@ -117,6 +124,7 @@ uint8_t LIN_CalculateChecksum(uint8_t *data, uint8_t length)
 
 void LIN_SendChecksum(uint8_t *data, uint8_t length)
 {
+	// Gửi trường Checksum
 	uint8_t checksum = LIN_CalculateChecksum(data, length);
 	USART_SendData(USART1, checksum);
 	while (!USART_GetFlagStatus(USART1, USART_FLAG_TC));

@@ -1,0 +1,2 @@
+## Sử dụng giao thức LIN để truyền nhận dữ liệu giữa 2 vi điều khiển STM32F1
+Sử dụng USART được tích hợp sẵn trong STM32F1 để cấu hình cho giao thức LIN kết hợp với bộ LIN Transceiver để truyền nhận 1 mảng dữ liệu.

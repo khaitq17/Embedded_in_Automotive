@@ -67,15 +67,15 @@ void SPI_Master_Config(void)
 {
 	SPI_InitTypeDef SPI_InitStruct;
 	
-	SPI_InitStruct.SPI_Mode = SPI_Mode_Master;
-	SPI_InitStruct.SPI_Direction = SPI_Direction_2Lines_FullDuplex;
-	SPI_InitStruct.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_16;
-	SPI_InitStruct.SPI_CPOL = SPI_CPOL_Low;
-	SPI_InitStruct.SPI_CPHA = SPI_CPHA_1Edge;
-	SPI_InitStruct.SPI_DataSize = SPI_DataSize_8b;
-	SPI_InitStruct.SPI_FirstBit = SPI_FirstBit_MSB;
-	SPI_InitStruct.SPI_CRCPolynomial = 7;
-	SPI_InitStruct.SPI_NSS = SPI_NSS_Soft;
+	SPI_InitStruct.SPI_Mode = SPI_Mode_Master; // Master
+	SPI_InitStruct.SPI_Direction = SPI_Direction_2Lines_FullDuplex; // Giao tiếp song công
+	SPI_InitStruct.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_16; // Hệ số chia baud rate
+	SPI_InitStruct.SPI_CPOL = SPI_CPOL_Low; // SCK ở mức 0 khi không truyền xung
+	SPI_InitStruct.SPI_CPHA = SPI_CPHA_1Edge; // Tín hiệu truyền đi ở cạnh xung đầu tiên
+	SPI_InitStruct.SPI_DataSize = SPI_DataSize_8b; // Kích thước dữ liệu 8 bit
+	SPI_InitStruct.SPI_FirstBit = SPI_FirstBit_MSB; // Truyền theo MSB (bit có trọng số cao nhất)
+	SPI_InitStruct.SPI_CRCPolynomial = 7; // 7 bit checksum
+	SPI_InitStruct.SPI_NSS = SPI_NSS_Soft; // Điều khiển bằng phần mềm
 	
 	SPI_Init(SPI1, &SPI_InitStruct);
 	SPI_Cmd(SPI1, ENABLE);
@@ -102,10 +102,15 @@ void delay_ms(uint16_t time)
 
 void SPI_Send1Byte(uint8_t data)
 {
+	// Kéo chân NSS xuống mức 0
 	GPIO_WriteBit(SPI1_GPIO, SPI1_NSS, Bit_RESET);
 	
+	// Gửi dữ liệu qua SPI1
 	SPI_I2S_SendData(SPI1, data);
+
+	// Chờ đến khi bộ đệm truyền trống -> Truyền xong dữ liệu
 	while(SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == RESET);
 	
+	// Kéo chân NSS lên mức 1
 	GPIO_WriteBit(SPI1_GPIO, SPI1_NSS, Bit_SET);
 }

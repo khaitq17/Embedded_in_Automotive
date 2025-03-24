@@ -5,8 +5,8 @@
 #include "stm32f10x_dma.h"             
 #include "stm32f10x_tim.h"             
 
-#define MIN_PULSE_WIDTH	500
-#define MAX_PULSE_WIDTH	2500
+#define MIN_PULSE_WIDTH	500	 // Độ rộng xung khi Servo quay góc 0° (nhỏ nhất)
+#define MAX_PULSE_WIDTH	2500 // Độ rộng xung khi Servo quay góc 180° (lớn nhất)
 
 #define SPI1_NSS	GPIO_Pin_4
 #define SPI1_SCK	GPIO_Pin_5
@@ -35,11 +35,16 @@ int main(void)
 
 	while(1)
 	{
-		while(GPIO_ReadInputDataBit(SPI1_GPIO, SPI1_NSS));
-		if(GPIO_ReadInputDataBit(SPI1_GPIO, SPI1_NSS) == Bit_RESET)
+		while (GPIO_ReadInputDataBit(SPI1_GPIO, SPI1_NSS));
+
+		if (GPIO_ReadInputDataBit(SPI1_GPIO, SPI1_NSS) == Bit_RESET)
 		{
+			// Nhận dữ liệu từ SPI
 			data = Receive1Byte();
+
+			// Điều chỉnh độ rộng xung thông qua giá trị góc đọc được
 			setPWM(data);
+
 			delay_us(10000);
 		}
 	}
@@ -107,24 +112,29 @@ void DMA_Config(void)
 {
 	DMA_InitTypeDef DMA_InitStruct;
 	
-	DMA_InitStruct.DMA_PeripheralBaseAddr = (uint32_t)&SPI1->DR;
-	DMA_InitStruct.DMA_MemoryBaseAddr = (uint32_t)&data;
-	DMA_InitStruct.DMA_DIR = DMA_DIR_PeripheralSRC;
-	DMA_InitStruct.DMA_BufferSize = 1; 
-	DMA_InitStruct.DMA_PeripheralInc = DISABLE;
-	DMA_InitStruct.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
-	DMA_InitStruct.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
-	DMA_InitStruct.DMA_Mode = DMA_Mode_Normal;
-	DMA_InitStruct.DMA_Priority = DMA_Priority_Medium;
-	DMA_InitStruct.DMA_M2M = DMA_M2M_Disable;
+	DMA_InitStruct.DMA_PeripheralBaseAddr = (uint32_t)&SPI1->DR; // Địa chỉ thanh ghi nơi DMA sẽ đọc dữ liệu từ SPI1
+	DMA_InitStruct.DMA_MemoryBaseAddr = (uint32_t)&data; // Địa chỉ bộ nhớ đệm để lưu dữ liệu từ ngoại vi
+	DMA_InitStruct.DMA_DIR = DMA_DIR_PeripheralSRC; // DMA lấy dữ liệu từ ngoại vi (SPI1) và lưu vào bộ nhớ
+	DMA_InitStruct.DMA_BufferSize = 1; // Truyền 1 byte dữ liệu
+	DMA_InitStruct.DMA_PeripheralInc = DMA_PeripheralInc_Disable; // Không tăng địa chỉ ngoại vi, vì SPI1->DR luôn có cùng một địa chỉ
+	DMA_InitStruct.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte; // Dữ liệu ngoại vi có kích thước 1 byte
+	DMA_InitStruct.DMA_MemoryInc = DMA_MemoryInc_Disable; // Không tăng địa chỉ bộ nhớ vì chỉ truyền 1 byte dữ liệu
+	DMA_InitStruct.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte; // Kích thước dữ liệu mỗi lần truyền là 1 byte
+	DMA_InitStruct.DMA_Mode = DMA_Mode_Normal; // Chế độ Normal
+	DMA_InitStruct.DMA_Priority = DMA_Priority_Medium; // Mức ưu tiên trung bình
+	DMA_InitStruct.DMA_M2M = DMA_M2M_Disable; // Không sử dụng chế độ truyền Memory-to-Memory
 	
+	// Khởi tạo cho kênh 2 của DMA1
 	DMA_Init(DMA1_Channel2, &DMA_InitStruct);
+
+	// Bật DMA1 kênh 2, bộ DMA sẽ tự động truyền nhận data cũng như ghi dữ liệu vào vùng nhớ cụ thể
 	DMA_Cmd(DMA1_Channel2, ENABLE);
 	SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Rx, ENABLE);
 }
 
 void TIMER_Config(void)
 {
+	// Sử dụng TIM2 ở chế độ Output Compare để sử dụng PWM điều khiển Servo
 	TIM_TimeBaseInitTypeDef TIM_InitStruct;
 	
 	TIM_InitStruct.TIM_ClockDivision = TIM_CKD_DIV1;
@@ -149,6 +159,7 @@ void TIMER_Config(void)
 
 void delay_us(uint16_t time)
 {
+	// Sử dụng TIM3 để tạo delay
 	TIM_TimeBaseInitTypeDef TIM_InitStruct;
 	
 	TIM_InitStruct.TIM_ClockDivision = TIM_CKD_DIV1;
@@ -165,7 +176,11 @@ void delay_us(uint16_t time)
 
 void setPWM(uint16_t angle)
 {
+	// Quy đổi độ rộng xung cho Servo tương ứng với góc quay 
 	uint16_t pulseWidth = MIN_PULSE_WIDTH + (MAX_PULSE_WIDTH - MIN_PULSE_WIDTH) * angle / 180;
+
+	// Điều chỉnh độ rộng xung cho TIM2
 	TIM_SetCompare1(TIM2, pulseWidth);
+
 	delay_us(100);
 }

@@ -1,6 +1,6 @@
 #include "stm32f10x.h"          
 
-#define ADDR_STR_BLINK	0x08008000
+#define ADDR_STR_BLINK	0x08008000 // Địa chỉ chương trình Blink Led
 
 void Boot(void);
 
@@ -8,7 +8,7 @@ int main(void)
 {
 	Boot();
 	
-	while(1) {}
+	while(1);
 }
 
 void Boot(void)

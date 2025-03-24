@@ -17,7 +17,7 @@ int main()
 		if (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_0) == Bit_RESET)
 		{
 			delay(50);
-			while(GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_0) == Bit_RESET)
+			while (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_0) == Bit_RESET)
 			{
 				chaseLed();
 			}
@@ -54,6 +54,7 @@ void delay(uint32_t timedelay)
 void chaseLed(void)
 {
 	uint16_t LedVal = 0x08; // 0b1000
+
 	for (uint8_t i = 0; i < 5; i++) {
 		LedVal = LedVal << 1;
 		GPIO_Write(GPIOC, LedVal);

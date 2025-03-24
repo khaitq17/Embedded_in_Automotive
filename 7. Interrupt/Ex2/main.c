@@ -45,16 +45,18 @@ void GPIO_Config(void)
 
 void TIMER_Config(void)
 {
-	TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStruct;
-	
+	// Cấu hình Timer ngắt mỗi 1 ms
 	TIM_TimeBaseInitStruct.TIM_ClockDivision = TIM_CKD_DIV1;
-	TIM_TimeBaseInitStruct.TIM_Prescaler = 7200 - 1;	
+	TIM_TimeBaseInitStruct.TIM_Prescaler = 7200 - 1;
 	TIM_TimeBaseInitStruct.TIM_Period = 10 - 1;
 	TIM_TimeBaseInitStruct.TIM_CounterMode = TIM_CounterMode_Up;
-	
 	TIM_TimeBaseInit(TIM2, &TIM_TimeBaseInitStruct);
-	TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
-	TIM_Cmd(TIM2, ENABLE);
+
+	// Bật ngắt cho TIM2
+   	TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
+
+	// Bật TIM2
+   	TIM_Cmd(TIM2, ENABLE);
 }
 
 void NVIC_Config(void)
@@ -71,6 +73,7 @@ void NVIC_Config(void)
 
 volatile uint16_t count;
 
+// Hàm delay phụ thuộc vào biến count được xử lý trong trình phục vụ ngắt của TIM2
 void delay(int time)
 {
 	count = 0;
@@ -79,11 +82,12 @@ void delay(int time)
 
 void TIM2_IRQHandler(void)
 {
+	// Kiểm tra cờ ngắt TIM2
 	if (TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET)
 	{
 		count++;
 
-		// Xóa cờ ngắt
+		// Xóa cờ ngắt TIM2
 		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
 	}
 }

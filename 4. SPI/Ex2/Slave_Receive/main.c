@@ -69,15 +69,15 @@ void SPI_Slave_Config(void)
 {
 	SPI_InitTypeDef SPI_InitStruct;
 	
-	SPI_InitStruct.SPI_Mode = SPI_Mode_Slave;
-	SPI_InitStruct.SPI_Direction = SPI_Direction_2Lines_FullDuplex;
-	SPI_InitStruct.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_16;
-	SPI_InitStruct.SPI_CPOL = SPI_CPOL_Low;
-	SPI_InitStruct.SPI_CPHA = SPI_CPHA_1Edge;
-	SPI_InitStruct.SPI_DataSize = SPI_DataSize_8b;
-	SPI_InitStruct.SPI_FirstBit = SPI_FirstBit_MSB;
-	SPI_InitStruct.SPI_CRCPolynomial = 7;
-	SPI_InitStruct.SPI_NSS = SPI_NSS_Soft;
+	SPI_InitStruct.SPI_Mode = SPI_Mode_Slave; // Slave
+	SPI_InitStruct.SPI_Direction = SPI_Direction_2Lines_FullDuplex; // Giao tiếp song công
+	SPI_InitStruct.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_16; // Hệ số chia baud rate
+	SPI_InitStruct.SPI_CPOL = SPI_CPOL_Low; // SCK ở mức 0 khi không truyền xung
+	SPI_InitStruct.SPI_CPHA = SPI_CPHA_1Edge; // Tín hiệu truyền đi ở cạnh xung đầu tiên
+	SPI_InitStruct.SPI_DataSize = SPI_DataSize_8b; // Kích thước dữ liệu 8 bit
+	SPI_InitStruct.SPI_FirstBit = SPI_FirstBit_MSB; // Truyền theo MSB (bit có trọng số cao nhất)
+	SPI_InitStruct.SPI_CRCPolynomial = 7; // 7 bit checksum
+	SPI_InitStruct.SPI_NSS = SPI_NSS_Soft; // Điều khiển bằng phần mềm
 	
 	SPI_Init(SPI1, &SPI_InitStruct);
 	SPI_Cmd(SPI1, ENABLE);
@@ -104,13 +104,11 @@ void delay_ms(uint16_t time)
 
 uint8_t SPI_Receive1Byte(void)
 {
-	uint8_t temp;
-
+	// Chờ đến khi SPI1 không bận
 	while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_BSY) == SET);
 
-	temp = (uint8_t) SPI_I2S_ReceiveData(SPI1);
-
+	// Chờ đến khi bộ đệm nhận không trống -> Có dữ liệu
 	while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE) == RESET);
 
-	return temp;
+	return (uint8_t) SPI_I2S_ReceiveData(SPI1); // Đọc dữ liệu từ SPI1
 }
