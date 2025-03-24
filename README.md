@@ -1610,29 +1610,32 @@ CAN đặc biệt được ứng dụng nhiều trong ngành công nghiệp ô t
 ![image](https://github.com/user-attachments/assets/74754ed6-bd7b-450b-8cf8-849a2586449b)
 
 Mỗi khối được điều khiển bởi 1 vi điều khiển riêng biệt, và thông qua CAN Bus để kết nối, giao tiếp với nhau. Và thời gian phản hồi của mỗi khối VĐK là cực kì nhanh.
+
 ## 11.1 Mạng CAN
-CAN có đường dây dẫn gồm 2 dây CAN_H (CAN High) và CAN_L (CAN Low). Các thiết bị được nối chung trên 2 dây này và được gọi là 1 Node trong mạng.
+**Đặc điểm**:
+- Giao tiếp song công, các thiết bị trên bus có thể vừa gửi vừa nhận dữ liệu đồng thời.
+- Cho phép nhiều hệ thống điều khiển (ECU) giao tiếp với nhau trên 1 bus truyền thông chung.
+- Không yêu cầu máy tính chủ (Master) để điều phối các thiết bị mà hoạt động theo mô hình **Multi-Master**, các thiết bị trên bus có thể truyền dữ liệu bất cứ lúc nào, với cơ chế arbitrage giúp tránh xung đột dữ liệu.
+- Độ tin cậy cao, đảm bảo việc phát hiện lỗi tự động thông qua cơ chế kiểm tra và sửa lỗi.
+
+CAN có đường dây dẫn gồm 2 dây **CAN_H** (CAN High) và **CAN_L** (CAN Low). Mỗi đầu của bus CAN cần một điện trở kết cuối với giá trị 120 Ω để ngăn chặn hiện tượng phản xạ tín hiệu. 
+
+Các tín hiệu truyền qua bus CAN là **tín hiệu vi sai** (differential signaling), nghĩa là thông tin được mã hóa dựa trên sự chênh lệch điện áp giữa 2 dây CAN_H và CAN_L. 
+
+Các thiết bị được nối chung trên 2 dây này và được gọi là 1 Node trong mạng. 
 
 ![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/68f12553-8b0b-4dc6-a9ae-c60abc5c7ff9)
 
-- **CAN Node**
-Mạng CAN được tạo thành bởi 1 nhóm các Node.
+Mạng CAN được tạo thành bởi một nhóm các Node.
 
-1 Node bao gồm:
-- Một thiết bị hỗ trợ xử lý điện áp trên Bus là CAN Transceiver.
-- Một MCU có hỗ trợ CAN Controller (giao thức CAN). MCU ngoài việc nhận và xử lý data còn thực hiện chức năng của Node.  
+Một Node trong bus CAN bao gồm:
+- Một thiết bị hỗ trợ xử lý điện áp trên bus là **CAN Transceiver** giúp chuyển đổi tín hiệu số từ bộ điều khiển CAN thành tín hiệu vi sai để gửi lên bus CAN và ngược lại.
+- Một **MCU** (hoặc một **Sensor** hoặc một **Actuator**) có hỗ trợ **CAN Controller** (giao thức CAN). CAN Controller là thành phần chính trong một Node có nhiệm vụ xử lý toàn bộ giao tiếp CAN.
 
 ![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/d8958672-8ccc-4b34-b280-b34147b0286e)
 
-- **CAN Transceiver**
-Bộ Transceiver hỗ trợ cho 1 Node truyền dữ liệu lên Bus đồng thời nhận lại tín hiệu vừa truyền đi.
-
-![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/a7b8a6cc-987e-4dd8-a7e9-f77bccd868b6)
-
-- **Trạng thái "dominant" và "recessive"**
-Can Bus định nghĩa 2 trạng thái điện áp là "dominant" (mức 0) và "recessive" (mức 1). Hai trạng thái này được xử lý bởi Transceiver của Node. Có 2 loại CAN tương ứng với các giá trị điện áp khác nhau.
-
-**CAN low speed**
+**Trạng thái "dominant" và "recessive"**: Can Bus định nghĩa 2 trạng thái điện áp là "dominant" (mức 0) và "recessive" (mức 1). Hai trạng thái này được xử lý bởi Transceiver của Node. Có 2 loại CAN tương ứng với các giá trị điện áp khác nha:
+- **CAN low speed**
 
 ![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/2c3c7083-c0a9-4804-872f-3bab731012a5)
 
@@ -1641,7 +1644,7 @@ Can Bus định nghĩa 2 trạng thái điện áp là "dominant" (mức 0) và 
 | CAN_H | 1,75 V | 4 V |
 | CAN_L | 3,25 V | 1 V |
 
-**CAN high speed**
+- **CAN high speed**
 
 ![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/63dc0e5f-5d54-4dcb-883b-8404f71ed1d8)
 
@@ -1650,107 +1653,237 @@ Can Bus định nghĩa 2 trạng thái điện áp là "dominant" (mức 0) và 
 | CAN_H | 2,5 V | 3,5 V |
 | CAN_L | 2,5 V | 1,5 V |
 
-- **Tính chất**
-
-Vì tính chất vi sai trên đường truyền tín hiệu của CAN Bus, tín hiệu nhiễu sẽ ảnh hưởng đến giá trị điện áp ở trên cả CAN H và CAN L.
-
-CAN Bus thường được **xoắn 2 dây vào nhau**. Khi đó tín hiệu nhiễu sẽ đều trên cả 2 dây CAN_H và CAN_L, lúc này nhiễu sẽ bị triệt tiêu.
+**Tính chất**: Vì tính chất vi sai trên đường truyền tín hiệu của CAN Bus, tín hiệu nhiễu sẽ ảnh hưởng đến giá trị điện áp ở trên cả CAN_H và CAN_L. CAN Bus thường được **xoắn 2 dây vào nhau** để giảm thiểu nhiễu tín hiệu.
 
 ![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/66ab8052-853f-4bb5-866c-7ccd06be6c5d)
 
 ## 11.2 Nguyên tắc hoạt động
 - Dữ liệu truyền từ 1 Node bất ký trên CAN Bus không truyền địa chỉ của Node đó, cũng không truyền địa chỉ của Node muốn giao tiếp.
 - Thay vào đó, dữ liệu truyền đi được gắn nhãn bởi 1 số nhận dạng (ID) duy nhất trên toàn mạng.
-
-  Ví dụ: Có 8 bit ID: 0000 0000. Bit 1 liên quan đến động cơ, bit 2 liên quan đến phanh ABS, bit 3 liên quan đến bánh xe,... Khi set bit tương ứng lên 1 thì các Node liên quan sẽ xử lý thông điệp được truyền đi.
 - Tất cả các Node khác đều nhận được thông điệp, mỗi Node tự kiểm tra mã ID để xem thông điệp có liên quan tới Node đó hay không. Nếu có liên quan quan, nó sẽ xử lý còn không thì bỏ qua.
 
-**Tranh chấp trên Bus**
+## 11.3 Tranh chấp trên Bus
 
-Giao thức CAN cho phép các Node khác nhau đưa dữ liệu cùng lúc. 
-
-**Data Frame** và **Remote Frame** làm việc theo cơ chế phân xử quyền ưu tiên của tín hiệu. Vì thế cấu trúc của chúng có vùng phân xử quyền ưu tiên.
+Giao thức CAN cho phép nhiều Node khác nhau đưa dữ liệu lên bus cùng lúc. Khi đó, cơ chế arbitration sẽ được thực hiện:
+- Mỗi thông điệp CAN có một ID ưu tiên. Node nào có thông điệp với ID ưu tiên thấp hơn (tức có độ ưu tiên cao hơn) sẽ chiếm quyền truy cập bus và gửi thông điệp trước.
+- Những node khác có ID ưu tiên cao hơn sẽ tự động dừng lại và chờ lượt tiếp theo để gửi thông điệp.
+- Quá trình arbitration diễn ra mà không gây mất dữ liệu hay làm gián đoạn các thiết bị khác, vì thế mạng CAN là một hệ thống non-destructive (không gây mất dữ liệu).
 
 ![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/de6a4bf9-bda3-4a99-9b1a-65df15455988)
 
 Khi phân xử, bit ID có giá trị 0 sẽ được ưu tiên hơn.
 
-## 11.3 Khung dữ liệu CAN
+## 11.4 Khung dữ liệu CAN
 Trong mạng CAN, dữ liệu được truyền thông qua các khung dữ liệu (CAN Frame). Mỗi khung dữ liệu bao gồm nhiều trường khác nhau, từ việc chỉ định ID của thiết bị gửi cho đến việc chứa dữ liệu và thông tin kiểm tra lỗi. Mạng CAN hỗ trợ nhiều loại khung dữ liệu, mỗi loại có chức năng cụ thể gồm:
 - Data Frame
 - Remote Frame
 - Error Frame
 - Overload Frame
-### 11.3.1 Data Frame
-**Data Frame** 2 dạng là **Standard Frame** và **Extended Frame**.
 
-Cấu trúc của 1 data frame:
+### 11.4.1 Data Frame
+**Data Frame** (Khung dữ liệu) là khung phổ biến nhất được sử dụng trong giao thức CAN. Nó được sử dụng để truyền dữ liệu thực tế giữa các node trên mạng CAN.
+
+Cấu trúc của một Data Frame:
 
 ![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/89c30093-165e-4f6c-8569-34a28697412e)
 
-#### 11.3.1.1 Standard Frame
+Có 2 loại Data Frame là **Standard Frame (Khung chuẩn)** và **Extended Frame (Khung mở rộng)**.
+
+**Standard Frame**
 
 ![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/3e34403a-df6b-4cda-9f24-11501ba23266)
 
-- **Start Of Frame Field – SOF** (Trường bắt đầu): Độ dài 1 bit đầu của frame, giá trị Dominant báo hiệu bắt đầu của 1 frame.
+- **Start Of Frame Field – SOF** (Trường bắt đầu): 1 bit **Dominant** báo hiệu bắt đầu của 1 frame.
 - **Arbitration Field** (Trường xác định quyền ưu tiên): Có độ dài 12 bit, bao gồm 11 bit ID và 1 bit RTR.
-    - **Bit RTR** (Remote Transmission Request): Dùng để phân biệt khung là **Data Frame** hay **Remote Frame** (0 - Data frame, 1 - Remote frame).
+	- Bit **RTR** (Remote Transmission Request) dùng để phân biệt khung là **Data Frame** hay **Remote Frame** (RTR = 0 - Data Frame, RTR = 1 - Remote Frame).
 - **Control Field** (Trường điều khiển): Khung chuẩn gồm IDE, r0 và DLC (Data Length Code).
-    - **Bit IDE** (Identifier Extension): Bit phân biệt giữa loại khung chuẩn và khung mở rộng: IDE = 0 - khung chuẩn.
-    - **Bit r0** (bit dự trữ): Phải được truyền là Recessive Bit bởi bộ truyền nhưng bộ nhận không quan tâm đến giá trị bit này. 
-    - **Bit DLC** (Data Length Code): Có độ dài 4 bit quy định số byte của trường dữ liệu của Data Frame, Chỉ được mang giá trị từ 0 đến 8.
-- **Data Field** (Trường dữ liệu): Chứa data, có độ dài từ 0 đến 8 byte tùy vào giá trị của DLC ở trường điều khiển.
+    - Bit **IDE** (Identifier Extension): Bit phân biệt giữa loại khung chuẩn và khung mở rộng: IDE = 0 - Khung chuẩn.
+    - Bit **r0** (Bit dự trữ): Phải được truyền là Recessive Bit bởi bộ truyền nhưng bộ nhận không quan tâm đến giá trị bit này. 
+    - Bit **DLC** (Data Length Code): Có độ dài 4 bit quy định số byte của trường dữ liệu của Data Frame, giá trị từ 0 đến 8 byte.
+- **Data Field** (Trường dữ liệu): Chứa dữ liệu, có độ dài từ 0 đến 8 byte tùy vào giá trị của DLC ở trường điều khiển.
 - **Cyclic Redundancy Check Field – CRC** (Trường kiểm tra): Gồm 16 bit và được chia làm 2 phần:
-    - **CRC Sequence**: Gồm 15 bit CRC tuần tự, tính toán mã hóa dữ liệu. Khi nhận sẽ kiểm tra xem mã hóa đúng hay sai.
-    - **CRC Delimiter**: Là một Recessive Bit làm nhiệm vụ phân cách trường CRC với trường phía sau.
+    - **CRC Sequence**: Gồm 15 bit CRC tuần tự tính toán mã hóa dữ liệu, khi nhận sẽ kiểm tra xem mã hóa đúng hay sai.
+    - **CRC Delimiter**: Là 1 bit **Recessive** làm nhiệm vụ phân cách trường CRC với trường phía sau.
 - **Acknowledge Field – ACK** (Trường xác nhận): Có độ dài 2 bit và bao gồm 2 phần:
-    - **ACK Slot**: Có độ dài 1 bit, Node truyền dữ liệu sẽ truyền bit này là Recessive. Khi một hoặc nhiều Node nhận chính xác giá trị thông điệp (không có lỗi và đã so sánh CRC Sequence trùng khớp) thì nó sẽ báo lại cho bộ truyền bằng cách truyền Dominant Bit ngay vị trí ACK Slot (tương tự việc kéo SDA trong I2C).
-    - **ACK Delimiter**: Có độ dài 1 bit, nó luôn là một Recessive Bit ⇒ ACK Slot luôn được đặt giữa hai Recessive Bit là CRC Delimiter và ACK Delimiter.
-- **End Of Frame Field – EOF** (Trường kết thúc): Thông báo kết thúc một Data Frame hay Remote Frame. Trường này gồm 7 Recessive Bit.
+    - **ACK Slot**: Có độ dài 1 bit, Node truyền dữ liệu sẽ truyền bit này là **Recessive**. Khi một hoặc nhiều Node nhận chính xác giá trị thông điệp (không có lỗi và đã so sánh CRC Sequence trùng khớp) thì nó sẽ báo lại cho bộ truyền bằng cách truyền bit **Dominant** ngay vị trí ACK Slot (tương tự việc kéo SDA trong I2C).
+    - **ACK Delimiter**: Có độ dài 1 bit, nó luôn là 1 bit **Recessive** để phân cách trường ACK với trường phía sau.
+- **End Of Frame Field – EOF** (Trường kết thúc): Thông báo kết thúc một Data Frame hay Remote Frame. Trường này gồm 7 bit **Recessive**.
 
-#### 11.3.1.2 Extended Frame
+**Extended Frame**
 
 ![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/44e167be-b619-4060-a749-8d3a65424ace)
 
 - **Start Of Frame Field – SOF** (Trường bắt đầu): Độ dài 1 bit đầu của frame, giá trị Dominant báo hiệu bắt đầu của 1 frame.
 - **Arbitration Field** (Trường xác định quyền ưu tiên): Có độ dài 32 bit, bao gồm 29 bit ID, 1 bit SRR, 1 bit IDE và 1 bit RTR.
-    - **Bit RTR** (Remote Transmission Request): Dùng để phân biệt khung là Data Frame hay Remote Frame (0- Data frame, 1- Remote frame).
-    - **Bit SRR** (Substitute Remote Request): Chỉ có ở khung mở rộng, có giá trị là 1.
-    - **Bit IDE** (Identifier Extension): Bit phân biệt giữa loại khung chuẩn và khung mở rộng: IDE = 1 - khung mở rộng. 
+    - Bit **RTR** (Remote Transmission Request) dùng để phân biệt khung là Data Frame hay Remote Frame (RTR = 0 - Data Frame, RTR = 1 - Remote Frame).
+    - Bit **SRR** (Substitute Remote Request): Chỉ có ở khung mở rộng, có giá trị là 1.
+    - Bit **IDE** (Identifier Extension): Bit phân biệt giữa loại khung chuẩn và khung mở rộng: IDE = 1 - Khung mở rộng. 
 - **Control Field** (Trường điều khiển): Khung mở rộng gồm r1, r0 và DLC (Data Length Code).
-    - **Bit r0, r1** (hai bit dự trữ): Phải được truyền là Recessive Bit bởi bộ truyền nhưng bộ nhận không quan tâm đến giá trị 2 bit này. 
-    - **Bit DLC** (Data Length Code): Có độ dài 4 bit quy định số byte của trường dữ liệu của Data Frame, Chỉ được mang giá trị từ 0 đến 8.
+    - Bit **r0, r1** (2 bit dự trữ): Phải được truyền là bit **Recessive** bởi bộ truyền nhưng bộ nhận không quan tâm đến giá trị 2 bit này. 
+    - Bit **DLC** (Data Length Code): Có độ dài 4 bit quy định số byte của trường dữ liệu của Data Frame, giá trị từ 0 đến 8 byte.
 - **Data Field** (Trường dữ liệu): Chứa data, có độ dài từ 0 đến 8 byte tùy vào giá trị của DLC ở trường điều khiển.
 - **Cyclic Redundancy Check Field – CRC** (Trường kiểm tra): Gồm 16 bit và được chia làm 2 phần:
-    - **CRC Sequence**: Gồm 15 bit CRC tuần tự, tính toán mã hóa dữ liệu. Khi nhận sẽ kiểm tra xem mã hóa đúng hay sai.
-    - **CRC Delimiter**: Là một Recessive Bit làm nhiệm vụ phân cách trường CRC với trường phía sau.
+    - **CRC Sequence**: Gồm 15 bit CRC tuần tự tính toán mã hóa dữ liệu, khi nhận sẽ kiểm tra xem mã hóa đúng hay sai.
+    - **CRC Delimiter**: Là 1 bit **Recessive** làm nhiệm vụ phân cách trường CRC với trường phía sau.
 - **Acknowledge Field – ACK** (Trường xác nhận): Có độ dài 2 bit và bao gồm 2 phần:
-    - **ACK Slot**: Có độ dài 1 bit, Node truyền dữ liệu sẽ truyền bit này là Recessive. Khi một hoặc nhiều Node nhận chính xác giá trị thông điệp (không có lỗi và đã so sánh CRC Sequence trùng khớp) thì nó sẽ báo lại cho bộ truyền bằng cách truyền Dominant Bit ngay vị trí ACK Slot (tương tự việc kéo SDA trong I2C).
-    - **ACK Delimiter**: Có độ dài 1 bit, nó luôn là một Recessive Bit ⇒ ACK Slot luôn được đặt giữa hai Recessive Bit là CRC Delimiter và ACK Delimiter.
+	- **ACK Slot**: Có độ dài 1 bit, Node truyền dữ liệu sẽ truyền bit này là **Recessive**. Khi một hoặc nhiều Node nhận chính xác giá trị thông điệp (không có lỗi và đã so sánh CRC Sequence trùng khớp) thì nó sẽ báo lại cho bộ truyền bằng cách truyền bit **Dominant** ngay vị trí ACK Slot (tương tự việc kéo SDA trong I2C).
+    - **ACK Delimiter**: Có độ dài 1 bit, nó luôn là 1 bit **Recessive** để phân cách trường ACK với trường phía sau.
 - **End Of Frame Field – EOF** (Trường kết thúc): Thông báo kết thúc một Data Frame hay Remote Frame. Trường này gồm 7 Recessive Bit.
 
-### 11.3.2 Remote Frame
-Cấu trúc 1 **Remote Frame** tương tự Data frame, tuy nhiên Remote Frame có Bit RTR = 1 và không có trường data (Bit DLC = 0).
+**Data Frame** xảy ra khi một node cần truyền dữ liệu đến các node khác trên mạng CAN. VD: 
+- Một cảm biến nhiệt độ trên mạng CAN gửi giá trị nhiệt độ đến bộ điều khiển trung tâm.
+- Một bộ điều khiển trong xe hơi gửi lệnh điều khiển đến các mô-tơ hoặc thiết bị truyền động (actuator) để thay đổi trạng thái cơ khí.
 
-**Remote Frame** được sử dụng khi một node trên mạng CAN yêu cầu dữ liệu từ một node khác. Thay vì chứa dữ liệu thực, Remote Frame chứa ID của node cần yêu cầu, cùng với bit điều khiển RTR (Remote Transmission Request).
+### 11.4.2 Remote Frame
+**Remote Frame** (Khung yêu cầu) là một loại khung trong giao thức CAN được sử dụng để yêu cầu một node khác gửi dữ liệu qua **Data Frame**. Khác với **Data Frame**, **Remote Frame** không chứa dữ liệu thực tế trong trường **Data Field**, mà chỉ yêu cầu node khác gửi lại một **Data Frame** có cùng ID. Một trong những đặc điểm quan trọng của **Remote Frame** là nó thiết lập bit **RTR** để phân biệt với **Data Frame**.
 
-Remote Frame thường được sử dụng trong các hệ thống mà một node có thể yêu cầu thông tin từ một node khác mà không có dữ liệu nào được truyền ngay lập tức. Node nhận yêu cầu sẽ trả lời bằng một Data Frame chứa dữ liệu cần thiết.
+Cấu trúc của một Remote Frame:
 
-### 11.3.3 Error Frame
-**Error Frame** được sử dụng khi một node phát hiện ra lỗi trong quá trình truyền dữ liệu. Nó được gửi để thông báo cho các node khác rằng có lỗi đã xảy ra trên bus. Bất kỳ node nào phát hiện ra lỗi đều có thể gửi Error Frame.
+![image](https://github.com/user-attachments/assets/84e6c752-0c2d-4b7b-b27d-cc53c7bca371)
+
+- **Start Of Frame Field – SOF** (Trường bắt đầu): 1 bit **Dominant** báo hiệu bắt đầu của 1 frame.
+- **Arbitration Field** (Trường xác định quyền ưu tiên): Có độ dài 12 bit, bao gồm 11 bit ID và 1 bit RTR.
+	- Bit **RTR** = 1 để chỉ ra rằng đây là Remote Frame.
+- **Control Field** (Trường điều khiển): Chứa DLC (Data Length Code), chỉ ra số byte dữ liệu mà Data Frame sẽ chứa (giá trị từ 0 đến 8 byte).
+- **Cyclic Redundancy Check Field – CRC** (Trường kiểm tra): Gồm 16 bit và được chia làm 2 phần:
+    - **CRC Sequence**: Gồm 15 bit CRC tuần tự tính toán mã hóa dữ liệu, khi nhận sẽ kiểm tra xem mã hóa đúng hay sai.
+    - **CRC Delimiter**: Là 1 bit **Recessive** làm nhiệm vụ phân cách trường CRC với trường phía sau.
+- **Acknowledge Field – ACK** (Trường xác nhận): Có độ dài 2 bit và bao gồm 2 phần:
+    - **ACK Slot**: Có độ dài 1 bit, Node truyền dữ liệu sẽ truyền bit này là **Recessive**. Khi một hoặc nhiều Node nhận chính xác giá trị thông điệp (không có lỗi và đã so sánh CRC Sequence trùng khớp) thì nó sẽ báo lại cho bộ truyền bằng cách truyền bit **Dominant** ngay vị trí ACK Slot (tương tự việc kéo SDA trong I2C).
+    - **ACK Delimiter**: Có độ dài 1 bit, nó luôn là 1 bit **Recessive** để phân cách trường ACK với trường phía sau.
+- **End Of Frame Field – EOF** (Trường kết thúc): Thông báo kết thúc một Data Frame hay Remote Frame. Trường này gồm 7 bit **Recessive**.
+
+**Remote Frame** xảy ra khi một node muốn yêu cầu dữ liệu từ một node khác trên mạng CAN mà không tự động nhận dữ liệu. Node gửi sẽ phát **Remote Frame**, sau đó node nhận sẽ trả lời bằng một **Data Frame** chứa dữ liệu được yêu cầu. VD:
+- Một node điều khiển trung tâm muốn yêu cầu cảm biến nhiệt độ gửi dữ liệu hiện tại. Node điều khiển sẽ phát một Remote Frame với ID tương ứng và cảm biến sẽ phản hồi lại bằng một Data Frame chứa dữ liệu.
+- Trong hệ thống ô tô, ECU có thể phát một Remote Frame để yêu cầu dữ liệu từ các cảm biến vị trí bánh xe để kiểm tra trạng thái vận hành.
+
+### 11.4.3 Error Frame
+**Error Frame** (Khung lỗi) là khung được tự động phát ra bởi một node CAN khi nó phát hiện lỗi trong quá trình giao tiếp. 
+
+Khung này có mục đích thông báo cho các node khác trong mạng về việc phát hiện lỗi và yêu cầu quá trình truyền thông được khởi động lại. Error Frame không được người dùng gửi trực tiếp, mà phần cứng CAN sẽ tự động phát hiện và phát ra khi có lỗi. 
+
+Error Frame có 2 loại: 
+- **Active Error Frame**: Được phát ra bởi một node đang trong trạng thái **Active Error**, có thể can thiệp để sửa lỗi. Node này sẽ phát ra 6 bit Error Flag.
+- **Passive Error Frame**: Được phát ra bởi một node trong trạng thái **Passive Error**, khi nó đã gặp nhiều lỗi nhưng không thể sửa được. Node này sẽ phát ra 12 bit Error Flag.
+
+Các node CAN quản lý một **Error Counter** để theo dõi số lượng lỗi mà chúng gặp phải. Mỗi khi một lỗi được phát hiện, giá trị của **Error Counter** sẽ tăng lên.
+- Khi Error Counter <= 127, Node vẫn ở trạng thái **Active Error**, có thể can thiệp để sửa lỗi.
+- Khi Error Counter > 127, Node sẽ chuyển sang trạng thái **Passive Error**, đã gặp nhiều lỗi và không thể tự sửa được.
+- Khi Error Counter > 255, Node sẽ chuyển sang trạng thái **Bus-Off**, nó sẽ bị loại khỏi mạng CAN và không thể giao tiếp thêm cho đến khi được reset lại.
 
 **Error Frame** gồm 2 phần: **Error Flag** và **Error Delimiter**. 
 - **Error Flag** là chuỗi từ 6 đến 12 bit dominant, báo hiệu lỗi.
 - **Error Delimiter** là chuỗi 8 bit recessive, kết thúc Error Frame.
 
-![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/e4a45569-6997-48b9-b452-e39a7dbdd8ee)
+Cấu trúc của một Error Frame: 
 
-### 11.3.4 Overload Frame
-**Overload Frame** được sử dụng để báo hiệu rằng một node đang trong trạng thái bận và không thể xử lý thêm thông điệp nào ngay lập tức. Điều này có thể xảy ra khi một node chưa xử lý xong thông điệp trước đó hoặc hệ thống quá tải.
+![image](https://github.com/user-attachments/assets/75820df8-28bf-4377-9d51-0ba210dfa41e)
 
-Khi một node gửi Overload Frame, nó báo hiệu cho các node khác trên mạng rằng chúng cần dừng truyền thông trong một thời gian ngắn để giảm tải cho node đó.
+- **Error Flag**: 6 hoặc 12 bit **Dominant** phụ thuộc vào trạng thái lỗi (Active hoặc Passive).
+- **Error Delimiter**: 8 bit **Recessive** để phân tách Error Frame với các khung khác.
 
-## 11.4 Cấu hình CAN
+**Error Frame** xảy ra khi một node phát hiện một trong các lỗi sau trong quá trình truyền dữ liệu:
+- **Bit Error**: Xảy ra khi một node phát hiện bit truyền ra không giống với bit nhận được.
+- **CRC Error**: Xảy ra khi có lỗi trong quá trình kiểm tra mã CRC.
+- **ACK Error**: Xảy ra khi node không nhận được tín hiệu ACK từ các node khác.
+- **Form Error**: Xảy ra khi một trường trong khung không tuân theo định dạng đúng của giao thức CAN.
+- **Stuff Error**: Xảy ra khi có nhiều hơn 5 bit giống nhau liên tiếp trong một khung (CAN sử dụng Bit stuffing để tránh điều này).
+
+Khi bất kỳ lỗi nào trong các lỗi kể trên được phát hiện, node phát ra Error Frame và các node khác trên mạng CAN sẽ tạm dừng quá trình giao tiếp và xử lý lại khung. VD:
+- Một node phát hiện rằng tín hiệu ACK từ các node nhận không được phát đi đúng cách, gây ra lỗi ACK Error. Node sẽ phát Error Frame để cảnh báo các node khác và yêu cầu truyền lại dữ liệu.
+- Một cảm biến trên mạng CAN bị lỗi truyền dữ liệu do môi trường bị nhiễu, gây ra lỗi Bit Error và phát Error Frame để các node khác biết rằng dữ liệu bị lỗi.
+
+### 11.4.4 Overload Frame
+**Overload Frame** là một loại khung đặc biệt trong giao thức CAN được sử dụng để trì hoãn việc truyền dữ liệu khi một node trong mạng CAN cần thêm thời gian để xử lý. Khung này không chứa dữ liệu, mà chỉ báo hiệu rằng một node đang quá tải và cần thời gian trước khi tiếp tục giao tiếp. 
+
+Mục tiêu của Overload Frame là ngăn không cho các khung khác được truyền quá nhanh, giúp node bị quá tải có đủ thời gian để xử lý các khung trước đó.
+
+Overload Frame không phải do người dùng phát ra, mà được tự động phát ra bởi phần cứng CAN khi cần thiết.
+
+Node CAN sẽ phát ra Overload Frame khi một trong các điều kiện sau xảy ra:
+- Node không thể xử lý tiếp dữ liệu do buffer đã đầy hoặc cần thêm thời gian xử lý dữ liệu.
+- Node không thể nhận khung mới do có quá trình xử lý nội bộ cần hoàn thành trước.
+
+Cấu trúc của Overload Frame:
+
+![image](https://github.com/user-attachments/assets/b30183f8-0096-435a-9e39-6213a8d3348b)
+
+- **Overload Flag**: 6 bit **Dominant** để báo hiệu trạng thái quá tải.
+- **Overload Delimiter**: 8 bit **Recessive** để phân tách khung quá tải với các khung khác và báo hiệu kết thúc Overload Frame.
+
+Các điều kiện có thể gây ra Overload Frame:
+- Bộ đệm FIFO trong node nhận đầy và node cần thêm thời gian để xử lý dữ liệu đã nhận.
+- Tạm dừng nội bộ trong node để hoàn tất việc xử lý một sự kiện trước khi nhận thêm khung dữ liệu mới.
+- Node cần xử lý một yêu cầu cao cấp khác (như một yêu cầu từ phần mềm ứng dụng).
+
+**Overload Frame** xảy ra khi một node cần thêm thời gian để xử lý khung dữ liệu đã nhận trước đó. Điều này ngăn các node khác truyền khung mới quá sớm, gây ra quá tải xử lý cho node đã phát ra Overload Frame.
+
+Overload Frame có thể được phát ra ngay sau khoảng trống giữa các khung hoặc ngay sau khi một khung dữ liệu đã được truyền hoàn tất, nếu node nhận không thể xử lý kịp thời. Trong thực tế, điều này thường xảy ra khi một node đang nhận nhiều dữ liệu từ nhiều nguồn khác nhau trên mạng CAN và cần tạm dừng để xử lý trước khi tiếp tục nhận thêm dữ liệu.
+
+VD: Trong hệ thống ô tô, module CAN trên MCU có thể phát ra Overload Frame khi phải nhận quá nhiều lệnh điều khiển từ nhiều bộ phận như cảm biến tốc độ, hệ thống phanh ABS và hệ thống điều hòa cùng một lúc. Việc phát Overload Frame giúp trì hoãn các lệnh mới cho đến khi module có thể xử lý xong lệnh trước đó.
+
+## 11.5 CAN và các phiên bản mở rộng
+### 11.5.1 CAN 2.0A
+Đặc điểm chính của CAN 2.0A:
+- 11 bit ID: Phiên bản CAN 2.0A sử dụng định dạng ID dài 11 bit. Đây là một trong những yếu tố quan trọng để xác định mức độ ưu tiên của thông điệp trong quá trình truyền dữ liệu. Với 11 bit, có thể biểu diễn 2^11 = 2048 ID khác nhau.
+- Khả năng ưu tiên: Mỗi thông điệp trong mạng CAN đều có một ID xác định mức độ ưu tiên của nó. ID càng thấp, mức độ ưu tiên càng cao.
+- Truyền dữ liệu: Dữ liệu có thể truyền đi qua bus CAN với kích thước tối đa là 8 byte mỗi khung. Điều này là đặc trưng của CAN 2.0A, giúp quản lý hiệu quả băng thông và độ trễ.
+
+## 11.5.2 CAN 2.0B
+Đặc điểm chính của CAN 2.0B:
+- 29 bit ID: Phiên bản CAN 2.0B mở rộng định dạng ID từ 11 bit trong CAN 2.0A lên 29 bit. Với 29 bit, có thể biểu diễn 2^29 ID khác nhau, cho phép phân bổ số lượng ID lớn hơn và hỗ trợ các hệ thống phức tạp với nhiều node hơn.
+- Tương thích ngược: CAN 2.0B vẫn tương thích ngược với CAN 2.0A, có nghĩa là các node sử dụng CAN 2.0B có thể hiểu được và giao tiếp với các node sử dụng CAN 2.0A. Các node CAN 2.0B có thể nhận diện giữa các khung dữ liệu tiêu chuẩn và khung dữ liệu mở rộng thông qua bit điều khiển IDE (Identifier Extension).
+- Khả năng truyền dữ liệu: Giống như CAN 2.0A, CAN 2.0B cũng giới hạn khung dữ liệu tối đa là 8 byte, nhưng sự khác biệt chính nằm ở số lượng ID có thể được sử dụng để định danh các thiết bị trên mạng.
+
+Khung dữ liệu CAN 2.0B bao gồm các trường sau:
+- **Start of Frame (SOF)**: Đây là 1 bit duy nhất đánh dấu bắt đầu của một frame.
+- **Identifier (ID)**:
+	- Standard Frame (11-bit ID): Đây là phần chứa 11-bit để nhận diện thông điệp.
+	- Extended Frame (29-bit ID): 29-bit được chia thành hai phần: Base ID: 11 bit giống như trong Standard Frame và Extended ID: 18 bit mở rộng để cung cấp tổng cộng 29 bit nhận dạng.
+- **Remote Transmission Request (RTR)**: Bit này chỉ định liệu frame là một Data Frame hay Remote Frame.
+	- RTR = 0: Đây là Data Frame.
+	- RTR = 1: Đây là Remote Frame (yêu cầu dữ liệu từ một node khác).
+- **Identifier Extension (IDE)**: Bit này phân biệt giữa Standard Frame (IDE = 0) và Extended Frame (IDE = 1).
+- **Reserved Bit (r0, r1)**: Những bit dự phòng để phục vụ cho các phiên bản tương lai của chuẩn CAN.
+- **Data Length Code (DLC)**: 4 bit chỉ định số lượng byte dữ liệu trong Data Field (từ 0 đến 8 byte).
+- **Data Field**: Chứa dữ liệu thực tế muốn truyền, độ dài từ 0 đến 8 byte.
+- **Cyclic Redundancy Check (CRC)**: Trường này chứa 15 bit CRC và 1 bit CRC Delimiter, dùng để kiểm tra lỗi trong frame.
+- **ACK Slot**: 1 bit dành cho node nhận phát tín hiệu xác nhận (ACK) nếu frame được nhận mà không có lỗi.
+- **End of Frame (EOF)**: Kết thúc frame, gồm 7 bit liên tiếp có giá trị 1.
+- **Intermission Frame Space (IFS)**: 3 bit dành cho thời gian nghỉ giữa hai frame truyền liên tiếp.
+
+## 11.5.3 CAN FD 
+**CAN FD (Flexible Data-rate)** là một phiên bản cải tiến của giao thức CAN tiêu chuẩn, được phát triển để giải quyết các hạn chế về tốc độ truyền dữ liệu và kích thước khung dữ liệu trong các phiên bản trước đó.
+
+Đặc điểm chính của CAN FD:
+- Truyền dữ liệu với tốc độ cao hơn: CAN FD cho phép tốc độ truyền dữ liệu nhanh hơn nhiều so với CAN tiêu chuẩn, với tốc độ có thể lên tới 8 Mbps trong giai đoạn truyền dữ liệu (Data Phase). Trong CAN tiêu chuẩn, tốc độ truyền tối đa bị giới hạn ở 1 Mbps. Điều này giúp tăng đáng kể tốc độ truyền thông cho các hệ thống đòi hỏi xử lý nhanh.
+- Kích thước khung dữ liệu lớn hơn: Trong khi CAN tiêu chuẩn chỉ hỗ trợ tối đa 8 byte dữ liệu trong mỗi khung, CAN FD có thể truyền tới 64 byte dữ liệu trong một khung. Điều này giúp giảm số lượng khung cần thiết để truyền một lượng lớn dữ liệu, từ đó giảm độ trễ và tăng hiệu suất.
+- Tốc độ truyền linh hoạt: CAN FD sử dụng hai tốc độ truyền khác nhau trong cùng một khung: một tốc độ chậm hơn cho Arbitration Phase (giai đoạn tranh chấp quyền gửi), và một tốc độ nhanh hơn cho Data Phase (giai đoạn truyền dữ liệu). Điều này giúp đảm bảo tính tương thích và hiệu quả của hệ thống.
+- Tương thích ngược: CAN FD vẫn giữ được khả năng tương thích ngược với các phiên bản CAN cũ như CAN 2.0A và CAN 2.0B, giúp các hệ thống sử dụng cả CAN tiêu chuẩn và CAN FD có thể hoạt động song song.
+
+Cấu trúc khung dữ liệu CAN FD:
+- **Start of Frame (SOF)**: 1 bit luôn có giá trị 0, đánh dấu bắt đầu của một khung dữ liệu.
+- **Identifier (ID)**:
+	- Standard Frame (11 bit ID): Khung chuẩn với 11 bit ID.
+	- Extended Frame (29 bit ID): Khung mở rộng với 29 bit ID, tương tự như trong CAN 2.0B.
+- **Extended Identifier (IDE)**: Bit này cho biết khung dữ liệu là chuẩn (Standard Frame) hay mở rộng (Extended Frame).
+	- IDE = 0: Khung chuẩn (11 bit)
+	- IDE = 1: Khung mở rộng (29 bit)
+- **Remote Transmission Request (RTR)**: Bit này chỉ có trong CAN 2.0B để yêu cầu dữ liệu từ node khác. Trong CAN FD, RTR đã bị loại bỏ.
+- **FD Format (FDF)**: Đây là bit mới được thêm vào trong CAN FD, cho biết khung dữ liệu là CAN 2.0 hay CAN FD.
+	- FDF = 0: Khung CAN 2.0
+	- FDF = 1: Khung CAN FD
+- **Bit Rate Switch (BRS)**: Bit này cho phép điều chỉnh tốc độ truyền dữ liệu. Nếu BRS = 1, tốc độ truyền trong phần Data Phase (phần chứa dữ liệu) sẽ cao hơn tốc độ truyền trong phần Arbitration Phase (phần xác định ưu tiên).
+- **Error State Indicator (ESI)**: Bit này cho biết trạng thái lỗi của node.
+	- ESI = 0: Node đang trong trạng thái active (hoạt động bình thường).
+	- ESI = 1: Node đang trong trạng thái passive (chờ phục hồi sau lỗi).
+- **Data Length Code (DLC)**: CAN FD vẫn sử dụng trường DLC để chỉ định số byte trong Data Field (trường dữ liệu). Tuy nhiên, CAN FD cho phép 64 byte dữ liệu, lớn hơn nhiều so với CAN 2.0.
+- **Data Field**: Đây là trường chứa dữ liệu thực tế. CAN FD cho phép truyền tối đa 64 byte dữ liệu (trong khi CAN 2.0 chỉ cho phép 8 byte).
+- **Cyclic Redundancy Check (CRC)**: Trường CRC trong CAN FD dài hơn so với CAN 2.0 để đảm bảo độ tin cậy khi truyền dữ liệu lớn hơn. CRC có thể là 17 bit hoặc 21 bit, tùy thuộc vào độ dài của dữ liệu.
+- **ACK Slot**: Khung ACK để các node trên bus xác nhận rằng frame đã được nhận thành công. Giống với CAN 2.0, node nhận sẽ ghi bit ACK nếu nhận được khung mà không gặp lỗi.
+- **End of Frame (EOF)**: Khung kết thúc giống với CAN 2.0, bao gồm 7 bit liên tiếp có giá trị 1.
+
+## 11.6 Cấu hình CAN
 
 ![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/cc24c5f1-9ac0-4e1a-a556-78707cb9aad5)
 
@@ -1762,16 +1895,16 @@ Trên STM32F1, CAN cần được cấp xung từ Bus APB1. Cấu hình cho 2 ch
 Các tham số cho CAN được cấu hình trong struct **CAN_InitTypeDef** bao gồm:
 - `CAN_TTCM`: Chế độ giao tiếp được kích hoạt theo thời gian ấn định khoảng thời gian khi truyền message.
 - `CAN_ABOM`: Quản lý ngắt bus tự động. Nếu trong quá trình truyền xảy ra lỗi, bus sẽ được ngắt. Bit này quy định việc CAN có quay về trạng thái bình thường hay không.
-- `CAN_AWUM`: Chế độ đánh thức tự động. Nếu CAN hoạt động ở SleepMode, Bit này quy định việc đánh thức CAN theo cách thủ công hay tự động.
-- `CAN_NART`: Không  tự động truyền lại. CAN sẽ thử lại để truyền tin nhắn nếu các lần thử trước đó không thành công. Nếu set bit này thì sẽ không truyền lại. Nên set bit khi sử dụng chung với **CAN_TTCM**, nếu không thì nên để = 0;
+- `CAN_AWUM`: Chế độ đánh thức tự động. Nếu CAN hoạt động ở SleepMode, bit này quy định việc đánh thức CAN theo cách thủ công hay tự động.
+- `CAN_NART`: Không tự động truyền lại. CAN sẽ thử lại để truyền tin nhắn nếu các lần thử trước đó không thành công. Nếu set bit này thì sẽ không truyền lại. Nên set bit khi sử dụng chung với **CAN_TTCM**, nếu không thì nên để = 0;
 - `CAN_RFLM`: Chế độ khóa nhận FIFO. Chế độ khóa bộ đệm khi đầy.
-- `CAN_TXFP`: Ưu tiên truyền FIFO. Đặt bit này =0, ưu tiên truyền các gói có ID thấp hơn. Nếu đặt lên 1, CAN sẽ ưu tiên các gói theo thứ tự trong bộ đệm.
+- `CAN_TXFP`: Ưu tiên truyền FIFO. Đặt bit này = 0, ưu tiên truyền các gói có ID thấp hơn. Nếu đặt lên 1, CAN sẽ ưu tiên các gói theo thứ tự trong bộ đệm.
 - `CAN_Mode`: Chế độ CAN:
     - `CAN_Mode_Normal`: Gửi message thông thường.
     - `CAN_Mode_LoopBack`: Các message gửi đi sẽ được lưu vào bộ nhớ đệm.
     - `CAN_Mode_Silent`: Chế độ chỉ nhận.
     - `CAN_Mode_Silent_LoopBack`: Kết hợp giữa 2 mode trên.
-- `CAN_Prescaler`: Cài đặt giá trị chia để tạo time quatum. 
+- `CAN_Prescaler`: Cài đặt giá trị chia để tạo time quantum. 
     - `fCan` = `sysclk` / `CAN_Prescaler`
     - `1tq` = 1 / `fCan`
 - `CAN_SJW`: Thời gian trễ phần cứng, tính theo tq.
@@ -1780,7 +1913,7 @@ Các tham số cho CAN được cấu hình trong struct **CAN_InitTypeDef** bao
 
 Tốc độ truyền CAN = 1/(`SJW`+`BS1`+`BS2`)
 
-## 11.5 CAN Mask & Filter
+## 11.7 CAN Mask & Filter
 CAN hỗ trợ bộ lọc ID, giúp các Node có thể lọc ra ID từ các message trên Bus để quyết định sẽ nhận massge nào. Các tham số cho bộ lọc được cấu hình trong **CAN_FilterInitTypeDef**:
 - `CAN_FilterNumber`: Chọn bộ lọc để dùng, từ 0-13.
 - `CAN_FilterMode`: Chế độ bộ lọc: 
@@ -1803,13 +1936,14 @@ CAN hỗ trợ bộ lọc ID, giúp các Node có thể lọc ra ID từ các me
 |1|1|1|Accept|
 
 **Giá trị bộ lọc & Giá trị ID trong massage**
+
 Thanh ghi chứa giá trị ID của gói tin:
 
 ![image](https://github.com/khaitq17/Embedded-Automotive/assets/159031971/0e78e5df-bfac-4696-9990-9a4b9ca9ce62)
 
 Để áp dụng được Mask và ID cho gói tin với ID là stdID, cần setup 11 bit cao của Mask cùng như của Filter.
 
-## 11.6 Truyền - nhận CAN
+## 11.8 Truyền - nhận CAN
 Để xác định được 1 gói tin, cần có **ID**, các bit **RTR**, **IDE**, **DLC** và tối đa 8 byte data như bài trước đã đề cập. Các thành phần này được tổ chức trong **CanRxMsg**.
 
 Hàm truyền: `uint8_t CAN_Transmit(CAN_TypeDef CANx, CanTxMsg TxMessage)`:
