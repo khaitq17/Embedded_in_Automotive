@@ -66,7 +66,7 @@ typedef uint8 Std_ReturnType;
 #define E_OK 		(Std_ReturnType)0x00U		/* Thao tác thành công */
 #define E_NOT_OK	(Std_ReturnType)0x01U		/* Thao tác không thành công */
 #define CAN_BUSY	(Std_ReturnType)0x02U		/* Yêu cầu truyền của Node CAN không thể được xử lý 
-													vì không có đối tượng truyền nào khả dụng */
+												   vì không có đối tượng truyền nào khả dụng */
 													 
 /**************************************************************************
  * @struct 	Std_VersionInfoType
@@ -141,8 +141,8 @@ typedef struct {
  * 			yêu cầu và phản hồi trong giao tiếp C/S.
  **************************************************************************/
 typedef uint8	Std_MessageTypeType;
-#define STD_MESSAGETYPE_REQUEST		0X00	/* Message type for a request message */
-#define STD_MESSAGETYPE_RESPONSE	0X01	/* Message type for a response message */
+#define STD_MESSAGETYPE_REQUEST		0X00	/* Kiểu thông điệp yêu cầu */
+#define STD_MESSAGETYPE_RESPONSE	0X01	/* Kiểu thông điệp phản hồi */
 
 /**************************************************************************
  * @typedef Std_MessageResultType
