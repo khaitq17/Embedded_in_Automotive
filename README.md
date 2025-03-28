@@ -2535,40 +2535,10 @@ Lớp này cung cấp một giao diện trừu tượng cho tất cả các thi�
 - **I/O Drivers**: Cung cấp cấu hình về ADC, PWM, ICU,...
 
 #### 13.2.3.4 Complex Device Driver
-Đây là lớp chứa những tính răng riêng biệt của từng hãng xe.
+Đây là lớp chứa những tính năng riêng biệt của từng hãng xe.
 
 Ví dụ:
 
 ![image](https://github.com/user-attachments/assets/6c545103-16ee-4c1e-84d4-08bcea2e61b2)
 
 </details>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
